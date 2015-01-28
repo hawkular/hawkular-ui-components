@@ -3,7 +3,7 @@
 /// <reference path="../../includes.ts"/>
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics.pluginName = "hawtio-assembly";
+    HawkularMetrics.pluginName = "hawkular-metrics";
     HawkularMetrics.log = Logger.get(HawkularMetrics.pluginName);
     HawkularMetrics.templatePath = "plugins/metrics/html";
 })(HawkularMetrics || (HawkularMetrics = {}));

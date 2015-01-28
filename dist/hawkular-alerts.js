@@ -3,7 +3,7 @@
 /// <reference path="../../includes.ts"/>
 var HawkularAlerts;
 (function (HawkularAlerts) {
-    HawkularAlerts.pluginName = "hawtio-assembly";
+    HawkularAlerts.pluginName = "hawkular-alerts";
     HawkularAlerts.log = Logger.get(HawkularAlerts.pluginName);
     HawkularAlerts.templatePath = "plugins/alerts/html";
 })(HawkularAlerts || (HawkularAlerts = {}));

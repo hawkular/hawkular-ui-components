@@ -89,6 +89,7 @@ gulp.task('template', ['tsc'], function() {
 gulp.task('concat', ['template'], function() {
   return gulp.src(['compiled.js', 'templates.js'])
     .pipe(plugins.concat(config.js))
+    .pipe(gulp.dest(config.dist))
     .pipe(gulp.dest(config.rootDist));
 });
 

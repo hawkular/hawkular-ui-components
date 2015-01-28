@@ -1,7 +1,7 @@
 /// <reference path="../../includes.ts"/>
 module HawkularAlerts {
 
-  export var pluginName = "hawtio-assembly";
+  export var pluginName = "hawkular-alerts";
 
   export var log:Logging.Logger = Logger.get(pluginName);
 
