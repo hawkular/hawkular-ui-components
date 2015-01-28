@@ -1,5 +1,5 @@
 {
-  "name": "hawkular-console",
+  "name": "hawkular-ui-components",
   "version": "0.1.6",
   "keywords": [
     "hawtio-hawkular",
@@ -22,10 +22,7 @@
   "dependencies": {
     "hawtio-core": "~2.0.0",
     "hawtio-core-navigation": "~2.0.0",
-    "hawtio-utilities": "~2.0.0",
-    "toastr": "~2.0.3",
-    "moment": "2.7.0",
-    "rhqm-charts": "~0.1.7"
+    "hawtio-utilities": "~2.0.0"
   },
   "devDependencies": {
     "bootstrap": "~3.3.1",
