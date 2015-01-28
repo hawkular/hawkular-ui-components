@@ -1,0 +1,62 @@
+= Hawkular Console
+
+[.lead]
+*Hawkular Console* is the home of the UI console for https://github.com/hawkular/hawkular[Hawkular].  This console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which a javascript based client-side framework. The various directories underneath console directory are Hawt.io 2 plugins and the various plugins eventually compose a Hawkular console. This modular approach to creating hawtio console plugins allows us to create individual plugins that comprise a console or can easily  be plugged into other Hawtio based consoles. The plugin system makes it easy to add/remove functionality (even dynamically).
+
+
+== Bower Component
+
+This git repository is published as bower component and consumed by the https://github.com/hawkular/hawkular[Hawkular Console]. Assets such as html/css/images/javascript can be published.
+
+
+_Note: Right now this component, is an unregistered bower component (and just pulled in by its git reference), soon it will have its own name on the bower registry like - 'hawtio-hawkular-console'_
+
+== Directory Structure Proposal
+
+*dist* - directory for  artifacts that need to published via bower package.
+
+*plugins* - directory containing Hawt.io 2 plugins for  Hawkular console. Multiple plugins can be packaged into a single bower component by adding the artefacts to the 'main' section of the bower.json file.
+
+The general idea here being that Hawt.io UIs which are composed of plugins (that can swapped around like legos between the various other Hawt.io UIs)
+
+== Dev Install
+_Dev Installs allow for live previewing changes as development occurs. Its an interactive environment that allows one to prototype quickly, seeing their changes instantly when they save since the browser refreshes with the changes._
+
+Assuming http://nodejs.org/[node.js/npm] is already installed:
+
+....
+npm install -g bower gulp typescript
+cd into the appropriate plugin directory `cd plugins/metrics`
+gulp
+In browser: Navigate to http://localhost:2772/
+....
+
+For further detail the Hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
+
+== Publish Builds
+
+The publish builds process make content available to the consumer of the bower package (muliple consumers can be using this package).
+
+cd into the appropriate plugin directory `cd plugins/metrics`
+
+`gulp dist`
+
+This will build the assets into the _hawkular-console/dist_ directory. The artefacts are now ready for publishing via bower.
+
+_Note: if you are adding new assets make sure they get added to the *main* section of the ../bower.json file._
+
+And from root of this git repo:
+
+ `git ci -m "Checkin new artefacts" `
+
+ `bower version [patch|release]`
+
+ which bumps the version and tags it.
+
+ `git push && git push --tags`
+
+This pushes and publishes the hawkular-console bower component so it can be used in the Hawkular UI hawkular-console or any other Hawt console.
+
+`bower update` in the client will update to the new version (as long as the rules are set properly)
+
+

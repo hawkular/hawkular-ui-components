@@ -21,3 +21,5 @@ node_modules/
 *.ipr
 *.iws
 *.iml
+
+dist/
