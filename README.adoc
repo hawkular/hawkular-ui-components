@@ -25,8 +25,10 @@ _Dev Installs allow for live previewing changes as development occurs. Its an in
 Assuming http://nodejs.org/[node.js/npm] is already installed:
 
 ....
-npm install -g bower gulp typescript
+sudo npm install -g bower gulp typescript
 cd into the appropriate plugin directory `cd plugins/metrics`
+npm install
+bower install 
 gulp
 In browser: Navigate to http://localhost:2772/
 ....
