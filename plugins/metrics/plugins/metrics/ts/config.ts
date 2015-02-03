@@ -17,8 +17,9 @@
 
 module HawkularMetrics {
 
-  export var MetricsController = _module.controller("HawkularMetrics.MetricsController", ['$scope', ($scope) => {
-    $scope.searchId = "";
+
+  export var ConfigController = _module.controller("HawkularMetrics.ConfigController", ['$scope', ($scope) => {
+    $scope.configName = "My Configuration";
 
   }]);
 
