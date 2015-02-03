@@ -1,6 +1,6 @@
 {
   "name": "hawkular-alerts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": [
     "hawtio",
     "hawkular-alerts"
@@ -14,8 +14,8 @@
   ],
   "dependencies": {
     "hawtio-core": "2.0.9",
-    "hawtio-core-navigation": "2.0.9",
-    "hawtio-utilities": "2.0.9"
+    "hawtio-core-navigation": "2.0.17",
+    "hawtio-utilities": "2.0.16"
   },
   "devDependencies": {
     "bootstrap": "3.3.2",
