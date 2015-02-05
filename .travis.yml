@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - '0.10'
+
+before_install:
+  - 'npm install -g bower gulp typescript'
+
+script: 
+    - 'for plugin in $(find plugins/ -maxdepth 1 -mindepth 1); do ./.travis.build.plugin.sh $plugin; done;'
+
+# use this line in case of building only a sub-set of plugins
+#  - 'for plugin in alerts inventory metrics; do ./.travis.build.plugin.sh $plugin; done;'
