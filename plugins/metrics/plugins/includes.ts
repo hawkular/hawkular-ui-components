@@ -1,4 +1,6 @@
 /// <reference path="../libs/hawtio-utilities/defs.d.ts"/>
+/// <reference path="../libs/hawtio-core-dts/defs.d.ts"/>
+/// <reference path="../vendor/moment/moment.d.ts"/>
 
 /// Copyright 2014-2015 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
