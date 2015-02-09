@@ -46,6 +46,7 @@ var config = {
     js: pkg.name + '.js',
     tsProject: plugins.typescript.createProject({
         target: 'ES5',
+        removeComments: true,
         module: 'commonjs',
         declarationFiles: true,
         noExternalResolve: false
@@ -78,6 +79,12 @@ gulp.task('clean-defs', function () {
 gulp.task('tsc', ['clean-defs'], function () {
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts)
+        .pipe(plugins.plumber({
+            handleError: function (err) {
+                console.log(err);
+                this.emit('end');
+            }
+        }))
         .pipe(plugins.typescript(config.tsProject))
         .on('error', plugins.notify.onError({
             message: '#{ error.message }',
@@ -86,6 +93,12 @@ gulp.task('tsc', ['clean-defs'], function () {
 
     return eventStream.merge(
         tsResult.js
+            .pipe(plugins.plumber({
+                handleError: function (err) {
+                    console.log(err);
+                    this.emit('end');
+                }
+            }))
             .pipe(plugins.concat('compiled.js'))
             .pipe(gulp.dest('.')),
         tsResult.dts
@@ -116,6 +129,12 @@ gulp.task('tslint-watch', function () {
 
 gulp.task('template', ['tsc'], function () {
     return gulp.src(config.templates)
+        .pipe(plugins.plumber({
+            handleError: function (err) {
+                console.log(err);
+                this.emit('end');
+            }
+        }))
         .pipe(plugins.angularTemplatecache({
             filename: 'templates.js',
             root: 'plugins/',
@@ -129,7 +148,14 @@ gulp.task('template', ['tsc'], function () {
 gulp.task('concat', ['template'], function () {
     var gZipSize = size(gZippedSizeOptions);
     return gulp.src(['compiled.js', 'templates.js'])
+        .pipe(plugins.plumber({
+            handleError: function (err) {
+                console.log(err);
+                this.emit('end');
+            }
+        }))
         .pipe(plugins.concat(config.js))
+        ///.pipe(plugins.ngAnnotate())
         .pipe(size(normalSizeOptions))
         .pipe(gZipSize)
         .pipe(gulp.dest(config.dist))

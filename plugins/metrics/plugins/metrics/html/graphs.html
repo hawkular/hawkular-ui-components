@@ -16,6 +16,8 @@
                               ng-show="chartForm.searchId.$dirty && chartForm.searchId.$error.required"> * Required.</span>
                         <span class="help-block">Example: 100, apache3.cpu1  </span>
                     </div>
+                    <h3>{{vm.startTimeStamp}}</h3>
+                    <h3>{{vm.endTimeStamp}}</h3>
                 </div>
 
                 <!--<div class="row">-->
@@ -99,15 +101,13 @@
             </form>
         </div>
 
+
         <div ng-show="vm.chartData.dataPoints.length > 4">
+            <p>Should see chart for: {{vm.chartData.dataPoints.length}} points</p>
             <div id="stackedBarChart" style="height:270px">
                 <!-- HINT: colors for the chart can be changed in the d3-chart.css -->
                 <rhqm-chart
                         data="{{vm.chartData.dataPoints}}"
-                        annotation-data="{{vm.chartData.annotationDataPoints}}"
-                        previous-range-data="{{vm.chartData.prevDataPoints}}"
-                        context-data="{{vm.chartData.contextDataPoints}}"
-                        multi-chart-overlay-data="{{vm.multiChartOverlayData}}"
                         chart-type="{{vm.chartType}}"
                         show-avg-line="{{vm.showAvgLine}}"
                         hide-high-low-values="{{vm.hideHighLowValues}}"

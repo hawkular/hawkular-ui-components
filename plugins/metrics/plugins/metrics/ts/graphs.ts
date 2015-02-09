@@ -18,12 +18,6 @@
 
 module HawkularMetrics {
 
-  //export var MetricsController = _module.controller("HawkularMetrics.MetricsController", ['$scope', ($scope) => {
-  //  $scope.searchId = "";
-  //
-  //}]);
-
-
     export interface IContextChartDataPoint {
         timestamp: number;
         value: number;
@@ -37,23 +31,23 @@ module HawkularMetrics {
         max: number;
     }
 
-//    export interface IChartParams {
-//        searchId: string;
-//        startTimeStamp: Date;
-//        endTimeStamp: Date;
-//        dateRange: string;
-//        updateEndTimeStampToNow: boolean;
-//        collapseTable: boolean;
-//        tableButtonLabel:  string;
-//        showAvgLine: boolean;
-//        hideHighLowValues:boolean;
-//        showPreviousRangeDataOverlay: boolean;
-//        showContextZoom: boolean;
-//        showAutoRefreshCancel:boolean;
-//        chartType: string;
-//        chartTypes: string[];
-//
-//    }
+///    export interface IChartParams {
+///        searchId: string;
+///        startTimeStamp: Date;
+///        endTimeStamp: Date;
+///        dateRange: string;
+///        updateEndTimeStampToNow: boolean;
+///        collapseTable: boolean;
+///        tableButtonLabel:  string;
+///        showAvgLine: boolean;
+///        hideHighLowValues:boolean;
+///        showPreviousRangeDataOverlay: boolean;
+///        showContextZoom: boolean;
+///        showAutoRefreshCancel:boolean;
+///        chartType: string;
+///        chartTypes: string[];
+///
+///    }
     export interface IChartController {
         searchId: string;
         startTimeStamp: Date;
@@ -101,7 +95,7 @@ module HawkularMetrics {
      * @param metricDataService
      */
     export class ChartController implements IChartController {
-        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService' ];
+        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService'];
 
         searchId = '';
         updateEndTimeStampToNow = false;
@@ -116,15 +110,15 @@ module HawkularMetrics {
         chartTypes:string[] = ['bar', 'line', 'area', 'scatter', 'scatterline', 'candlestick', 'histogram'];
 
         dateTimeRanges:IDateTimeRangeDropDown[] = [
-            { 'range': '1h', 'rangeInSeconds': 60 * 60 } ,
-            { 'range': '4h', 'rangeInSeconds': 4 * 60 * 60 } ,
-            { 'range': '8h', 'rangeInSeconds': 8 * 60 * 60 },
-            { 'range': '12h', 'rangeInSeconds': 12 * 60 * 60 },
-            { 'range': '1d', 'rangeInSeconds': 24 * 60 * 60 },
-            { 'range': '5d', 'rangeInSeconds': 5 * 24 * 60 * 60 },
-            { 'range': '1m', 'rangeInSeconds': 30 * 24 * 60 * 60 },
-            { 'range': '3m', 'rangeInSeconds': 3 * 30 * 24 * 60 * 60 },
-            { 'range': '6m', 'rangeInSeconds': 6 * 30 * 24 * 60 * 60 }
+            {'range': '1h', 'rangeInSeconds': 60 * 60},
+            {'range': '4h', 'rangeInSeconds': 4 * 60 * 60},
+            {'range': '8h', 'rangeInSeconds': 8 * 60 * 60},
+            {'range': '12h', 'rangeInSeconds': 12 * 60 * 60},
+            {'range': '1d', 'rangeInSeconds': 24 * 60 * 60},
+            {'range': '5d', 'rangeInSeconds': 5 * 24 * 60 * 60},
+            {'range': '1m', 'rangeInSeconds': 30 * 24 * 60 * 60},
+            {'range': '3m', 'rangeInSeconds': 3 * 30 * 24 * 60 * 60},
+            {'range': '6m', 'rangeInSeconds': 6 * 30 * 24 * 60 * 60}
         ];
 
         constructor(private $scope:any,
@@ -137,11 +131,11 @@ module HawkularMetrics {
                     public dateRange:string) {
             $scope.vm = this;
 
-            this.startTimeStamp = moment().subtract('hours', 24).toDate(); //default time period set to 24 hours
+            this.startTimeStamp = moment().subtract(72, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract('hours', 24).from(moment(), true);
+            this.dateRange = moment().subtract(72, 'hours').from(moment());
 
-            $scope.$on('GraphTimeRangeChangedEvent', (event, timeRange) =>  {
+            $scope.$on('GraphTimeRangeChangedEvent', (event, timeRange) => {
                 $scope.vm.startTimeStamp = timeRange[0];
                 $scope.vm.endTimeStamp = timeRange[1];
                 $scope.vm.dateRange = moment(timeRange[0]).from(moment(timeRange[1]));
@@ -158,15 +152,12 @@ module HawkularMetrics {
         private chartData:any;
 
 
-        //@todo: refactor out vars to I/F object
-        //chartInputParams:IChartInputParams ;
+        ///@todo: refactor out vars to I/F object
+        ///chartInputParams:IChartInputParams ;
 
-//       $rootScope.$on('DateRangeMove', (event, message) =>  {
-//            $log.debug('DateRangeMove on chart Detected.');
-//        });
-//
-
-
+///       $rootScope.$on('DateRangeMove', (event, message) =>  {
+///            $log.debug('DateRangeMove on chart Detected.');
+///        });
 
         private noDataFoundForId(id:string):void {
             this.$log.warn('No Data found for id: ' + id);
@@ -259,7 +250,7 @@ module HawkularMetrics {
         }
 
         refreshChartDataNow(startTime:Date):void {
-            var adjStartTimeStamp:Date = moment().subtract('hours', 24).toDate(); //default time period set to 24 hours
+            var adjStartTimeStamp:Date = moment().subtract('hours', 72).toDate(); //default time period set to 24 hours
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
             this.refreshHistoricalChartData(angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
@@ -287,11 +278,12 @@ module HawkularMetrics {
 
             if (this.searchId !== '') {
 
-                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime))
+                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime), 60)
                     .then((response) => {
                         console.dir(response);
                         // we want to isolate the response from the data we are feeding to the chart
                         this.bucketedDataPoints = this.formatBucketedChartOutput(response);
+                        console.dir(this.bucketedDataPoints);
 
                         if (this.bucketedDataPoints.length !== 0) {
                             // this is basically the DTO for the chart
@@ -317,7 +309,7 @@ module HawkularMetrics {
 
         private formatBucketedChartOutput(response):IChartDataPoint[] {
             //  The schema is different for bucketed output
-            return _.map(response.data, (point:IChartDataPoint) =>  {
+            return _.map(response.data, (point:IChartDataPoint) => {
                 return {
                     timestamp: point.timestamp,
                     date: new Date(point.timestamp),
@@ -403,7 +395,7 @@ module HawkularMetrics {
             var endTime = _.now(),
                 startTime = moment().subtract('months', 24).valueOf();
 
-            console.debug('refreshChartContext');
+            this.$log.debug('refreshChartContext');
             if (this.searchId !== '') {
                 if (startTime >= endTime) {
                     this.$log.warn('Start Date was >= End Date');
@@ -435,11 +427,7 @@ module HawkularMetrics {
                     empty: point.empty
                 };
             });
-
         }
-
-
-
     }
 
     _module.controller('ChartController', ChartController);
