@@ -1,8 +1,6 @@
-/// <reference path="../bower_components/dt-angular/angular.d.ts" />
-
 /**
  * @ngdoc provider
- * @name hawkular.rest.HawkularRest
+ * @name hawkular.rest.HawkularMetric
  * @description
  * # HawkularRest
  * Provider in the hawkular.rest.
@@ -10,9 +8,7 @@
 
 module hawkularRest {
 
-  export var hawkMetric = angular.module('hawkular.rest',['ngResource']);
-
-  hawkMetric.provider('HawkularRest', function() {
+  _module.provider('HawkularMetric', function() {
     // time (in ms) the notifications are shown
 
     this.host = 'localhost';

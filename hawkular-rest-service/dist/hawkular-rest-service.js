@@ -1,15 +1,57 @@
 /// <reference path="../bower_components/dt-angular/angular.d.ts" />
+var hawkularRest;
+(function (hawkularRest) {
+    hawkularRest._module = angular.module('hawkular.rest', ['ngResource']);
+})(hawkularRest || (hawkularRest = {}));
+
 /**
  * @ngdoc provider
- * @name hawkular.rest.HawkularRest
+ * @name hawkular.rest.HawkularInventory
+ * @description
+ * # HawkularInventory
+ * Provider in the hawkular.rest.
+ */
+var hawkularRest;
+(function (hawkularRest) {
+    hawkularRest._module.provider('HawkularInventory', function () {
+        // time (in ms) the notifications are shown
+        this.host = 'localhost';
+        this.port = 8080;
+        this.setHost = function (host) {
+            this.host = host;
+            return this;
+        };
+        this.setPort = function (port) {
+            this.port = port;
+            return this;
+        };
+        this.$get = ['$resource', function ($resource) {
+            var prefix = 'http://' + this.host + ':' + this.port;
+            var factory = {};
+            factory['Resource'] = $resource(prefix + '/hawkular/inventory/:tenantId/resources/:resourceId', {
+                tenantId: '@tenantId',
+                resourceId: '@resourceId'
+            });
+            factory['Metric'] = $resource(prefix + '/hawkular/inventory/:tenantId/resources/:resourceId/metric/:metricId', {
+                tenantId: '@tenantId',
+                resourceId: '@resourceId',
+                metricId: '@metricId'
+            });
+            return factory;
+        }];
+    });
+})(hawkularRest || (hawkularRest = {}));
+
+/**
+ * @ngdoc provider
+ * @name hawkular.rest.HawkularMetric
  * @description
  * # HawkularRest
  * Provider in the hawkular.rest.
  */
 var hawkularRest;
 (function (hawkularRest) {
-    hawkularRest.hawkMetric = angular.module('hawkular.rest', ['ngResource']);
-    hawkularRest.hawkMetric.provider('HawkularRest', function () {
+    hawkularRest._module.provider('HawkularMetric', function () {
         // time (in ms) the notifications are shown
         this.host = 'localhost';
         this.port = 8080;

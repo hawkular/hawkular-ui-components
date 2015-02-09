@@ -1,29 +1,12 @@
-// Module needed for the test-suite to be able to do actual (non-mock) REST calls
-angular.module('httpReal', ['ng'])
-  .config(['$provide', function($provide) {
-    $provide.decorator('$httpBackend', function() {
-      return angular.injector(['ng']).get('$httpBackend');
-    });
-  }])
-  .service('httpReal', ['$rootScope', function($rootScope) {
-    this.submit = function() {
-      $rootScope.$digest();
-    };
-  }]);
-
-var TIMEOUT = 30000;
-
 describe('Provider: Hawkular live REST', function() {
 
-  var HawkularRest;
-  var res;
+  var HawkularMetric;
   var httpReal;
 
   beforeEach(module('hawkular.rest', 'httpReal'));
 
-  beforeEach(inject(function(_HawkularRest_, _$resource_, _httpReal_) {
-    HawkularRest = _HawkularRest_;
-    res = _$resource_
+  beforeEach(inject(function(_HawkularMetric_, _httpReal_) {
+    HawkularMetric = _HawkularMetric_;
     httpReal = _httpReal_;
   }));
 
@@ -43,12 +26,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         };
 
-        result = HawkularRest.Tenant.save(tenant);
+        result = HawkularMetric.Tenant.save(tenant);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          fail(error.data.errorMsg);
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -65,12 +48,12 @@ describe('Provider: Hawkular live REST', function() {
 
       beforeEach(function(done) {
 
-        result = HawkularRest.Tenant.query();
+        result = HawkularMetric.Tenant.query();
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          fail(error.data.errorMsg);
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -97,12 +80,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         };
 
-        result = HawkularRest.Tenant.save(tenant);
+        result = HawkularMetric.Tenant.save(tenant);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          fail(error.data.errorMsg);
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -119,12 +102,12 @@ describe('Provider: Hawkular live REST', function() {
 
       beforeEach(function(done) {
 
-        result = HawkularRest.Tenant.query();
+        result = HawkularMetric.Tenant.query();
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          fail(error.data.errorMsg);
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -157,16 +140,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         };
 
-        result = HawkularRest.NumericMetric.save({ tenantId: 'com.acme.sk' }, metric);
+        result = HawkularMetric.NumericMetric.save({ tenantId: 'com.acme.sk' }, metric);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -183,16 +162,12 @@ describe('Provider: Hawkular live REST', function() {
 
       beforeEach(function(done) {
 
-        result = HawkularRest.Metric.queryNum({ tenantId: 'com.acme.sk' });
+        result = HawkularMetric.Metric.queryNum({ tenantId: 'com.acme.sk' });
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-          fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -217,16 +192,12 @@ describe('Provider: Hawkular live REST', function() {
           {"timestamp": 1456857688195, "value": 2.3}
         ];
 
-        result = HawkularRest.NumericMetricData.save({ tenantId: 'com.acme.sk', numericId: 'mymetric' }, data);
+        result = HawkularMetric.NumericMetricData.save({ tenantId: 'com.acme.sk', numericId: 'mymetric' }, data);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -248,16 +219,12 @@ describe('Provider: Hawkular live REST', function() {
           "attr2": "value 2"
         };
 
-        result = HawkularRest.NumericMetricMeta.update({ tenantId: 'com.acme.sk', numericId: 'mymetric' }, data);
+        result = HawkularMetric.NumericMetricMeta.update({ tenantId: 'com.acme.sk', numericId: 'mymetric' }, data);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -291,16 +258,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         ];
 
-        result = HawkularRest.NumericMetricMultiple.save({ tenantId: 'com.acme.sk' }, data);
+        result = HawkularMetric.NumericMetricMultiple.save({ tenantId: 'com.acme.sk' }, data);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -312,7 +275,7 @@ describe('Provider: Hawkular live REST', function() {
     });
 
     /*
-      Availability
+     Availability
      */
 
     describe('creating a availability metric', function() {
@@ -329,16 +292,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         };
 
-        result = HawkularRest.AvailabilityMetric.save({ tenantId: 'com.acme.sk' }, metric);
+        result = HawkularMetric.AvailabilityMetric.save({ tenantId: 'com.acme.sk' }, metric);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -355,16 +314,12 @@ describe('Provider: Hawkular live REST', function() {
 
       beforeEach(function(done) {
 
-        result = HawkularRest.Metric.queryAvail({ tenantId: 'com.acme.sk' });
+        result = HawkularMetric.Metric.queryAvail({ tenantId: 'com.acme.sk' });
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -388,16 +343,12 @@ describe('Provider: Hawkular live REST', function() {
           {"timestamp": 1416857688195, "value": "up"}
         ];
 
-        result = HawkularRest.AvailabilityMetricData.save({ tenantId: 'com.acme.sk', availabilityId: 'myavail' }, data);
+        result = HawkularMetric.AvailabilityMetricData.save({ tenantId: 'com.acme.sk', availabilityId: 'myavail' }, data);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });
@@ -431,16 +382,12 @@ describe('Provider: Hawkular live REST', function() {
           }
         ];
 
-        result = HawkularRest.AvailabilityMetricMultiple.save({ tenantId: 'com.acme.sk' }, data);
+        result = HawkularMetric.AvailabilityMetricMultiple.save({ tenantId: 'com.acme.sk' }, data);
         httpReal.submit();
 
         result.$promise.then(function(){
         }, function(error){
-          if(error && error.data && error.data.errorMsg) {
-            fail(error.data.errorMsg);
-          } else {
-            fail(error);
-          }
+          fail(errorFn(error));
         }).finally(function(){
           done();
         });

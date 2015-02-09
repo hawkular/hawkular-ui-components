@@ -33,7 +33,7 @@ function runTests (singleRun) {
     });
 }
 
-function runTestsRest (singleRun) {
+function runTestsRest (singleRun, service) {
   var bowerDeps = wiredep({
     directory: 'bower_components',
     exclude: ['bootstrap-sass-official'],
@@ -42,7 +42,8 @@ function runTestsRest (singleRun) {
   });
 
   var testFiles = bowerDeps.js.concat([
-    paths.src + '/*.spec.rest.js',
+    paths.src + '/hawkRest.spec.rest.js',
+    paths.src + '/hawkRest-' + service + '*.spec.rest.js',
     paths.dist + '/*.js'
   ]);
 
@@ -61,4 +62,5 @@ function runTestsRest (singleRun) {
 gulp.task('test', ['scripts'], function (done) { runTests(true /* singleRun */, done) });
 gulp.task('test:auto', ['scripts'], function (done) { runTests(false /* singleRun */, done) });
 
-gulp.task('rest', ['scripts'], function (done) { runTestsRest(true /* singleRun */, done) });
+gulp.task('rest:metric', ['scripts'], function (done) { runTestsRest(true, 'metric', done) });
+gulp.task('rest:inventory', ['scripts'], function (done) { runTestsRest(true, 'inventory', done) });

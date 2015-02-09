@@ -9,7 +9,7 @@ var $ = require('gulp-load-plugins')({
 });
 
 gulp.task('scripts', function () {
-  return gulp.src(paths.src + '/*.ts')
+  return gulp.src([paths.src + '/hawkRest.ts', paths.src + '/hawkRest-*.ts'])
     .pipe($.typescript())
     .on('error', function handleError(err) {
       console.error(err.toString());
