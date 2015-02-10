@@ -8,6 +8,7 @@ endif::[]
 [.lead]
 *Hawkular UI Components* is the home of UI Components that comprise the Hawkular console for https://github.com/hawkular/hawkular[Hawkular].  This console is based on https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[Hawt.io 2], which a javascript based client-side framework. The various directories underneath console directory are Hawt.io 2 plugins and the various plugins eventually compose a Hawkular console. This modular approach to creating hawtio console plugins allows us to create individual plugins that comprise a console or can easily  be plugged into other Hawtio based consoles. The plugin system makes it easy to add/remove functionality (even dynamically).
 
+image::hawkular-ui.png[Hawkular UI Architecture]
 
 == Bower Component
 
