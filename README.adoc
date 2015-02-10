@@ -14,9 +14,8 @@ endif::[]
 This git repository is published as bower component and consumed by the https://github.com/hawkular/hawkular/ui/console/README.adoc[Hawkular Console]. Assets such as html/css/images/javascript can be published.
 
 
-_Note: Right now this component, is an unregistered bower component (and just pulled in by its git reference), soon it will have its own name on the bower registry like - 'hawtio-hawkular-console'_
 
-== Directory Structure Proposal
+== Directory Structure
 
 *dist* - directory for  artifacts that need to published via bower package.
 
@@ -35,7 +34,7 @@ cd into the appropriate plugin directory `cd plugins/metrics`
 npm install
 bower install 
 gulp
-In browser: Navigate to http://localhost:2772/
+In web browser: Navigate to http://localhost:2772/
 ....
 
 For further detail the Hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
@@ -54,16 +53,15 @@ _Note: if you are adding new assets make sure they get added to the *main* secti
 
 And from root of this git repo:
 
- `git ci -m "Checkin new artefacts" `
+ git ci -m "Checkin new artefacts" 
 
- `bower version [patch|release]`
+ bower version [patch|release]
 
- which bumps the version and tags it.
+which bumps the version and tags it.
 
- `git push && git push --tags`
+ git push && git push --tags
 
-This pushes and publishes the hawkular-ui-components bower component so it can be used in the Hawkular UI hawkular-console or any other Hawt console.
+This pushes and publishes the _hawkular-ui-components_ bower component so it can be used in the Hawkular UI hawkular-console or any other Hawt.io 2 console.
 
-`bower update` in the client will update to the new version (as long as the rules are set properly)
 
 
