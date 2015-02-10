@@ -66,8 +66,8 @@ var hawkularRest;
         this.$get = ['$resource', function ($resource) {
             var prefix = 'http://' + this.host + ':' + this.port;
             var factory = {};
-            factory['Tenant'] = $resource(prefix + '/rhq-metrics/tenants', {});
-            factory['Metric'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics', {
+            factory['Tenant'] = $resource(prefix + '/hawkular-metrics/tenants', {});
+            factory['Metric'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics', {
                 tenantId: '@tenantId'
             }, {
                 queryNum: {
@@ -86,31 +86,31 @@ var hawkularRest;
                     params: { type: 'log' }
                 }
             });
-            factory['NumericMetric'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/numeric', {
+            factory['NumericMetric'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/numeric', {
                 tenantId: '@tenantId'
             });
-            factory['NumericMetricData'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/numeric/:numericId/data', {
+            factory['NumericMetricData'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/numeric/:numericId/data', {
                 tenantId: '@tenantId',
                 numericId: '@numericId'
             });
-            factory['NumericMetricMeta'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/numeric/:numericId/meta', {
+            factory['NumericMetricMeta'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/numeric/:numericId/meta', {
                 tenantId: '@tenantId',
                 numericId: '@numericId'
             }, {
                 update: 'PUT'
             });
-            factory['NumericMetricMultiple'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/numeric/data', {
+            factory['NumericMetricMultiple'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/numeric/data', {
                 tenantId: '@tenantId',
                 numericId: '@numericId'
             });
-            factory['AvailabilityMetric'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/availability', {
+            factory['AvailabilityMetric'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/availability', {
                 tenantId: '@tenantId'
             });
-            factory['AvailabilityMetricData'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/availability/:availabilityId/data', {
+            factory['AvailabilityMetricData'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/availability/:availabilityId/data', {
                 tenantId: '@tenantId',
                 availabilityId: '@availabilityId'
             });
-            factory['AvailabilityMetricMultiple'] = $resource(prefix + '/rhq-metrics/:tenantId/metrics/availability/data', {
+            factory['AvailabilityMetricMultiple'] = $resource(prefix + '/hawkular-metrics/:tenantId/metrics/availability/data', {
                 tenantId: '@tenantId'
             });
             return factory;
