@@ -18,7 +18,7 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, []);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
 
     var metricsTab:any;
 
@@ -28,9 +28,9 @@ module HawkularMetrics {
             .id(HawkularMetrics.pluginName)
             .title(() => "Metrics")
             .href(() => "/metrics")
-            .subPath("Config", "config", navBuilder.join(HawkularMetrics.templatePath, 'config.html'))
             .subPath("Graphs", "graphs", navBuilder.join(HawkularMetrics.templatePath, 'graphs.html'))
             .subPath("Advanced", "advanced", navBuilder.join(HawkularMetrics.templatePath, 'advanced.html'))
+            .subPath("Config", "config", navBuilder.join(HawkularMetrics.templatePath, 'config.html'))
             .build();
 
         navBuilder.configureRouting($routeProvider, metricsTab);
@@ -40,8 +40,7 @@ module HawkularMetrics {
 
     _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
         HawtioNav.add(metricsTab);
-        log.debug("loaded");
-        console.warn("loaded");
+        log.debug("loaded Metrics Plugin");
     }]);
 
 

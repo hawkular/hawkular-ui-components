@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
+<head>
     <title>hawkular-metrics</title>
     <base href='/'></base>
     <meta charset="UTF8">
 
 
-    <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css" />
+    <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css"/>
+    <link rel="stylesheet" href="libs/hawkular-charts/css/hawkular-chart.css"/>
 
     <!-- bower:css -->
+    <link rel="stylesheet" href="libs/toastr/toastr.css" />
     <!-- endbower -->
 
     <!-- ES6/ES6 shim -->
@@ -41,25 +43,33 @@
     <script src="libs/hawtio-utilities/dist/sugar.js"></script>
     <script src="libs/hawtio-utilities/dist/angular-file-upload.js"></script>
     <script src="libs/hawtio-utilities/dist/hawtio-utilities.js"></script>
+    <script src="libs/moment/moment.js"></script>
+    <script src="libs/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="libs/toastr/toastr.js"></script>
+    <script src="libs/d3/d3.js"></script>
+    <script src="libs/d3-tip/index.js"></script>
+    <script src="libs/numeral/numeral.js"></script>
+    <script src="libs/hawkular-charts/hawkular-charts.js"></script>
     <!-- endbower -->
 
     <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
     <script src="libs/patternfly/dist/js/patternfly.js"></script>
+    <script type="node_modules/angular-hint/hint.js"></script>
 
-  </head>
+</head>
 
-  <body>
-    <nav class="navbar navbar-default navbar-pf" role="navigation">
-      <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
-      <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
-    </nav>
+<body>
+<nav class="navbar navbar-default navbar-pf" role="navigation">
+    <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
+    <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
+</nav>
 
-    <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
-      <div ng-include src="viewPartial"></div>
-    </div>
+<div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
+    <div ng-include src="viewPartial"></div>
+</div>
 
-    <!-- add any scripts under dist/ here -->
-    <script src="dist/hawkular-metrics.js"></script>
+<!-- add any scripts under dist/ here -->
+<script src="dist/hawkular-metrics.js"></script>
 
-  </body>
+</body>
 </html>
