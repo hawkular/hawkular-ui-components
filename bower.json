@@ -24,7 +24,8 @@
   "dependencies": {
     "hawtio-core": "2.0.9",
     "hawtio-core-navigation": "2.0.17",
-    "hawtio-utilities": "2.0.16"
+    "hawtio-utilities": "2.0.16",
+    "hawkular-charts": "~0.1.13"
   },
   "devDependencies": {
     "bootstrap": "3.3.2",
