@@ -18,7 +18,7 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, []);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['rhqmCharts']);
 
     var metricsTab:any;
 
@@ -40,7 +40,7 @@ module HawkularMetrics {
 
     _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
         HawtioNav.add(metricsTab);
-        log.debug("loaded Metrics");
+        log.debug("loaded Metrics Plugin");
     }]);
 
 
