@@ -23,7 +23,7 @@
     "lodash": "2.4.1",
     "d3": "3.4.8",
     "d3-tip": "0.6.4",
-    "rhqm-charts": "~0.1.10"
+    "hawkular-charts": "~0.1.13"
   },
   "devDependencies": {
     "bootstrap": "3.3.2",

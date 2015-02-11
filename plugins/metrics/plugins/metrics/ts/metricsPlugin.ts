@@ -18,7 +18,7 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, ['rhqmCharts']);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
 
     var metricsTab:any;
 

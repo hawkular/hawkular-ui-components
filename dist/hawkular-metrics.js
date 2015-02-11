@@ -9,7 +9,7 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['rhqmCharts']);
+    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
     var metricsTab;
     HawkularMetrics._module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($locationProvider, $routeProvider, navBuilder) {
         metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Graphs", "graphs", navBuilder.join(HawkularMetrics.templatePath, 'graphs.html')).subPath("Advanced", "advanced", navBuilder.join(HawkularMetrics.templatePath, 'advanced.html')).subPath("Config", "config", navBuilder.join(HawkularMetrics.templatePath, 'config.html')).build();
@@ -41,6 +41,7 @@ var HawkularMetrics;
 (function (HawkularMetrics) {
     var ChartController = (function () {
         function ChartController($scope, $rootScope, $interval, $log, metricDataService, startTimeStamp, endTimeStamp, dateRange) {
+            var _this = this;
             this.$scope = $scope;
             this.$rootScope = $rootScope;
             this.$interval = $interval;
@@ -50,33 +51,19 @@ var HawkularMetrics;
             this.endTimeStamp = endTimeStamp;
             this.dateRange = dateRange;
             this.searchId = '';
-            this.updateEndTimeStampToNow = false;
-            this.collapseTable = true;
-            this.tableButtonLabel = 'Show Table';
             this.showAvgLine = true;
             this.hideHighLowValues = false;
             this.showPreviousRangeDataOverlay = false;
             this.showContextZoom = true;
-            this.showAutoRefreshCancel = false;
-            this.chartType = 'bar';
-            this.chartTypes = ['bar', 'line', 'area', 'scatter', 'scatterline', 'candlestick', 'histogram'];
-            this.dateTimeRanges = [
-                { 'range': '1h', 'rangeInSeconds': 60 * 60 },
-                { 'range': '4h', 'rangeInSeconds': 4 * 60 * 60 },
-                { 'range': '8h', 'rangeInSeconds': 8 * 60 * 60 },
-                { 'range': '12h', 'rangeInSeconds': 12 * 60 * 60 },
-                { 'range': '1d', 'rangeInSeconds': 24 * 60 * 60 },
-                { 'range': '5d', 'rangeInSeconds': 5 * 24 * 60 * 60 },
-                { 'range': '1m', 'rangeInSeconds': 30 * 24 * 60 * 60 },
-                { 'range': '3m', 'rangeInSeconds': 3 * 30 * 24 * 60 * 60 },
-                { 'range': '6m', 'rangeInSeconds': 6 * 30 * 24 * 60 * 60 }
-            ];
             this.bucketedDataPoints = [];
             this.contextDataPoints = [];
             $scope.vm = this;
             this.startTimeStamp = moment().subtract(72, 'hours').toDate();
             this.endTimeStamp = new Date();
             this.dateRange = moment().subtract(72, 'hours').from(moment());
+            $scope.$watch('vm.searchId', function (newValue, oldValue) {
+                _this.refreshChartDataNow();
+            });
             $scope.$on('GraphTimeRangeChangedEvent', function (event, timeRange) {
                 $scope.vm.startTimeStamp = timeRange[0];
                 $scope.vm.endTimeStamp = timeRange[1];
@@ -117,40 +104,6 @@ var HawkularMetrics;
         ChartController.prototype.hasNext = function () {
             var nextTimeRange = this.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
             return nextTimeRange[1].getTime() < _.now();
-        };
-        ChartController.prototype.toggleTable = function () {
-            this.collapseTable = !this.collapseTable;
-            if (this.collapseTable) {
-                this.tableButtonLabel = 'Show Table';
-            }
-            else {
-                this.tableButtonLabel = 'Hide Table';
-            }
-        };
-        ChartController.prototype.cancelAutoRefresh = function () {
-            this.showAutoRefreshCancel = !this.showAutoRefreshCancel;
-            this.$interval.cancel(this.updateLastTimeStampToNowPromise);
-            toastr.info('Canceling Auto Refresh');
-        };
-        ChartController.prototype.autoRefresh = function (intervalInSeconds) {
-            var _this = this;
-            toastr.info('Auto Refresh Mode started');
-            this.updateEndTimeStampToNow = !this.updateEndTimeStampToNow;
-            this.showAutoRefreshCancel = true;
-            if (this.updateEndTimeStampToNow) {
-                this.refreshHistoricalChartDataForTimestamp();
-                this.showAutoRefreshCancel = true;
-                this.updateLastTimeStampToNowPromise = this.$interval(function () {
-                    _this.endTimeStamp = new Date();
-                    _this.refreshHistoricalChartDataForTimestamp();
-                }, intervalInSeconds * 1000);
-            }
-            else {
-                this.$interval.cancel(this.updateLastTimeStampToNowPromise);
-            }
-            this.$scope.$on('$destroy', function () {
-                _this.$interval.cancel(_this.updateLastTimeStampToNowPromise);
-            });
         };
         ChartController.prototype.refreshChartDataNow = function (startTime) {
             var adjStartTimeStamp = moment().subtract('hours', 72).toDate();
@@ -353,4 +306,4 @@ var HawkularMetrics;
 
 angular.module("hawkular-metrics-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/advanced.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AdvancedController\">\n    <div class=\"col-md-12\">\n        <h1>Advanced Settings: {{advancedName}}</h1>\n       TBD\n    </div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/config.html","<div class=\"row\" ng-controller=\"HawkularMetrics.ConfigController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Graph Config</h1>\n        <h3>{{configName}}</h3>\n       TBD\n    </div>\n</div>\n");
-$templateCache.put("plugins/metrics/html/graphs.html","<div class=\"panel panel-default\" style=\"width:880px\" ng-controller=\"ChartController as vm\">\n    <div class=\"panel-body\">\n        <div class=\"well\">\n            <small style=\"margin-left: 15px\" class=\"graphDateTimeRangeLabel\"></small>\n\n            <form class=\"form-horizontal\" name=\"chartForm\" role=\"form\" novalidate >\n\n                <div class=\"form-group\">\n                    <label class=\"col-sm-2 control-label\">Metric ID:</label>\n\n                    <div class=\"col-sm-5\">\n                        <input type=\"text\" class=\"form-control\" name=\"searchId\" ng-model=\"vm.searchId\"\n                               ng-enter=\"vm.refreshChartDataNow();\"\n                               placeholder=\"Enter Id...\" required ng-minlength=\"1\">\n                        <span class=\"error-message\"\n                              ng-show=\"chartForm.searchId.$dirty && chartForm.searchId.$error.required\"> * Required.</span>\n                        <span class=\"help-block\">Example: 100, apache3.cpu1  </span>\n                    </div>\n                </div>\n\n                <!--<div class=\"row\">-->\n                    <!--<div class=\"col-md-12\">-->\n                        <!--<relative-time-range-button-bar style=\"margin-left: 140px;\"-->\n                                                        <!--start-time-stamp=\"vm.startTimestamp\"-->\n                                                        <!--end-time-stamp=\"vm..endTimeStamp\">-->\n                        <!--</relative-time-range-button-bar>-->\n\n                        <!--<input type=\"text\" style=\"margin-left: 20px;text-align: center;\" ng-model=\"vm.dateRange\" readonly disbabled/>-->\n                        <!--<p></p>-->\n                    <!--</div>-->\n                <!--</div>-->\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">Start</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownStart\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.startTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.startTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownStart\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">End</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownEnd\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.endTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i-->\n                <!--class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.endTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownEnd\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2 col-sm-10\">\n                        <div class=\"btn-group\" ng-disabled=\"!chartForm.$valid || vm.showAutoRefreshCancel\" dropdown>\n                            <button type=\"button\" class=\"btn btn-primary\" ng-disabled=\"!chartForm.$valid || vm.showAutoRefreshCancel\"\n                                    ng-click=\"vm.refreshChartDataNow()\">Refresh\n                            </button>\n                            <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"!chartForm.$valid || vm.showAutoRefreshCancel\">\n                                <span class=\"caret\"></span>\n                                <span class=\"sr-only\">Refresh</span>\n                            </button>\n                            <ul class=\"dropdown-menu\" role=\"menu\" ng-disabled=\"!chartForm.$valid\">\n                                <li><a href=\"#\" ng-click=\"vm.refreshHistoricalChartData()\">Refresh from History</a></li>\n                                <li><a href=\"#\" ng-click=\"vm.autoRefresh(5)\">Auto Refresh (every 5s)</a></li>\n                                <li><a href=\"#\" ng-click=\"vm.autoRefresh(30)\">Auto Refresh (every 30s)</a></li>\n                                <li><a href=\"#\" ng-click=\"vm.autoRefresh(60)\">Auto Refresh (every 1m)</a></li>\n                            </ul>\n                        </div>\n                        <button style=\"margin-left: 15px\" type=\"button\" class=\"btn-small btn-danger\" ng-hide=\"!vm.showAutoRefreshCancel\" ng-click=\"vm.cancelAutoRefresh()\">Stop</button>\n                        <span class=\"help-block\">Default is Refresh to Now</span>\n                    </div>\n                </div>\n            </form>\n        </div>\n\n\n        <div ng-show=\"vm.chartData.dataPoints.length > 1\">\n            <div id=\"stackedBarChart\" style=\"height:270px\">\n                <!-- HINT: colors for the chart can be changed in the d3-chart.css -->\n                <rhqm-chart\n                        data=\"{{vm.chartData.dataPoints}}\"\n                        chart-type=\"{{vm.chartType}}\"\n                        show-avg-line=\"{{vm.showAvgLine}}\"\n                        hide-high-low-values=\"{{vm.hideHighLowValues}}\"\n                        chart-title=\"{{\'Metrics Id: \'+vm.searchId}}\"\n                        chart-height=\"250\"></rhqm-chart>\n            </div>\n\n            <div style=\"margin-top: 30px;\">\n                <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n                </button>\n                <button class=\"btn btn-sm\" style=\"float:right;margin-right: 90px;\" ng-click=\"vm.showNextTimeRange()\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n            </div>\n            <br/>\n            <br/>\n\n            <div class=\"form-group\">\n\n                <label class=\"col-sm-2 control-label\">Chart Type:</label>\n\n                <div class=\"col-sm-10\">\n                    <div class=\"btn-group\">\n                        <button type=\"button\" class=\"btn btn-primary btn-sm\"\n                                ng-model=\"vm.chartType\" btn-radio=\"value\"\n                                ng-repeat=\"value in vm.chartTypes\"\n                                >{{value}}\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-metrics-templates");
+$templateCache.put("plugins/metrics/html/graphs.html","<div class=\"panel panel-default\" style=\"width:880px\" ng-controller=\"ChartController as vm\">\n    <div class=\"panel-body\">\n        <div class=\"well\">\n            <small style=\"margin-left: 15px\" class=\"graphDateTimeRangeLabel\"></small>\n\n            <form class=\"form-horizontal\" name=\"chartForm\" role=\"form\" novalidate>\n\n                <div class=\"form-group\">\n                    <label class=\"col-sm-2 control-label\">Metric ID:</label>\n\n                    <div class=\"col-sm-5\">\n                        <input type=\"text\" class=\"form-control\" name=\"searchId\" ng-model=\"vm.searchId\"\n                               ng-model-options=\"{ updateOn: \'default blur\', debounce: { \'default\': 700, \'blur\': 0 } }\"\n                               ng-enter=\"vm.refreshChartDataNow();\"\n                               placeholder=\"Enter Id...\" required ng-minlength=\"1\">\n                        <span class=\"error-message\"\n                              ng-show=\"chartForm.searchId.$dirty && chartForm.searchId.$error.required\"> * Required.</span>\n                        <span class=\"help-block\">Example: 100, apache3.cpu1  </span>\n                    </div>\n                </div>\n\n                <!--<div class=\"row\">-->\n                <!--<div class=\"col-md-12\">-->\n                <!--<relative-time-range-button-bar style=\"margin-left: 140px;\"-->\n                <!--start-time-stamp=\"vm.startTimestamp\"-->\n                <!--end-time-stamp=\"vm..endTimeStamp\">-->\n                <!--</relative-time-range-button-bar>-->\n\n                <!--<input type=\"text\" style=\"margin-left: 20px;text-align: center;\" ng-model=\"vm.dateRange\" readonly disbabled/>-->\n                <!--<p></p>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">Start</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownStart\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.startTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.startTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownStart\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">End</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownEnd\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.endTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i-->\n                <!--class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.endTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownEnd\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2 col-sm-10\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                                ng-disabled=\"!chartForm.$valid\"\n                                ng-click=\"vm.refreshChartDataNow()\">Refresh\n                        </button>\n                    </div>\n                </div>\n        </div>\n        </form>\n    </div>\n\n\n    <div ng-show=\"vm.chartData.dataPoints.length > 1\">\n        <div id=\"stackedBarChart\" style=\"height:270px\">\n            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->\n            <hawkular-chart\n                    data=\"{{vm.chartData.dataPoints}}\"\n                    chart-type=\"bar\"\n                    show-avg-line=\"{{vm.showAvgLine}}\"\n                    hide-high-low-values=\"{{vm.hideHighLowValues}}\"\n                    chart-title=\"{{\'Metrics Id: \'+vm.searchId}}\"\n                    chart-height=\"250\"></hawkular-chart>\n        </div>\n\n        <div style=\"margin-top: 30px;\">\n            <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n            </button>\n            <button class=\"btn btn-sm\" style=\"float:right;margin-right: 90px;\" ng-click=\"vm.showNextTimeRange()\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n        </div>\n        <br/>\n\n    </div>\n</div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-metrics-templates");

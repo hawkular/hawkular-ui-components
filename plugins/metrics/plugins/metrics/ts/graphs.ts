@@ -38,7 +38,6 @@ module HawkularMetrics {
 ///        dateRange: string;
 ///        updateEndTimeStampToNow: boolean;
 ///        collapseTable: boolean;
-///        tableButtonLabel:  string;
 ///        showAvgLine: boolean;
 ///        hideHighLowValues:boolean;
 ///        showPreviousRangeDataOverlay: boolean;
@@ -53,23 +52,14 @@ module HawkularMetrics {
         startTimeStamp: Date;
         endTimeStamp: Date;
         dateRange: string;
-        updateEndTimeStampToNow: boolean;
-        collapseTable: boolean;
-        tableButtonLabel:  string;
         showAvgLine: boolean;
         hideHighLowValues:boolean;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
-        showAutoRefreshCancel:boolean;
-        chartType: string;
-        chartTypes: string[];
 
         showPreviousTimeRange():void;
         showNextTimeRange():void;
         hasNext():boolean;
-        toggleTable():void;
-        cancelAutoRefresh():void;
-        autoRefresh(intervalInSeconds:number):void;
         refreshChartDataNow(startTime:Date):void;
         refreshHistoricalChartData(startDate:Date, endDate:Date):void;
         refreshHistoricalChartDataForTimestamp(startTime?:number, endTime?:number):void;
@@ -79,10 +69,6 @@ module HawkularMetrics {
         refreshContextChart():void;
     }
 
-    export interface IDateTimeRangeDropDown {
-        range: string;
-        rangeInSeconds:number;
-    }
 
     /**
      * @ngdoc controller
@@ -98,28 +84,10 @@ module HawkularMetrics {
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService'];
 
         searchId = '';
-        updateEndTimeStampToNow = false;
-        collapseTable = true;
-        tableButtonLabel = 'Show Table';
         showAvgLine = true;
         hideHighLowValues = false;
         showPreviousRangeDataOverlay = false;
         showContextZoom = true;
-        showAutoRefreshCancel = false;
-        chartType = 'bar';
-        chartTypes:string[] = ['bar', 'line', 'area', 'scatter', 'scatterline', 'candlestick', 'histogram'];
-
-        dateTimeRanges:IDateTimeRangeDropDown[] = [
-            {'range': '1h', 'rangeInSeconds': 60 * 60},
-            {'range': '4h', 'rangeInSeconds': 4 * 60 * 60},
-            {'range': '8h', 'rangeInSeconds': 8 * 60 * 60},
-            {'range': '12h', 'rangeInSeconds': 12 * 60 * 60},
-            {'range': '1d', 'rangeInSeconds': 24 * 60 * 60},
-            {'range': '5d', 'rangeInSeconds': 5 * 24 * 60 * 60},
-            {'range': '1m', 'rangeInSeconds': 30 * 24 * 60 * 60},
-            {'range': '3m', 'rangeInSeconds': 3 * 30 * 24 * 60 * 60},
-            {'range': '6m', 'rangeInSeconds': 6 * 30 * 24 * 60 * 60}
-        ];
 
         constructor(private $scope:any,
                     private $rootScope:ng.IRootScopeService,
@@ -135,6 +103,10 @@ module HawkularMetrics {
             this.endTimeStamp = new Date();
             this.dateRange = moment().subtract(72, 'hours').from(moment());
 
+            $scope.$watch('vm.searchId', (newValue, oldValue)  => {
+                this.refreshChartDataNow();
+            });
+
             $scope.$on('GraphTimeRangeChangedEvent', (event, timeRange) => {
                 $scope.vm.startTimeStamp = timeRange[0];
                 $scope.vm.endTimeStamp = timeRange[1];
@@ -146,7 +118,6 @@ module HawkularMetrics {
 
         }
 
-        private updateLastTimeStampToNowPromise:ng.IPromise<number>;
         private bucketedDataPoints:IChartDataPoint[] = [];
         private contextDataPoints:IChartDataPoint[] = [];
         private chartData:any;
@@ -212,44 +183,7 @@ module HawkularMetrics {
         }
 
 
-        toggleTable():void {
-            this.collapseTable = !this.collapseTable;
-            if (this.collapseTable) {
-                this.tableButtonLabel = 'Show Table';
-            } else {
-                this.tableButtonLabel = 'Hide Table';
-            }
-        }
-
-
-        cancelAutoRefresh():void {
-            this.showAutoRefreshCancel = !this.showAutoRefreshCancel;
-            this.$interval.cancel(this.updateLastTimeStampToNowPromise);
-            toastr.info('Canceling Auto Refresh');
-        }
-
-        autoRefresh(intervalInSeconds:number):void {
-            toastr.info('Auto Refresh Mode started');
-            this.updateEndTimeStampToNow = !this.updateEndTimeStampToNow;
-            this.showAutoRefreshCancel = true;
-            if (this.updateEndTimeStampToNow) {
-                this.refreshHistoricalChartDataForTimestamp();
-                this.showAutoRefreshCancel = true;
-                this.updateLastTimeStampToNowPromise = this.$interval(()  => {
-                    this.endTimeStamp = new Date();
-                    this.refreshHistoricalChartDataForTimestamp();
-                }, intervalInSeconds * 1000);
-
-            } else {
-                this.$interval.cancel(this.updateLastTimeStampToNowPromise);
-            }
-
-            this.$scope.$on('$destroy', () => {
-                this.$interval.cancel(this.updateLastTimeStampToNowPromise);
-            });
-        }
-
-        refreshChartDataNow(startTime:Date):void {
+        refreshChartDataNow(startTime?:Date):void {
             var adjStartTimeStamp:Date = moment().subtract('hours', 72).toDate(); //default time period set to 24 hours
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
