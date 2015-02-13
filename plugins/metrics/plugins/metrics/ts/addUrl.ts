@@ -17,10 +17,29 @@
 
 module HawkularMetrics {
 
+    export class AddUrlController {
+        public static  $inject = ['$scope', '$log'];
 
-  export var ConfigController = _module.controller("HawkularMetrics.ConfigController", ['$scope', ($scope) => {
-    $scope.configName = "My Configuration";
+        constructor(private $scope:any,
+                    private $log:ng.ILogService,
+                    public resourceUrl:string) {
+            $scope.vm = this;
+            this.resourceUrl = '';
 
-  }]);
+            $scope.$watch('vm.resourceUrl', (newValue)  => {
+                if(angular.isDefined(newValue)){
+                    this.$log.debug("Add New Resource Url: " + newValue);
+                }
+            });
+
+        }
+
+        addUrl(url:string):void {
+            this.$log.debug("Adding Url to backend: "+ url);
+        }
+
+    }
+
+    _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
 
 }

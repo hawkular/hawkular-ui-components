@@ -47,7 +47,7 @@ module HawkularMetrics {
 ///        chartTypes: string[];
 ///
 ///    }
-    export interface IChartController {
+    export interface IMetricsViewController {
         searchId: string;
         startTimeStamp: Date;
         endTimeStamp: Date;
@@ -80,7 +80,7 @@ module HawkularMetrics {
      * @param $log
      * @param metricDataService
      */
-    export class ChartController implements IChartController {
+    export class MetricsViewController implements IMetricsViewController {
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService'];
 
         searchId = '';
@@ -143,7 +143,7 @@ module HawkularMetrics {
         }
 
         showPreviousTimeRange():void {
-            var previousTimeRange = ChartController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             this.startTimeStamp = previousTimeRange[0];
             this.endTimeStamp = previousTimeRange[1];
@@ -163,7 +163,7 @@ module HawkularMetrics {
 
 
         showNextTimeRange():void {
-            var nextTimeRange = ChartController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             this.startTimeStamp = nextTimeRange[0];
             this.endTimeStamp = nextTimeRange[1];
@@ -173,11 +173,11 @@ module HawkularMetrics {
 
 
         hasNext():boolean {
-            var nextTimeRange = ChartController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
             // unsophisticated test to see if there is a next; without actually querying.
 
             //@fixme: pay the price, do the query!
-            return nextTimeRange[1].getTime() < _.now();
+            return nextTimeRange[1].getTime() < new Date().getTime();
         }
 
 
@@ -265,7 +265,7 @@ module HawkularMetrics {
 
 
         overlayPreviousRangeData():void {
-            var previousTimeRange = ChartController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             if (this.searchId !== '') {
                 this.metricDataService.getMetricsForTimeRange(this.searchId, previousTimeRange[0], previousTimeRange[1])
@@ -324,7 +324,7 @@ module HawkularMetrics {
         refreshContextChart():void {
             // unsophisticated default time range to avoid DB checking right now
             // @fixme: add a real service to determine unbounded range
-            var endTime = _.now(),
+            var endTime = moment().valueOf(),
                 startTime = moment().subtract('months', 24).valueOf();
 
             this.$log.debug('refreshChartContext');
@@ -362,6 +362,6 @@ module HawkularMetrics {
         }
     }
 
-    _module.controller('ChartController', ChartController);
+    _module.controller('MetricsViewController', MetricsViewController);
 
 }

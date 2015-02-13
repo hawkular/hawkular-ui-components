@@ -28,9 +28,10 @@ module HawkularMetrics {
             .id(HawkularMetrics.pluginName)
             .title(() => "Metrics")
             .href(() => "/metrics")
-            .subPath("Graphs", "graphs", navBuilder.join(HawkularMetrics.templatePath, 'graphs.html'))
-            .subPath("Advanced", "advanced", navBuilder.join(HawkularMetrics.templatePath, 'advanced.html'))
-            .subPath("Config", "config", navBuilder.join(HawkularMetrics.templatePath, 'config.html'))
+            .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+            .subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
+            .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
+            .subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html'))
             .build();
 
         navBuilder.configureRouting($routeProvider, metricsTab);
