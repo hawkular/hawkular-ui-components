@@ -55,7 +55,6 @@ _Note: if you are adding new assets make sure they get added to the *main* secti
 And from root of this git repo:
 
  git ci -m "Checkin new artefacts" 
-
  bower version [patch|release]
 
 which bumps the version and tags it.
