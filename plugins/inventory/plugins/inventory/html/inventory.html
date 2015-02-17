@@ -1,9 +1,105 @@
-<div class="row">
-    <div class="col-md-12" ng-controller="Inventory.InventoryController">
-        <h1>Inventory List</h1>
-        <ul class="list-group" ng-repeat="inventoryItem in inventory">
-            <li class="list-group-item">{{inventoryItem.resourceName}}</li>
-        </ul>
+<div ng-controller="Inventory.InventoryController">
+
+    <hr>
+
+    <!-- Dropdown View -->
+    <div class="row">
+        <div class=" col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-user"></i> Tenant</h3>
+                </div>
+                <div class="panel-body">
+                    <form role="form" class="search-pf has-button">
+                        <div class="form-group has-clear">
+                            <div class="search-pf-input-group">
+                                <label for="tenantId" class="sr-only">Tenant</label>
+                                <input id="tenantId" type="search" class="form-control" placeholder="Tenant ID" ng-model="tenantId" ng-enter="queryResources()" autofocus>
+                                <button type="button" class="clear" aria-hidden="true" ng-click="tenantId = ''"><span class="pficon pficon-close"></span></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-default" type="button" ng-click="queryResources()"><span class="fa fa-search"></span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-cube"></i> Resource <span class="pull-right" ng-show="tenantId && resources"><a href="#" ng-click="showTable = !showTable"><span ng-hide="showTable">Show</span><span ng-show="showTable">Hide</span> all</a></span></h3>
+                </div>
+                <div class="panel-body">
+                    <select class="form-control" ng-options="resource.id as resource.parameters.url + ' (' +resource.id + ')' for resource in resources" ng-model="resourceId" ng-disabled="!tenantId || !resources" ng-hide="resources.length === 0" ng-change="queryMetrics()"></select>
+                    <span ng-show="resources.length === 0"><i class="fa fa-warning"></i> No Resources Available</span>
+                </div>
+            </div>
+        </div>
+        <div class=" col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-line-chart"></i> Metric</h3>
+                </div>
+                <div class="panel-body">
+                    <select class="form-control" ng-options="metric.name as metric.name for metric in metrics" ng-model="metricId" ng-disabled="!tenantId || !resourceId" ng-hide="metrics.length === 0"></select>
+                    <span ng-show="metrics.length === 0"><i class="fa fa-warning"></i> No Metrics Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-10">
+            <a href="" class="btn btn-primary btn-lg" ng-click="showMetric()"><i class="fa fa-line-chart" ng-disabled="!metricId"></i> Show Metric</a>
+        </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="row" ng-show="tenantId && showTable">
+        <div class="col-md-12">
+            <h1>Resources</h1>
+            <table class="table table-condensed">
+                <thead>
+                    <th>Resource ID</th>
+                    <th>Resource Type</th>
+                    <th>Parameters</th>
+                    <th>Metrics</th>
+                </thead>
+                <tr ng-repeat="resource in resources">
+                    <td>{{resource.id}}</td>
+                    <td>{{resource.type}}</td>
+                    <td>
+                        <dl class="dl-horizontal" ng-repeat="(name, value) in resource.parameters">
+                          <dt>{{name}}</dt>
+                          <dd>{{value}}</dd>
+                        </dl>
+                    </td>
+                    <td >
+                        <table>
+                            <tr ng-repeat="metric in resource.metrics">
+                                <td>{{metric.name}} <button class="btn btn-primary btn-xs" ng-click="showMetric(tenantId, resource.id, metric.name)"> <i class="fa fa-area-chart"></i> </button></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart View -->
+    <div class="row" ng-show="metricData">
+        <hr>
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{metricData.tenantId}} / {{metricData.resourceId}} / {{metricData.metricId}} <span class="pull-right" ng-click="closeChart()"><i class="pficon pficon-close"></i></span></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="text-center">
+                        <i class="fa fa-area-chart" style="font-size: 33em; color: #199DDE;"></i><i class="fa fa-area-chart fa-flip-horizontal" style="font-size: 33em; color: #199DDE;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
