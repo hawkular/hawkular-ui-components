@@ -2,11 +2,11 @@
 /// <reference path="inventoryGlobals.ts"/>
 module Inventory {
 
-    export var _module = angular.module(Inventory.pluginName, []);
+    export var _module = angular.module(Inventory.pluginName, ['ngResource','hawkular.services']);
 
     var tab = undefined;
 
-    _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, builder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', 'HawkularInventoryProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, builder:HawtioMainNav.BuilderFactory, HawkularInventoryProvider) => {
         tab = builder.create()
             .id(Inventory.pluginName)
             .title(() => "Inventory")
