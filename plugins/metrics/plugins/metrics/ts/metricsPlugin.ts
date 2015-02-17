@@ -18,11 +18,15 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts', 'hawkular.services']);
 
     var metricsTab:any;
 
-    _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$httpProvider','$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+
+        /// enable CORS
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
         metricsTab = navBuilder.create()
             .id(HawkularMetrics.pluginName)

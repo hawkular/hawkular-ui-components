@@ -9,9 +9,11 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
+    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts', 'hawkular.services']);
     var metricsTab;
-    HawkularMetrics._module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($locationProvider, $routeProvider, navBuilder) {
+    HawkularMetrics._module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($httpProvider, $locationProvider, $routeProvider, navBuilder) {
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
         metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html')).subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html')).subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html')).subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html')).build();
         navBuilder.configureRouting($routeProvider, metricsTab);
         $locationProvider.html5Mode(true);
@@ -26,23 +28,50 @@ var HawkularMetrics;
 var HawkularMetrics;
 (function (HawkularMetrics) {
     var AddUrlController = (function () {
-        function AddUrlController($scope, $log, resourceUrl) {
-            var _this = this;
+        function AddUrlController($location, $scope, $log, HawkularMetric, resourceUrl) {
+            this.$location = $location;
             this.$scope = $scope;
             this.$log = $log;
+            this.HawkularMetric = HawkularMetric;
             this.resourceUrl = resourceUrl;
+            this.tenantId = 'test';
             $scope.vm = this;
             this.resourceUrl = '';
-            $scope.$watch('vm.resourceUrl', function (newValue) {
-                if (angular.isDefined(newValue)) {
-                    _this.$log.debug("Add New Resource Url: " + newValue);
-                }
-            });
         }
         AddUrlController.prototype.addUrl = function (url) {
+            var _this = this;
             this.$log.debug("Adding Url to backend: " + url);
+            this.HawkularMetric.Metric.queryNum({ tenantId: 'test' }, function (data) {
+                console.dir(data);
+                _this.$log.debug("#Metrics: " + data.length);
+            });
+            this.registerFixedMetrics(this.tenantId);
+            this.$log.debug("Current url: " + this.$location.url());
+            this.$location.url("/metrics/metricsView");
         };
-        AddUrlController.$inject = ['$scope', '$log'];
+        AddUrlController.prototype.registerFixedMetrics = function (tenantId) {
+            this.HawkularMetric.Metric.queryNum({ tenantId: 'test' });
+            var result;
+            var webResponseTimeMetric = {
+                "name": "web.responseTime",
+                "tags": {
+                    "attribute1": "web",
+                    "attribute2": "value2"
+                }
+            };
+            var cpuUsageMetric = {
+                "name": "cpu.usage",
+                "tags": {
+                    "attribute1": "cpu",
+                    "attribute2": "value2"
+                }
+            };
+            result = this.HawkularMetric.NumericMetric.save({ tenantId: tenantId }, webResponseTimeMetric);
+            this.$log.info("Created Metric: " + result);
+            result = this.HawkularMetric.NumericMetric.save({ tenantId: tenantId }, cpuUsageMetric);
+            this.$log.info("Created Metric: " + result);
+        };
+        AddUrlController.$inject = ['$location', '$scope', '$log', 'HawkularMetric'];
         return AddUrlController;
     })();
     HawkularMetrics.AddUrlController = AddUrlController;
@@ -101,6 +130,13 @@ var HawkularMetrics;
     })();
     HawkularMetrics.MetricDataService = MetricDataService;
     HawkularMetrics._module.service('metricDataService', MetricDataService);
+})(HawkularMetrics || (HawkularMetrics = {}));
+
+var HawkularMetrics;
+(function (HawkularMetrics) {
+    HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
+        $scope.overview = "Over View";
+    }]);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 var HawkularMetrics;
@@ -323,7 +359,7 @@ var HawkularMetrics;
     }]);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
-angular.module("hawkular-metrics-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/add-url.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AddUrlController\" style=\"margin-left: 10px;\">\n    <h1>Welcome Brian!</h1>\n\n    <h2>Collect metrics from a website that you want to monitor.</h2>\n\n    <form class=\"form-horizontal\" name=\"addUrlForm\" role=\"form\" novalidate>\n        <div class=\"form-group input\">\n            <div class=\"col-lg-6 col-sm-8 col-xs-12 align-center\">\n                <div class=\"input-group\">\n                    <input type=\"url\" class=\"form-control input-lg\" name=\"resourceUrl\" ng-model=\"vm.resourceUrl\"\n                           ng-model-options=\"{ updateOn: \'default blur\'}\"\n                           placeholder=\"Enter a website URL\" required >\n                      <span class=\"error-message\"\n                            ng-show=\"addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required\">The URL you entered is not valid. Please enter a valid URL.</span>\n\n              <span class=\"input-group-btn\">\n                <button class=\"btn btn-primary btn-lg\" type=\"button\" ng-disabled=\"!addUrlForm.$valid\"\n                        ng-click=\"vm.addUrl(vm.resourceUrl)\">Get Metrics\n                </button>\n              </span>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n");
+angular.module("hawkular-metrics-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/add-url.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AddUrlController\" style=\"margin-left: 10px;\">\n    <h1>Welcome Brian!</h1>\n\n    <h2>Collect metrics from a website that you want to monitor.</h2>\n\n    <form class=\"form-horizontal\" name=\"addUrlForm\" role=\"form\" novalidate>\n        <div class=\"form-group input\">\n            <div class=\"col-lg-6 col-sm-8 col-xs-12 align-center\">\n                <div class=\"input-group\">\n                    <input type=\"url\" class=\"form-control input-lg\" name=\"resourceUrl\" ng-model=\"vm.resourceUrl\"\n                           ng-model-options=\"{ updateOn: \'default blur\'}\"\n                           placeholder=\"Enter a website URL (e.g., http://mysite.com/home)\" required >\n                      <span class=\"error-message\"\n                            ng-show=\"addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required\">The URL you entered is not valid. Please enter a valid URL.</span>\n\n              <span class=\"input-group-btn\">\n                <button class=\"btn btn-primary btn-lg\" type=\"button\" ng-disabled=\"!addUrlForm.$valid\"\n                        ng-click=\"vm.addUrl(vm.resourceUrl)\">Get Metrics\n                </button>\n              </span>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n");
 $templateCache.put("plugins/metrics/html/metrics-selection.html","<div class=\"row\" ng-controller=\"HawkularMetrics.MetricsSelectionController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Selection: TBD</h1>\n       TBD\n    </div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/metrics-view.html","<div class=\"panel panel-default\" style=\"width:880px\" ng-controller=\"MetricsViewController as vm\">\n    <div class=\"panel-body\">\n        <div class=\"well\">\n            <small style=\"margin-left: 15px\" class=\"graphDateTimeRangeLabel\"></small>\n\n            <form class=\"form-horizontal\" name=\"chartForm\" role=\"form\" novalidate>\n\n                <div class=\"form-group\">\n                    <label class=\"col-sm-2 control-label\">Metric ID:</label>\n\n                    <div class=\"col-sm-5\">\n                        <input type=\"text\" class=\"form-control\" name=\"searchId\" ng-model=\"vm.searchId\"\n                               ng-model-options=\"{ updateOn: \'default blur\', debounce: { \'default\': 700, \'blur\': 0 } }\"\n                               placeholder=\"Enter Id...\" required ng-minlength=\"1\">\n                        <span class=\"error-message\"\n                              ng-show=\"chartForm.searchId.$dirty && chartForm.searchId.$error.required\"> * Required.</span>\n                        <span class=\"help-block\">Example: 100, apache3.cpu1  </span>\n                    </div>\n                </div>\n\n                <!--<div class=\"row\">-->\n                <!--<div class=\"col-md-12\">-->\n                <!--<relative-time-range-button-bar style=\"margin-left: 140px;\"-->\n                <!--start-time-stamp=\"vm.startTimestamp\"-->\n                <!--end-time-stamp=\"vm..endTimeStamp\">-->\n                <!--</relative-time-range-button-bar>-->\n\n                <!--<input type=\"text\" style=\"margin-left: 20px;text-align: center;\" ng-model=\"vm.dateRange\" readonly disbabled/>-->\n                <!--<p></p>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">Start</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownStart\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.startTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.startTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownStart\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">End</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownEnd\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.endTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i-->\n                <!--class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.endTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownEnd\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2 col-sm-10\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                                ng-disabled=\"!chartForm.$valid\"\n                                ng-click=\"vm.refreshChartDataNow()\">Refresh\n                        </button>\n                    </div>\n                </div>\n        </div>\n        </form>\n    </div>\n\n\n    <div ng-show=\"vm.chartData.dataPoints.length > 1\">\n        <div id=\"stackedBarChart\" style=\"height:270px\">\n            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->\n            <hawkular-chart\n                    data=\"{{vm.chartData.dataPoints}}\"\n                    chart-type=\"bar\"\n                    show-avg-line=\"{{vm.showAvgLine}}\"\n                    hide-high-low-values=\"{{vm.hideHighLowValues}}\"\n                    chart-title=\"{{\'Metrics Id: \'+vm.searchId}}\"\n                    chart-height=\"250\"></hawkular-chart>\n        </div>\n\n        <div style=\"margin-top: 30px;\">\n            <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n            </button>\n            <button class=\"btn btn-sm\" style=\"float:right;margin-right: 90px;\" ng-click=\"vm.showNextTimeRange()\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n        </div>\n        <br/>\n\n    </div>\n</div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/overview.html","<div class=\"row\" ng-controller=\"HawkularMetrics.OverviewController\">\n    <div class=\"col-md-12\">\n        <h1>Overview: TBD</h1>\n       TBD\n    </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-metrics-templates");

@@ -18,24 +18,68 @@
 module HawkularMetrics {
 
     export class AddUrlController {
-        public static  $inject = ['$scope', '$log'];
+        public static $inject = ['$location', '$scope', '$log', 'HawkularMetric' ];
 
-        constructor(private $scope:any,
+       ///@todo: fixed tenant until we get it from KeyCloak
+        private tenantId = 'test';
+
+        constructor(private $location:ng.ILocationService,
+                    private $scope:any,
                     private $log:ng.ILogService,
+                    private HawkularMetric:any,
                     public resourceUrl:string) {
             $scope.vm = this;
             this.resourceUrl = '';
 
-            $scope.$watch('vm.resourceUrl', (newValue)  => {
-                if(angular.isDefined(newValue)){
-                    this.$log.debug("Add New Resource Url: " + newValue);
-                }
-            });
-
         }
 
         addUrl(url:string):void {
-            this.$log.debug("Adding Url to backend: "+ url);
+            this.$log.debug("Adding Url to backend: " + url);
+            this.HawkularMetric.Metric.queryNum({tenantId: 'test'}, (data) => {
+                console.dir(data);
+                this.$log.debug("#Metrics: " + data.length);
+            });
+
+            this.registerFixedMetrics(this.tenantId);
+
+            this.$log.debug("Current url: " + this.$location.url());
+
+            /// Hop on over to the metricsView page for charting
+            this.$location.url("/metrics/metricsView");
+
+        }
+
+
+        /// @todo: this will become the 'Metrics Selection' screen once we get that
+        /// For right now we will just Register a couple of metrics automatically
+        /// Later, this will become the metrics selection screen and the user can
+        /// select metrics for the resource url
+        registerFixedMetrics(tenantId:string):void {
+            /// for now just register the two metrics
+            this.HawkularMetric.Metric.queryNum({tenantId: 'test'});
+
+            var result:any;
+            var webResponseTimeMetric = {
+                "name": "web.responseTime",
+                "tags": {
+                    "attribute1": "web",
+                    "attribute2": "value2"
+                }
+            };
+            var cpuUsageMetric = {
+                "name": "cpu.usage",
+                "tags": {
+                    "attribute1": "cpu",
+                    "attribute2": "value2"
+                }
+            };
+
+            //@todo: ignoring error handling for now
+            result = this.HawkularMetric.NumericMetric.save({tenantId: tenantId}, webResponseTimeMetric);
+            this.$log.info("Created Metric: " + result);
+            result = this.HawkularMetric.NumericMetric.save({tenantId: tenantId}, cpuUsageMetric);
+            this.$log.info("Created Metric: " + result);
+
         }
 
     }
