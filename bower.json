@@ -1,7 +1,7 @@
 {
   "name": "hawkular-ui-components",
   "description": "WIP:Hawt.io 2 plugins for the Hawkular Console.",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "keywords": [
     "hawtio-hawkular",
     "hawkular-console",
