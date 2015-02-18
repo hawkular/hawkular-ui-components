@@ -39,18 +39,12 @@ var HawkularMetrics;
             this.resourceUrl = '';
         }
         AddUrlController.prototype.addUrl = function (url) {
-            var _this = this;
             this.$log.debug("Adding Url to backend: " + url);
-            this.HawkularMetric.Metric.queryNum({ tenantId: 'test' }, function (data) {
-                console.dir(data);
-                _this.$log.debug("#Metrics: " + data.length);
-            });
             this.registerFixedMetrics(this.tenantId);
             this.$log.debug("Current url: " + this.$location.url());
             this.$location.url("/metrics/metricsView");
         };
         AddUrlController.prototype.registerFixedMetrics = function (tenantId) {
-            this.HawkularMetric.Metric.queryNum({ tenantId: 'test' });
             var result;
             var webResponseTimeMetric = {
                 "name": "web.responseTime",
@@ -80,60 +74,6 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    var MetricDataService = (function () {
-        function MetricDataService($q, $rootScope, $http, $log) {
-            this.$q = $q;
-            this.$rootScope = $rootScope;
-            this.$http = $http;
-            this.$log = $log;
-        }
-        MetricDataService.prototype.getBaseUrl = function () {
-            return 'http://127.0.0.1:8080/rhq-metrics/test/metrics';
-        };
-        MetricDataService.prototype.getAllMetrics = function () {
-            this.$log.info('-- Retrieving all metrics');
-            var base = this.getBaseUrl() + '/?type=num', deferred = this.$q.defer();
-            this.$http.get(base).success(function (data) {
-                deferred.resolve(data);
-            }).error(function (reason, status) {
-                console.error('Error Retrieving all metrics :' + status + ", " + reason);
-                toastr.warning('No Metrics retrieved.');
-                deferred.reject(status + " - " + reason);
-            });
-            return deferred.promise;
-        };
-        MetricDataService.prototype.getMetricsForTimeRange = function (id, startDate, endDate, buckets) {
-            var _this = this;
-            this.$log.info('-- Retrieving metrics data for id: ' + id);
-            this.$log.info('-- Date Range: ' + startDate + ' - ' + endDate);
-            var numBuckets = buckets || 60, deferred = this.$q.defer(), searchParams = {
-                params: {
-                    start: startDate.getTime(),
-                    end: endDate.getTime(),
-                    buckets: numBuckets
-                }
-            };
-            if (startDate >= endDate) {
-                this.$log.warn("Start date was after end date");
-                deferred.reject("Start date was after end date");
-            }
-            this.$http.get(this.getBaseUrl() + '/numeric/' + id + '/data', searchParams).success(function (data) {
-                deferred.resolve(data);
-            }).error(function (reason, status) {
-                _this.$log.error('Error Loading Chart Data:' + status + ", " + reason);
-                deferred.reject(status + " - " + reason);
-            });
-            return deferred.promise;
-        };
-        MetricDataService.$inject = ['$q', '$rootScope', '$http', '$log'];
-        return MetricDataService;
-    })();
-    HawkularMetrics.MetricDataService = MetricDataService;
-    HawkularMetrics._module.service('metricDataService', MetricDataService);
-})(HawkularMetrics || (HawkularMetrics = {}));
-
-var HawkularMetrics;
-(function (HawkularMetrics) {
     HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
         $scope.overview = "Over View";
     }]);
@@ -142,13 +82,13 @@ var HawkularMetrics;
 var HawkularMetrics;
 (function (HawkularMetrics) {
     var MetricsViewController = (function () {
-        function MetricsViewController($scope, $rootScope, $interval, $log, metricDataService, startTimeStamp, endTimeStamp, dateRange) {
+        function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, startTimeStamp, endTimeStamp, dateRange) {
             var _this = this;
             this.$scope = $scope;
             this.$rootScope = $rootScope;
             this.$interval = $interval;
             this.$log = $log;
-            this.metricDataService = metricDataService;
+            this.HawkularMetric = HawkularMetric;
             this.startTimeStamp = startTimeStamp;
             this.endTimeStamp = endTimeStamp;
             this.dateRange = dateRange;
@@ -157,6 +97,7 @@ var HawkularMetrics;
             this.hideHighLowValues = false;
             this.showPreviousRangeDataOverlay = false;
             this.showContextZoom = true;
+            this.tenantId = 'test';
             this.bucketedDataPoints = [];
             this.contextDataPoints = [];
             $scope.vm = this;
@@ -225,7 +166,7 @@ var HawkularMetrics;
                 startTime = this.startTimeStamp.getTime();
             }
             if (this.searchId !== '') {
-                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime), 60).then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     console.dir(response);
                     _this.bucketedDataPoints = _this.formatBucketedChartOutput(response);
                     console.dir(_this.bucketedDataPoints);
@@ -272,7 +213,7 @@ var HawkularMetrics;
             var _this = this;
             var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
             if (this.searchId !== '') {
-                this.metricDataService.getMetricsForTimeRange(this.searchId, previousTimeRange[0], previousTimeRange[1]).then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets: 60 }).$promise.then(function (response) {
                     var prevTimeRangeBucketedDataPoints = _this.formatPreviousBucketedOutput(response);
                     if (angular.isDefined(prevTimeRangeBucketedDataPoints) && prevTimeRangeBucketedDataPoints.length !== 0) {
                         _this.chartData = {
@@ -325,7 +266,7 @@ var HawkularMetrics;
                     this.$log.warn('Start Date was >= End Date');
                     return;
                 }
-                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime), 300).then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     _this.chartData.contextDataPoints = _this.formatContextOutput(response);
                     if (angular.isUndefined(_this.chartData.contextDataPoints) || _this.chartData.contextDataPoints.length === 0) {
                         _this.noDataFoundForId(_this.searchId);
@@ -345,7 +286,7 @@ var HawkularMetrics;
                 };
             });
         };
-        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService'];
+        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric'];
         return MetricsViewController;
     })();
     HawkularMetrics.MetricsViewController = MetricsViewController;

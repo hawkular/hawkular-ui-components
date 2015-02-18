@@ -35,11 +35,6 @@ module HawkularMetrics {
 
         addUrl(url:string):void {
             this.$log.debug("Adding Url to backend: " + url);
-            this.HawkularMetric.Metric.queryNum({tenantId: 'test'}, (data) => {
-                console.dir(data);
-                this.$log.debug("#Metrics: " + data.length);
-            });
-
             this.registerFixedMetrics(this.tenantId);
 
             this.$log.debug("Current url: " + this.$location.url());
@@ -56,7 +51,6 @@ module HawkularMetrics {
         /// select metrics for the resource url
         registerFixedMetrics(tenantId:string):void {
             /// for now just register the two metrics
-            this.HawkularMetric.Metric.queryNum({tenantId: 'test'});
 
             var result:any;
             var webResponseTimeMetric = {

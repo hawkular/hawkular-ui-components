@@ -37,7 +37,7 @@ declare module HawkularMetrics {
         private $rootScope;
         private $interval;
         private $log;
-        private metricDataService;
+        private HawkularMetric;
         startTimeStamp: Date;
         endTimeStamp: Date;
         dateRange: string;
@@ -47,7 +47,8 @@ declare module HawkularMetrics {
         hideHighLowValues: boolean;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
-        constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, metricDataService: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
+        private tenantId;
+        constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, HawkularMetric: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
         private bucketedDataPoints;
         private contextDataPoints;
         private chartData;
