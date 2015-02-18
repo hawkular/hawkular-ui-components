@@ -1,4 +1,4 @@
 /// <reference path="metricsPlugin.d.ts" />
 declare module HawkularMetrics {
-    var ConfigController: ng.IModule;
+    var MetricsSelectionController: ng.IModule;
 }

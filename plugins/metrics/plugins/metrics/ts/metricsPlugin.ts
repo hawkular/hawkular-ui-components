@@ -18,19 +18,24 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts']);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts', 'hawkular.services']);
 
     var metricsTab:any;
 
-    _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$httpProvider','$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+
+        /// enable CORS
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
         metricsTab = navBuilder.create()
             .id(HawkularMetrics.pluginName)
             .title(() => "Metrics")
             .href(() => "/metrics")
-            .subPath("Graphs", "graphs", navBuilder.join(HawkularMetrics.templatePath, 'graphs.html'))
-            .subPath("Advanced", "advanced", navBuilder.join(HawkularMetrics.templatePath, 'advanced.html'))
-            .subPath("Config", "config", navBuilder.join(HawkularMetrics.templatePath, 'config.html'))
+            .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+            .subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
+            .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
+            .subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html'))
             .build();
 
         navBuilder.configureRouting($routeProvider, metricsTab);

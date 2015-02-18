@@ -18,8 +18,8 @@
 module HawkularMetrics {
 
 
-  export var AdvancedController = _module.controller("HawkularMetrics.AdvancedController", ['$scope', ($scope) => {
-    $scope.advancedName = "Advanced Stuff";
+  export var OverviewController = _module.controller("HawkularMetrics.OverviewController", ['$scope', ($scope) => {
+    $scope.overview = "Over View";
 
   }]);
 

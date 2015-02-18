@@ -47,7 +47,7 @@ module HawkularMetrics {
 ///        chartTypes: string[];
 ///
 ///    }
-    export interface IChartController {
+    export interface IMetricsViewController {
         searchId: string;
         startTimeStamp: Date;
         endTimeStamp: Date;
@@ -80,20 +80,21 @@ module HawkularMetrics {
      * @param $log
      * @param metricDataService
      */
-    export class ChartController implements IChartController {
-        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'metricDataService'];
+    export class MetricsViewController implements IMetricsViewController {
+        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric'];
 
         searchId = '';
         showAvgLine = true;
         hideHighLowValues = false;
         showPreviousRangeDataOverlay = false;
         showContextZoom = true;
+        private tenantId = 'test';
 
         constructor(private $scope:any,
                     private $rootScope:ng.IRootScopeService,
                     private $interval:ng.IIntervalService,
                     private $log:ng.ILogService,
-                    private metricDataService,
+                    private HawkularMetric:any,
                     public startTimeStamp:Date,
                     public endTimeStamp:Date,
                     public dateRange:string) {
@@ -111,9 +112,7 @@ module HawkularMetrics {
                 $scope.vm.startTimeStamp = timeRange[0];
                 $scope.vm.endTimeStamp = timeRange[1];
                 $scope.vm.dateRange = moment(timeRange[0]).from(moment(timeRange[1]));
-                $scope.vm.refreshHistoricalChartDataForTimestamp(startTimeStamp, endTimeStamp);
-
-
+                $scope.vm.refreshHistoricalChartDataForTimestamp(startTimeStamp.getTime(), endTimeStamp.getTime());
             });
 
         }
@@ -135,7 +134,7 @@ module HawkularMetrics {
             toastr.warning('No Data found for id: ' + id);
         }
 
-        private calculatePreviousTimeRange(startDate:Date, endDate:Date):any {
+        private static calculatePreviousTimeRange(startDate:Date, endDate:Date):any {
             var previousTimeRange:Date[] = [];
             var intervalInMillis = endDate.getTime() - startDate.getTime();
 
@@ -145,7 +144,7 @@ module HawkularMetrics {
         }
 
         showPreviousTimeRange():void {
-            var previousTimeRange = this.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             this.startTimeStamp = previousTimeRange[0];
             this.endTimeStamp = previousTimeRange[1];
@@ -154,7 +153,7 @@ module HawkularMetrics {
         }
 
 
-        private calculateNextTimeRange(startDate:Date, endDate:Date):any {
+        private static calculateNextTimeRange(startDate:Date, endDate:Date):any {
             var nextTimeRange = [];
             var intervalInMillis = endDate.getTime() - startDate.getTime();
 
@@ -165,7 +164,7 @@ module HawkularMetrics {
 
 
         showNextTimeRange():void {
-            var nextTimeRange = this.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             this.startTimeStamp = nextTimeRange[0];
             this.endTimeStamp = nextTimeRange[1];
@@ -175,11 +174,11 @@ module HawkularMetrics {
 
 
         hasNext():boolean {
-            var nextTimeRange = this.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
             // unsophisticated test to see if there is a next; without actually querying.
 
             //@fixme: pay the price, do the query!
-            return nextTimeRange[1].getTime() < _.now();
+            return nextTimeRange[1].getTime() < new Date().getTime();
         }
 
 
@@ -212,8 +211,8 @@ module HawkularMetrics {
 
             if (this.searchId !== '') {
 
-                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime), 60)
-                    .then((response) => {
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
+                   .then((response) => {
                         console.dir(response);
                         // we want to isolate the response from the data we are feeding to the chart
                         this.bucketedDataPoints = this.formatBucketedChartOutput(response);
@@ -267,10 +266,10 @@ module HawkularMetrics {
 
 
         overlayPreviousRangeData():void {
-            var previousTimeRange = this.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
+            var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             if (this.searchId !== '') {
-                this.metricDataService.getMetricsForTimeRange(this.searchId, previousTimeRange[0], previousTimeRange[1])
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets:  60}).$promise
                     .then((response) => {
                         // we want to isolate the response from the data we are feeding to the chart
                         var prevTimeRangeBucketedDataPoints = this.formatPreviousBucketedOutput(response);
@@ -326,7 +325,7 @@ module HawkularMetrics {
         refreshContextChart():void {
             // unsophisticated default time range to avoid DB checking right now
             // @fixme: add a real service to determine unbounded range
-            var endTime = _.now(),
+            var endTime = moment().valueOf(),
                 startTime = moment().subtract('months', 24).valueOf();
 
             this.$log.debug('refreshChartContext');
@@ -336,7 +335,8 @@ module HawkularMetrics {
                     return;
                 }
 
-                this.metricDataService.getMetricsForTimeRange(this.searchId, new Date(startTime), new Date(endTime), 300)
+
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
                     .then((response) => {
 
                         this.chartData.contextDataPoints = this.formatContextOutput(response);
@@ -364,6 +364,6 @@ module HawkularMetrics {
         }
     }
 
-    _module.controller('ChartController', ChartController);
+    _module.controller('MetricsViewController', MetricsViewController);
 
 }
