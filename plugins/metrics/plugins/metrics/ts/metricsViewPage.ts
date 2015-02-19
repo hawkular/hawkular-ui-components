@@ -1,6 +1,3 @@
-/// <reference path="metricsPlugin.ts"/>
-/// <reference path="../../includes.ts"/>
-
 /// Copyright 2014-2015 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
@@ -15,6 +12,9 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
+
+/// <reference path="metricsPlugin.ts"/>
+/// <reference path="../../includes.ts"/>
 
 module HawkularMetrics {
 
