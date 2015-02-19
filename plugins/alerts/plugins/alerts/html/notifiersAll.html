@@ -1,0 +1,33 @@
+<h1>Notifiers</h1>
+<div class="dataTables_wrapper no-footer">
+  <div class="dataTables_header">
+    <div class="text-right">
+      <button ng-click="nc.newNotifier()" type="button" class="btn btn-primary">New Notifier</button>
+      <button ng-click="nc.allNotifiers()" type="button" class="btn btn-info">Refresh</button>
+    </div>
+  </div>
+  <table class="datatable table table-striped table-bordered dataTable no-footer" role="grid">
+    <thead>
+    <tr role="row">
+      <th class="vert-align">Notifier Id</th>
+      <th class="vert-align">Notifier Type</th>
+      <th class="vert-align">Description</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="notifier in notifiers | orderBy:['notifierId', 'notifierType']:false" ng-class-odd="'gradeA odd'" ng-class-even="'gradeA even'" >
+      <td class="vert-align">{{ notifier.notifierId }}</td>
+      <td class="vert-align">{{ notifier.notifierType }}</td>
+      <td class="vert-align">{{ notifier.description }}</td>
+      <td style="vertical-align: middle;">
+        <div class="text-right">
+          <a ng-click="nc.viewNotifier(notifier.notifierId)" class="btn btn-primary">View</a>
+          <a class="btn btn-danger" ng-click="nc.deleteNotifier(notifier.notifierId)">Delete</a>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+

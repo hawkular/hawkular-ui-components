@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-md-12" ng-controller="HawkularAlerts.NotifiersController as nc">
+
+    <div ng-if="status == 'all'" ng-include="'plugins/alerts/html/notifiersAll.html'"></div>
+
+    <div ng-if="status == 'new'" ng-include="'plugins/alerts/html/notifiersNew.html'"></div>
+
+    <div ng-if="status == 'edit'" ng-include="'plugins/alerts/html/notifiersEdit.html'"></div>
+
+  </div>
+</div>
