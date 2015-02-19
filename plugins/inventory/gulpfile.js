@@ -1,3 +1,20 @@
+/*
+ * Copyright 2014-2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     eventStream = require('event-stream'),
@@ -5,7 +22,9 @@ var gulp = require('gulp'),
     map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path'),
-    s = require('underscore.string');
+    s = require('underscore.string'),
+    tslint = require('gulp-tslint'),
+    tslintRules = require('./tslint.json');
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -22,8 +41,12 @@ var config = {
         target: 'ES5',
         module: 'commonjs',
         declarationFiles: true,
-        noExternalResolve: false
-    })
+        noExternalResolve: false,
+        removeComments: true
+    }),
+    tsLintOptions: {
+      rulesDirectory: './tslint-rules/'
+    }
 };
 
 gulp.task('bower', function () {
@@ -74,6 +97,20 @@ gulp.task('tsc', ['clean-defs'], function () {
         }));
 });
 
+gulp.task('tslint', function () {
+  gulp.src(config.ts)
+    .pipe(tslint(config.tsLintOptions))
+    .pipe(tslint.report('verbose'));
+});
+
+gulp.task('tslint-watch', function () {
+  gulp.src(config.ts)
+    .pipe(tslint(config.tsLintOptions))
+    .pipe(tslint.report('prose', {
+      emitError: false
+    }));
+});
+
 gulp.task('template', ['tsc'], function () {
     return gulp.src(config.templates)
         .pipe(plugins.angularTemplatecache({
@@ -87,8 +124,11 @@ gulp.task('template', ['tsc'], function () {
 });
 
 gulp.task('concat', ['template'], function () {
+    var license = tslintRules.rules['license-header'][1];
+
     return gulp.src(['compiled.js', 'templates.js'])
         .pipe(plugins.concat(config.js))
+        .pipe(plugins.header(license))
         .pipe(gulp.dest(config.dist))
         .pipe(gulp.dest(config.rootDist));
 });
@@ -103,7 +143,7 @@ gulp.task('watch', ['build'], function () {
         gulp.start('reload');
     });
     plugins.watch(['libs/**/*.d.ts', config.ts, config.templates], function () {
-        gulp.start(['tsc', 'template', 'concat', 'clean']);
+        gulp.start(['tslint-watch', 'tsc', 'template', 'concat', 'clean']);
     });
 });
 
@@ -121,9 +161,6 @@ gulp.task('reload', function () {
         .pipe(plugins.connect.reload());
 });
 
-gulp.task('build', ['bower', 'path-adjust', 'tsc', 'template', 'concat', 'clean']);
+gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'template', 'concat', 'clean']);
 
 gulp.task('default', ['connect']);
-
-
-    

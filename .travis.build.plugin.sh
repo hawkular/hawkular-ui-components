@@ -15,6 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-pushd $@
-npm install && bower instal && gulp build
-popd
+status=0;
+
+for plugin in $(find plugins/ -maxdepth 1 -mindepth 1);
+do
+  pushd $plugin
+  (npm install && bower install && gulp build) || status=1;
+  popd
+done;
+
+if [ "$status" != 0 ]; then
+ exit 1;
+fi

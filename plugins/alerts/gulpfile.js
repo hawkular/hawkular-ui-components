@@ -23,7 +23,8 @@ var gulp = require('gulp'),
     fs = require('fs'),
     path = require('path'),
     s = require('underscore.string'),
-    tslint = require('gulp-tslint');
+    tslint = require('gulp-tslint'),
+    tslintRules = require('./tslint.json');
 
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
@@ -40,8 +41,12 @@ var config = {
     target: 'ES5',
     module: 'commonjs',
     declarationFiles: true,
-    noExternalResolve: false
-  })
+    noExternalResolve: false,
+    removeComments: true
+  }),
+  tsLintOptions: {
+    rulesDirectory: './tslint-rules/'
+  }
 };
 
 gulp.task('bower', function() {
@@ -94,13 +99,13 @@ gulp.task('tsc', ['clean-defs'], function() {
 
 gulp.task('tslint', function(){
   gulp.src(config.ts)
-    .pipe(tslint())
+    .pipe(tslint(config.tsLintOptions))
     .pipe(tslint.report('verbose'));
 });
 
 gulp.task('tslint-watch', function(){
   gulp.src(config.ts)
-    .pipe(tslint())
+    .pipe(tslint(config.tsLintOptions))
     .pipe(tslint.report('prose', {
       emitError: false
     }));
@@ -119,8 +124,11 @@ gulp.task('template', ['tsc'], function() {
 });
 
 gulp.task('concat', ['template'], function() {
+  var license = tslintRules.rules['license-header'][1];
+
   return gulp.src(['compiled.js', 'templates.js'])
     .pipe(plugins.concat(config.js))
+    .pipe(plugins.header(license))
     .pipe(gulp.dest(config.dist))
     .pipe(gulp.dest(config.rootDist));
 });
@@ -156,6 +164,3 @@ gulp.task('reload', function() {
 gulp.task('build', ['bower', 'path-adjust', 'tslint', 'tsc', 'template', 'concat', 'clean']);
 
 gulp.task('default', ['connect']);
-
-
-    
