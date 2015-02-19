@@ -23,7 +23,7 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['hawkularCharts', 'hawkular.services']);
+    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'hawkularCharts', 'hawkular.services']);
     var metricsTab;
     HawkularMetrics._module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($httpProvider, $locationProvider, $routeProvider, navBuilder) {
         $httpProvider.defaults.useXDomain = true;
