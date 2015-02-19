@@ -11,13 +11,13 @@ module Inventory {
                 });
             });
         }
-      }
+      };
 
       $scope.queryMetrics = function() {
         if(this.tenantId && this.resourceId) {
             this.metrics = hkInventory.Metric.query({tenantId: this.tenantId, resourceId: this.resourceId});
         }
-      }
+      };
 
       $scope.showMetric = function(tenantId, resourceId, metricId) {
         var _tenantId = tenantId || this.tenantId;
@@ -29,11 +29,11 @@ module Inventory {
             $rootScope.metricData.resourceId = _resourceId;
             $rootScope.metricData.metricId = _metricId;
         }
-      }
+      };
 
       $scope.closeChart = function() {
         delete $rootScope.metricData;
-      }
+      };
 
   }]);
 
