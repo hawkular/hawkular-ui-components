@@ -18,10 +18,11 @@
 module HawkularMetrics {
 
     export class AddUrlController {
-        public static $inject = ['$location', '$scope', '$log', 'HawkularInventory' ];
+        public static $inject = ['$location', '$scope', '$log', 'HawkularInventory'];
 
-       ///@todo: fixed tenant until we get it from KeyCloak
-       tenantId = 'test';
+        ///@todo: fixed tenant until we get it from KeyCloak
+        tenantId = 'test';
+        httpUriPart = 'http://';
 
 
         constructor(private $location:ng.ILocationService,
@@ -30,15 +31,15 @@ module HawkularMetrics {
                     private HawkularInventory:any,
                     public resourceUrl:string) {
             $scope.vm = this;
-            this.resourceUrl = 'http://';
+            this.resourceUrl = this.httpUriPart;
 
         }
 
         addUrl(resourceId:string):void {
-            var cleanedResourceId = resourceId.substr(7);
+            var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
             this.$log.debug("Adding Url to backend: " + cleanedResourceId);
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: this.tenantId},cleanedResourceId);
+            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, cleanedResourceId);
 
 
             /// Add our fixed metrics
@@ -46,8 +47,8 @@ module HawkularMetrics {
             /// For right now we will just Register a couple of metrics automatically
             /// Later, this will become the metrics selection screen and the user can
             /// select metrics for the resource url
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:cleanedResourceId }, 'status.time');
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:cleanedResourceId }, 'status.code');
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.time');
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.code');
 
 
             this.$log.debug("Current url: " + this.$location.url());
