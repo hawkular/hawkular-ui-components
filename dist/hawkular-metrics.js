@@ -50,13 +50,14 @@ var HawkularMetrics;
             this.resourceUrl = resourceUrl;
             this.tenantId = 'test';
             $scope.vm = this;
-            this.resourceUrl = '';
+            this.resourceUrl = 'http://';
         }
         AddUrlController.prototype.addUrl = function (resourceId) {
-            this.$log.debug("Adding Url to backend: " + resourceId);
-            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, resourceId);
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: resourceId }, 'status.time');
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: resourceId }, 'status.code');
+            var cleanedResourceId = resourceId.substr(7);
+            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
+            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, cleanedResourceId);
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.time');
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.code');
             this.$log.debug("Current url: " + this.$location.url());
             this.$location.url("/metrics/metricsView");
         };

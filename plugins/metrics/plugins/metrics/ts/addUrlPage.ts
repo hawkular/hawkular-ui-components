@@ -30,14 +30,15 @@ module HawkularMetrics {
                     private HawkularInventory:any,
                     public resourceUrl:string) {
             $scope.vm = this;
-            this.resourceUrl = '';
+            this.resourceUrl = 'http://';
 
         }
 
         addUrl(resourceId:string):void {
-            this.$log.debug("Adding Url to backend: " + resourceId);
+            var cleanedResourceId = resourceId.substr(7);
+            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: this.tenantId},resourceId);
+            this.HawkularInventory.Resource.save({tenantId: this.tenantId},cleanedResourceId);
 
 
             /// Add our fixed metrics
@@ -45,8 +46,8 @@ module HawkularMetrics {
             /// For right now we will just Register a couple of metrics automatically
             /// Later, this will become the metrics selection screen and the user can
             /// select metrics for the resource url
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:resourceId }, 'status.time');
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:resourceId }, 'status.code');
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:cleanedResourceId }, 'status.time');
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId:cleanedResourceId }, 'status.code');
 
 
             this.$log.debug("Current url: " + this.$location.url());
