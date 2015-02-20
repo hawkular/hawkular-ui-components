@@ -18,24 +18,38 @@
 module HawkularMetrics {
 
     export class AddUrlController {
-        public static $inject = ['$location', '$scope', '$log', 'HawkularMetric' ];
+        public static $inject = ['$location', '$scope', '$log', 'HawkularInventory'];
 
-       ///@todo: fixed tenant until we get it from KeyCloak
-        private tenantId = 'test';
+        ///@todo: fixed tenant until we get it from KeyCloak
+        tenantId = 'test';
+        httpUriPart = 'http://';
+
 
         constructor(private $location:ng.ILocationService,
                     private $scope:any,
                     private $log:ng.ILogService,
-                    private HawkularMetric:any,
+                    private HawkularInventory:any,
                     public resourceUrl:string) {
             $scope.vm = this;
-            this.resourceUrl = '';
+            this.resourceUrl = this.httpUriPart;
 
         }
 
-        addUrl(url:string):void {
-            this.$log.debug("Adding Url to backend: " + url);
-            this.registerFixedMetrics(this.tenantId);
+        addUrl(resourceId:string):void {
+            var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
+            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
+            /// Add the Resource
+            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, cleanedResourceId);
+
+
+            /// Add our fixed metrics
+            /// @todo: this will become the 'Metrics Selection' screen once we get that
+            /// For right now we will just Register a couple of metrics automatically
+            /// Later, this will become the metrics selection screen and the user can
+            /// select metrics for the resource url
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.time');
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.code');
+
 
             this.$log.debug("Current url: " + this.$location.url());
 
@@ -43,39 +57,6 @@ module HawkularMetrics {
             this.$location.url("/metrics/metricsView");
 
         }
-
-
-        /// @todo: this will become the 'Metrics Selection' screen once we get that
-        /// For right now we will just Register a couple of metrics automatically
-        /// Later, this will become the metrics selection screen and the user can
-        /// select metrics for the resource url
-        registerFixedMetrics(tenantId:string):void {
-            /// for now just register the two metrics
-
-            var result:any;
-            var webResponseTimeMetric = {
-                "name": "web.responseTime",
-                "tags": {
-                    "attribute1": "web",
-                    "attribute2": "value2"
-                }
-            };
-            var cpuUsageMetric = {
-                "name": "cpu.usage",
-                "tags": {
-                    "attribute1": "cpu",
-                    "attribute2": "value2"
-                }
-            };
-
-            //@todo: ignoring error handling for now
-            result = this.HawkularMetric.NumericMetric.save({tenantId: tenantId}, webResponseTimeMetric);
-            this.$log.info("Created Metric: " + result);
-            result = this.HawkularMetric.NumericMetric.save({tenantId: tenantId}, cpuUsageMetric);
-            this.$log.info("Created Metric: " + result);
-
-        }
-
     }
 
     _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
