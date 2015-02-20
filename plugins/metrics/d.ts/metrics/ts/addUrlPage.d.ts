@@ -4,12 +4,11 @@ declare module HawkularMetrics {
         private $location;
         private $scope;
         private $log;
-        private HawkularMetric;
+        private HawkularInventory;
         resourceUrl: string;
         static $inject: string[];
-        private tenantId;
-        constructor($location: ng.ILocationService, $scope: any, $log: ng.ILogService, HawkularMetric: any, resourceUrl: string);
-        addUrl(url: string): void;
-        registerFixedMetrics(tenantId: string): void;
+        tenantId: string;
+        constructor($location: ng.ILocationService, $scope: any, $log: ng.ILogService, HawkularInventory: any, resourceUrl: string);
+        addUrl(resourceId: string): void;
     }
 }

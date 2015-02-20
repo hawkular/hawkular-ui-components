@@ -42,44 +42,25 @@ var HawkularMetrics;
 var HawkularMetrics;
 (function (HawkularMetrics) {
     var AddUrlController = (function () {
-        function AddUrlController($location, $scope, $log, HawkularMetric, resourceUrl) {
+        function AddUrlController($location, $scope, $log, HawkularInventory, resourceUrl) {
             this.$location = $location;
             this.$scope = $scope;
             this.$log = $log;
-            this.HawkularMetric = HawkularMetric;
+            this.HawkularInventory = HawkularInventory;
             this.resourceUrl = resourceUrl;
             this.tenantId = 'test';
             $scope.vm = this;
             this.resourceUrl = '';
         }
-        AddUrlController.prototype.addUrl = function (url) {
-            this.$log.debug("Adding Url to backend: " + url);
-            this.registerFixedMetrics(this.tenantId);
+        AddUrlController.prototype.addUrl = function (resourceId) {
+            this.$log.debug("Adding Url to backend: " + resourceId);
+            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, resourceId);
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: resourceId }, 'status.time');
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: resourceId }, 'status.code');
             this.$log.debug("Current url: " + this.$location.url());
             this.$location.url("/metrics/metricsView");
         };
-        AddUrlController.prototype.registerFixedMetrics = function (tenantId) {
-            var result;
-            var webResponseTimeMetric = {
-                "name": "web.responseTime",
-                "tags": {
-                    "attribute1": "web",
-                    "attribute2": "value2"
-                }
-            };
-            var cpuUsageMetric = {
-                "name": "cpu.usage",
-                "tags": {
-                    "attribute1": "cpu",
-                    "attribute2": "value2"
-                }
-            };
-            result = this.HawkularMetric.NumericMetric.save({ tenantId: tenantId }, webResponseTimeMetric);
-            this.$log.info("Created Metric: " + result);
-            result = this.HawkularMetric.NumericMetric.save({ tenantId: tenantId }, cpuUsageMetric);
-            this.$log.info("Created Metric: " + result);
-        };
-        AddUrlController.$inject = ['$location', '$scope', '$log', 'HawkularMetric'];
+        AddUrlController.$inject = ['$location', '$scope', '$log', 'HawkularInventory'];
         return AddUrlController;
     })();
     HawkularMetrics.AddUrlController = AddUrlController;
