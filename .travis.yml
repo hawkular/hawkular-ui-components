@@ -5,14 +5,14 @@ node_js:
 notifications:
   irc:
     channels:
-    - chat.freenode.net#hawkular
+#    - chat.freenode.net#hawkular
     on_success: change
     
 before_install:
   - 'npm install -g bower gulp typescript'
 
 script: 
-    - './.travis.build.plugin.sh'
+  - 'gulp'
 
 # use this line in case of building only a sub-set of plugins
 #  - 'for plugin in alerts inventory metrics; do ./.travis.build.plugin.sh $plugin; done;'
