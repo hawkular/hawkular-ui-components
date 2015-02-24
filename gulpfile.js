@@ -61,11 +61,17 @@ function getFolders(dir) {
     });
 }
 
+var pluginBuildTasks = [];
 var pluginFolders = getFolders('./plugins');
+
 console.log('creating tasks:', pluginFolders);
 for (var i = 0; i < pluginFolders.length; i++){
   console.log('creating tasks for ' + pluginFolders[i])
-  taskCreator(gulp, config, pluginFolders[i]);
+  var pluginName = pluginFolders[i];
+
+  taskCreator(gulp, config, pluginName);
+  pluginBuildTasks.push('build-' + pluginName);
+
 }
 
-gulp.task('default', ['tsc-metrics']);
+gulp.task('default', pluginBuildTasks);
