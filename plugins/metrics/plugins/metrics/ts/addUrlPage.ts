@@ -45,7 +45,7 @@ module HawkularMetrics {
             };
             var metricResponseTime = [{
                 name: 'status.time',
-                unit: 'ms',
+                unit: 'MILLI_SECOND',
                 description: 'Response Time in ms.'
             }];
             var metricStatusCode = [{
