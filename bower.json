@@ -8,9 +8,9 @@
     "hawkular-ui"
   ],
   "main": [
-    "dist/hawkular-metrics.js",
-    "dist/hawkular-alerts.js",
-    "dist/hawkular-inventory.js"
+    "dist/hawkular-ui-components-metrics.js",
+    "dist/hawkular-ui-components-alerts.js",
+    "dist/hawkular-ui-components-inventory.js"
   ],
   "ignore": [
     "*",

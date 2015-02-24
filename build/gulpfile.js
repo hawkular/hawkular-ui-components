@@ -126,22 +126,35 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
-    plugins.watch(['libs/**/*.js', 'libs/**/*.css', 'index.html', config.dist + '/' + config.js], function() {
-      gulp.start('reload');
+    plugins.watch(['libs/**/*.js', 'libs/**/*.css', 'index.html', config.dist + '/' + config.js(pluginName)], function() {
+      gulp.start(['reload' + pluginName, 'connect-prepare-' + pluginName]);
     });
-    plugins.watch(['libs/**/*.d.ts', config.ts(pluginName), config.templates], function() {
-      gulp.start(['tslint-watch', 'tsc', 'template', 'concat', 'clean']);
+    plugins.watch(['libs/**/*.d.ts', config.ts(pluginName), config.templates(pluginName)], function() {
+      gulp.start(['tslint-watch' + pluginName, 'tsc' + pluginName, 'template' + pluginName, 'concat' + pluginName,
+        'clean' + pluginName, 'connect-prepare-' + pluginName]);
     });
   });
 
-  gulp.task('connect-' + pluginName, ['watch-' + pluginName], function() {
-    console.log('./plugins/' + pluginName);
+  gulp.task('connect-prepare-' + pluginName, function() {
+    var indexPath = path.resolve(__dirname, '../plugins/'+pluginName+'/index.html');
+    var libPath = path.resolve(__dirname, '../libs/**');
+    var distPath = path.resolve(__dirname, '../dist/**');
+
+    gulp.src([indexPath])
+      .pipe(gulp.dest('.tmp/gulp-connect-server'));
+
+    gulp.src([libPath, distPath], { "base" : '.' })
+      .pipe(gulp.dest('.tmp/gulp-connect-server'));
+  });
+
+  gulp.task('connect-' + pluginName, ['connect-prepare-' + pluginName, 'watch-' + pluginName], function() {
+    var staticPath = path.resolve(__dirname, '../.tmp/gulp-connect-server/');
+    console.log(staticPath);
 
     plugins.connect.server({
-      root: './plugins/' + pluginName,
-      livereload: true,
-      port: 2772,
-      fallback: 'index.html'
+      root: staticPath,
+      //livereload: true,
+      port: 2772
     });
   });
 
@@ -152,6 +165,4 @@ module.exports = function(gulp, config, pluginName){
 
   console.log('creating ', 'build-' + pluginName);
   gulp.task('build-' + pluginName, ['bower', 'path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
-
-  gulp.task('default', ['connect-' + pluginName]);
 };

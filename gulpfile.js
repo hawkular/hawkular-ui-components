@@ -18,20 +18,17 @@
 var gulp = require('gulp'),
     wiredep = require('wiredep').stream,
     gulpLoadPlugins = require('gulp-load-plugins'),
-    map = require('vinyl-map'),
     fs = require('fs'),
-    path = require('path'),
-    s = require('underscore.string'),
-    tslint = require('gulp-tslint'),
-    minimist = require('minimist');
+    path = require('path');
 
 var taskCreator = require('./build/gulpfile.js');
 var plugins = gulpLoadPlugins({});
 var pkg = require('./package.json');
+
 var config = {
   main: '.',
   ts: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.ts'];},
-  templates: function (pluginName){ return ['./plugins/' + pluginName + '/*.html'];},
+  templates: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.html'];},
   templateModule: pkg.name + '-templates',
   dist: './dist/',
   js: function(pluginName){ return pkg.name + '-' + pluginName +'.js'; },
@@ -48,8 +45,13 @@ var config = {
   }
 };
 
+gulp.task('clean', function() {
+  return gulp.src(['.tmp'], { read: false })
+    .pipe(plugins.clean());
+});
+
 gulp.task('bower', function () {
-  gulp.src('index.html')
+  gulp.src('./tmp/gulp-server-connect/index.html')
     .pipe(wiredep({}))
     .pipe(gulp.dest('.'));
 });
@@ -64,14 +66,10 @@ function getFolders(dir) {
 var pluginBuildTasks = [];
 var pluginFolders = getFolders('./plugins');
 
-console.log('creating tasks:', pluginFolders);
 for (var i = 0; i < pluginFolders.length; i++){
-  console.log('creating tasks for ' + pluginFolders[i])
   var pluginName = pluginFolders[i];
-
   taskCreator(gulp, config, pluginName);
   pluginBuildTasks.push('build-' + pluginName);
-
 }
 
 gulp.task('default', pluginBuildTasks);
