@@ -38,9 +38,9 @@ module HawkularMetrics {
             var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
             var resource = {
                 type: 'URL',
-                id: 'hawkular_web',
+                id: '',
                 parameters: {
-                    url:resourceId
+                    url: resourceId
                 }
             };
             var metrics = [{
@@ -52,21 +52,25 @@ module HawkularMetrics {
                 unit: 'NONE',
                 description: 'Status Code'
             }];
+
             this.$log.info("Adding new Resource Url to backend: " + cleanedResourceId);
 
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, resource);
+            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, resource).$promise
+                .then((newResource) => {
+                    this.$log.info("New Resource ID: " + newResource.id);
+                    /// @todo: this will become the 'Metrics Selection' screen once we get that
+                    /// For right now we will just Register a couple of metrics automatically
+                    this.HawkularInventory.Metric.save({
+                        tenantId: this.tenantId,
+                        resourceId: newResource.id
+                    }, metrics).$promise.then((newMetrics) => {
+                            /// Hop on over to the metricsView page for charting
+                            this.$location.url("/metrics/metricsResponse");
+                        });
 
+                });
 
-            /// Add our fixed metrics
-            /// @todo: this will become the 'Metrics Selection' screen once we get that
-            /// For right now we will just Register a couple of metrics automatically
-            /// Later, this will become the metrics selection screen and the user can
-            /// select metrics for the resource url
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metrics);
-
-            /// Hop on over to the metricsView page for charting
-            this.$location.url("/metrics/metricsView");
 
         }
     }
