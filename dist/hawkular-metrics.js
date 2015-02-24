@@ -28,7 +28,7 @@ var HawkularMetrics;
     HawkularMetrics._module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($httpProvider, $locationProvider, $routeProvider, navBuilder) {
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
-        metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html')).subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html')).subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html')).subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html')).build();
+        metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html')).subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html')).subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html')).subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html')).build();
         navBuilder.configureRouting($routeProvider, metricsTab);
         $locationProvider.html5Mode(true);
     }]);
@@ -67,11 +67,27 @@ var HawkularMetrics;
         }
         AddUrlController.prototype.addUrl = function (resourceId) {
             var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
-            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
-            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, cleanedResourceId);
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.time');
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.code');
-            this.$log.debug("Current url: " + this.$location.url());
+            var resource = {
+                type: 'URL',
+                id: 'hawkular_web',
+                parameters: {
+                    url: resourceId
+                }
+            };
+            var metricResponseTime = [{
+                name: 'status.time',
+                unit: 'ms',
+                description: 'Response Time in ms.'
+            }];
+            var metricStatusCode = [{
+                name: 'status.code',
+                unit: 'NONE',
+                description: 'Status Code'
+            }];
+            this.$log.debug("Adding Resource Url to backend: " + cleanedResourceId);
+            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, resource);
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, metricResponseTime);
+            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, metricStatusCode);
             this.$location.url("/metrics/metricsView");
         };
         AddUrlController.$inject = ['$location', '$scope', '$log', 'HawkularInventory'];
@@ -83,27 +99,19 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
-        $scope.overview = "Over View";
-    }]);
-})(HawkularMetrics || (HawkularMetrics = {}));
-
-var HawkularMetrics;
-(function (HawkularMetrics) {
     var MetricsViewController = (function () {
-        function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, startTimeStamp, endTimeStamp, dateRange) {
+        function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, HawkularInventory, startTimeStamp, endTimeStamp, dateRange) {
             var _this = this;
             this.$scope = $scope;
             this.$rootScope = $rootScope;
             this.$interval = $interval;
             this.$log = $log;
             this.HawkularMetric = HawkularMetric;
+            this.HawkularInventory = HawkularInventory;
             this.startTimeStamp = startTimeStamp;
             this.endTimeStamp = endTimeStamp;
             this.dateRange = dateRange;
             this.searchId = '';
-            this.showAvgLine = true;
-            this.hideHighLowValues = false;
             this.showPreviousRangeDataOverlay = false;
             this.showContextZoom = true;
             this.tenantId = 'test';
@@ -158,6 +166,8 @@ var HawkularMetrics;
             return nextTimeRange[1].getTime() < new Date().getTime();
         };
         MetricsViewController.prototype.refreshChartDataNow = function (startTime) {
+            var metricList = this.HawkularInventory.Resource.query({ tenantId: this.tenantId });
+            console.dir(metricList);
             var adjStartTimeStamp = moment().subtract('hours', 72).toDate();
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
@@ -295,11 +305,18 @@ var HawkularMetrics;
                 };
             });
         };
-        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric'];
+        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
         return MetricsViewController;
     })();
     HawkularMetrics.MetricsViewController = MetricsViewController;
     HawkularMetrics._module.controller('MetricsViewController', MetricsViewController);
+})(HawkularMetrics || (HawkularMetrics = {}));
+
+var HawkularMetrics;
+(function (HawkularMetrics) {
+    HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
+        $scope.overview = "Over View";
+    }]);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 var HawkularMetrics;

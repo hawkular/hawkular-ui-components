@@ -24,7 +24,6 @@ module HawkularMetrics {
         tenantId = 'test';
         httpUriPart = 'http://';
 
-
         constructor(private $location:ng.ILocationService,
                     private $scope:any,
                     private $log:ng.ILogService,
@@ -37,9 +36,27 @@ module HawkularMetrics {
 
         addUrl(resourceId:string):void {
             var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
-            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
+            var resource = {
+                type: 'URL',
+                id: 'hawkular_web',
+                parameters: {
+                    url:resourceId
+                }
+            };
+            var metricResponseTime = [{
+                name: 'status.time',
+                unit: 'ms',
+                description: 'Response Time in ms.'
+            }];
+            var metricStatusCode = [{
+                name: 'status.code',
+                unit: 'NONE',
+                description: 'Status Code'
+            }];
+            this.$log.debug("Adding Resource Url to backend: " + cleanedResourceId);
+
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, cleanedResourceId);
+            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, resource);
 
 
             /// Add our fixed metrics
@@ -47,11 +64,8 @@ module HawkularMetrics {
             /// For right now we will just Register a couple of metrics automatically
             /// Later, this will become the metrics selection screen and the user can
             /// select metrics for the resource url
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.time');
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, 'status.code');
-
-
-            this.$log.debug("Current url: " + this.$location.url());
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metricResponseTime);
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metricStatusCode);
 
             /// Hop on over to the metricsView page for charting
             this.$location.url("/metrics/metricsView");

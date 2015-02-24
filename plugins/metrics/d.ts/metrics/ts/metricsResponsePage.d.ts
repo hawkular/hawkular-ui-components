@@ -17,8 +17,6 @@ declare module HawkularMetrics {
         startTimeStamp: Date;
         endTimeStamp: Date;
         dateRange: string;
-        showAvgLine: boolean;
-        hideHighLowValues: boolean;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
         showPreviousTimeRange(): void;
@@ -38,17 +36,16 @@ declare module HawkularMetrics {
         private $interval;
         private $log;
         private HawkularMetric;
+        private HawkularInventory;
         startTimeStamp: Date;
         endTimeStamp: Date;
         dateRange: string;
         static $inject: string[];
         searchId: string;
-        showAvgLine: boolean;
-        hideHighLowValues: boolean;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
         private tenantId;
-        constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, HawkularMetric: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
+        constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, HawkularMetric: any, HawkularInventory: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
         private bucketedDataPoints;
         private contextDataPoints;
         private chartData;

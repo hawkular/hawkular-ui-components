@@ -52,8 +52,6 @@ module HawkularMetrics {
         startTimeStamp: Date;
         endTimeStamp: Date;
         dateRange: string;
-        showAvgLine: boolean;
-        hideHighLowValues:boolean;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
 
@@ -81,11 +79,9 @@ module HawkularMetrics {
      * @param metricDataService
      */
     export class MetricsViewController implements IMetricsViewController {
-        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric'];
+        public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
 
         searchId = '';
-        showAvgLine = true;
-        hideHighLowValues = false;
         showPreviousRangeDataOverlay = false;
         showContextZoom = true;
         private tenantId = 'test';
@@ -95,6 +91,7 @@ module HawkularMetrics {
                     private $interval:ng.IIntervalService,
                     private $log:ng.ILogService,
                     private HawkularMetric:any,
+                    private HawkularInventory:any,
                     public startTimeStamp:Date,
                     public endTimeStamp:Date,
                     public dateRange:string) {
@@ -114,6 +111,7 @@ module HawkularMetrics {
                 $scope.vm.dateRange = moment(timeRange[0]).from(moment(timeRange[1]));
                 $scope.vm.refreshHistoricalChartDataForTimestamp(startTimeStamp.getTime(), endTimeStamp.getTime());
             });
+
 
         }
 
@@ -183,6 +181,9 @@ module HawkularMetrics {
 
 
         refreshChartDataNow(startTime?:Date):void {
+            var metricList = this.HawkularInventory.Resource.query({tenantId: this.tenantId});
+            console.dir(metricList);
+
             var adjStartTimeStamp:Date = moment().subtract('hours', 72).toDate(); //default time period set to 24 hours
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();

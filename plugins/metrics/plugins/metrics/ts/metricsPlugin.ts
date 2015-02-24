@@ -35,7 +35,7 @@ module HawkularMetrics {
             .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
             .subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
             .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
-            .subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html'))
+            .subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html'))
             .build();
 
         navBuilder.configureRouting($routeProvider, metricsTab);
