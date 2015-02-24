@@ -23,6 +23,7 @@ module.exports = function(gulp, config, pluginName){
     map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path'),
+    del = require('del'),
     s = require('underscore.string'),
     tslint = require('gulp-tslint'),
     tslintRules = require('../tslint.json');
@@ -42,8 +43,7 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('clean-defs', function() {
-    return gulp.src('defs.d.ts', { read: false })
-      .pipe(plugins.clean());
+    del(['.tmp/' + pluginName + 'defs.d.ts']);
   });
 
   //gulp.task('tsc-' + pluginName, ['clean-defs'], function() {
@@ -121,8 +121,7 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('clean-' + pluginName, ['concat-' + pluginName], function() {
-    return gulp.src(['templates.js', 'compiled.js'], { read: false })
-      .pipe(plugins.clean());
+    del(['.tmp/' + pluginName + 'templates.js', '.tmp/' + pluginName + 'compiled.js']);
   });
 
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
