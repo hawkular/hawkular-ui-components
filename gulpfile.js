@@ -16,14 +16,17 @@
  */
 
 var gulp = require('gulp'),
+    del = require('del'),
     wiredep = require('wiredep').stream,
-    gulpLoadPlugins = require('gulp-load-plugins'),
+    plugins = require('gulp-load-plugins')({}),
     fs = require('fs'),
     path = require('path');
 
-var taskCreator = require('./build/gulpfile.js');
-var plugins = gulpLoadPlugins({});
-var pkg = require('./package.json');
+var pkg = require('./package.json'),
+    taskCreator = require('./build/gulpfile.js');
+
+var pluginBuildTasks = [],
+    pluginFolders = getFolders('./plugins');
 
 var config = {
   main: '.',
@@ -45,17 +48,7 @@ var config = {
   }
 };
 
-gulp.task('clean', function() {
-  return gulp.src(['.tmp'], { read: false })
-    .pipe(plugins.clean());
-});
-
-gulp.task('bower', function () {
-  gulp.src('./tmp/gulp-server-connect/index.html')
-    .pipe(wiredep({}))
-    .pipe(gulp.dest('.'));
-});
-
+// Get the contents of ./plugins directory. Directory names must match actual plugin names.
 function getFolders(dir) {
   return fs.readdirSync(dir)
     .filter(function(file) {
@@ -63,13 +56,21 @@ function getFolders(dir) {
     });
 }
 
-var pluginBuildTasks = [];
-var pluginFolders = getFolders('./plugins');
-
+// Create subtasks for each plugin.
 for (var i = 0; i < pluginFolders.length; i++){
   var pluginName = pluginFolders[i];
   taskCreator(gulp, config, pluginName);
   pluginBuildTasks.push('build-' + pluginName);
 }
+
+gulp.task('clean', function() {
+  del(['.tmp/**']);
+});
+
+gulp.task('bower', function () {
+  gulp.src('./tmp/gulp-server-connect/index.html')
+    .pipe(wiredep({}))
+    .pipe(gulp.dest('.'));
+});
 
 gulp.task('default', pluginBuildTasks);
