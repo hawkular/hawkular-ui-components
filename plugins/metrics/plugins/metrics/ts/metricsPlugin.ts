@@ -33,7 +33,7 @@ module HawkularMetrics {
             .title(() => "Metrics")
             .href(() => "/metrics")
             .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-            .subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
+            //.subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
             .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
             .subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html'))
             .build();

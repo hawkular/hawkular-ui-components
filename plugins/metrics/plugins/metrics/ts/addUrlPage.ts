@@ -43,17 +43,16 @@ module HawkularMetrics {
                     url:resourceId
                 }
             };
-            var metricResponseTime = [{
+            var metrics = [{
                 name: 'status.time',
                 unit: 'MILLI_SECOND',
                 description: 'Response Time in ms.'
-            }];
-            var metricStatusCode = [{
+            }, {
                 name: 'status.code',
                 unit: 'NONE',
                 description: 'Status Code'
             }];
-            this.$log.debug("Adding Resource Url to backend: " + cleanedResourceId);
+            this.$log.info("Adding new Resource Url to backend: " + cleanedResourceId);
 
             /// Add the Resource
             this.HawkularInventory.Resource.save({tenantId: this.tenantId}, resource);
@@ -64,8 +63,7 @@ module HawkularMetrics {
             /// For right now we will just Register a couple of metrics automatically
             /// Later, this will become the metrics selection screen and the user can
             /// select metrics for the resource url
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metricResponseTime);
-            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metricStatusCode);
+            this.HawkularInventory.Metric.save({tenantId: this.tenantId, resourceId: cleanedResourceId}, metrics);
 
             /// Hop on over to the metricsView page for charting
             this.$location.url("/metrics/metricsView");
