@@ -29,6 +29,7 @@
     "hawkular-ui-services": "hawkular/hawkular-ui-services#master",
     "d3": "3.4.8",
     "event-drops": "0.1.1",
+    "toastr": "2.1.0",
     "angular-bootstrap": "0.11.0",
     "angular-ui-select": "0.9.9"
   },
