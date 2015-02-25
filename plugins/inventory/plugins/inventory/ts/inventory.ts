@@ -16,7 +16,7 @@
 /// <reference path="inventoryPlugin.ts"/>
 module Inventory {
 
-  export var InventoryController = _module.controller("Inventory.InventoryController", ['$scope', '$rootScope', 'HawkularInventory', ($scope, $rootScope, hkInventory) => {
+  export var InventoryController = _module.controller("Inventory.InventoryController", ['$scope', '$rootScope', 'HawkularInventory', 'HawkularMetric' ,($scope, $rootScope, hkInventory, hkMetric) => {
 
       $scope.queryResources = function() {
         if(this.tenantId) {
@@ -39,10 +39,9 @@ module Inventory {
         var _resourceId = resourceId || this.resourceId;
         var _metricId = metricId || this.metricId;
         if(_tenantId && _resourceId && _metricId) {
-            $rootScope.metricData = hkInventory.Metric.query({tenantId: _tenantId, resourceId: _resourceId, metricId: _metricId});
-            $rootScope.metricData.tenantId = _tenantId;
-            $rootScope.metricData.resourceId = _resourceId;
-            $rootScope.metricData.metricId = _metricId;
+          hkMetric.NumericMetricData.get({tenantId: _tenantId, numericId: _metricId, buckets: 60}, function (data) {
+            $rootScope.metricData = data;
+          });
         }
       };
 

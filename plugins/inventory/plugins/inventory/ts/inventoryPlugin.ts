@@ -17,7 +17,7 @@
 /// <reference path="inventoryGlobals.ts"/>
 module Inventory {
 
-    export var _module = angular.module(Inventory.pluginName, ['ngResource','hawkular.services']);
+    export var _module = angular.module(Inventory.pluginName, ['ngResource','hawkular.services','hawkularCharts']);
 
     var tab = undefined;
 
