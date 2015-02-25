@@ -14,7 +14,7 @@
                         <div class="form-group has-clear">
                             <div class="search-pf-input-group">
                                 <label for="tenantId" class="sr-only">Tenant</label>
-                                <input id="tenantId" type="search" class="form-control" placeholder="Tenant ID" ng-model="tenantId" ng-enter="queryResources()" autofocus>
+                                <input id="tenantId" type="search" class="form-control" placeholder="Tenant ID" ng-model="tenantId" autofocus>
                                 <button type="button" class="clear" aria-hidden="true" ng-click="tenantId = ''"><span class="pficon pficon-close"></span></button>
                             </div>
                         </div>
@@ -92,12 +92,10 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{metricData.tenantId}} / {{metricData.resourceId}} / {{metricData.metricId}} <span class="pull-right" ng-click="closeChart()"><i class="pficon pficon-close"></i></span></h3>
+                    <h3 class="panel-title">{{metricData.tenantId}} / {{metricData.name}} <span class="pull-right" ng-click="closeChart()"><i class="pficon pficon-close"></i></span></h3>
                 </div>
-                <div class="panel-body">
-                    <div class="text-center">
-                        <i class="fa fa-area-chart" style="font-size: 33em; color: #199DDE;"></i><i class="fa fa-area-chart fa-flip-horizontal" style="font-size: 33em; color: #199DDE;"></i>
-                    </div>
+                <div class="panel-body" style="height: 280px;">
+                  <hawkular-chart data="{{metricData.data}}" chart-type="bar" chart-height="250" chart-width="1000px"></hawkular-chart>
                 </div>
             </div>
         </div>
