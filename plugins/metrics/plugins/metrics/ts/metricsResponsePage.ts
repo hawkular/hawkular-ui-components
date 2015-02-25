@@ -81,7 +81,7 @@ module HawkularMetrics {
     export class MetricsViewController implements IMetricsViewController {
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
 
-        searchId = '';
+        searchId = '100';
         showPreviousRangeDataOverlay = false;
         showContextZoom = true;
 
