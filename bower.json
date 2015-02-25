@@ -26,7 +26,7 @@
     "hawtio-core-navigation": "2.0.17",
     "hawtio-utilities": "2.0.16",
     "hawkular-charts": "~0.1.13",
-    "hawkular-ui-services": "https://github.com/hawkular/hawkular-ui-services.git",
+    "hawkular-ui-services": "hawkular/hawkular-ui-services#master",
     "d3": "3.4.8",
     "event-drops": "0.1.1",
     "angular-bootstrap": "0.11.0",
