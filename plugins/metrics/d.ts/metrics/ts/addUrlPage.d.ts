@@ -7,8 +7,7 @@ declare module HawkularMetrics {
         private HawkularInventory;
         resourceUrl: string;
         static $inject: string[];
-        tenantId: string;
-        httpUriPart: string;
+        private httpUriPart;
         constructor($location: ng.ILocationService, $scope: any, $log: ng.ILogService, HawkularInventory: any, resourceUrl: string);
         addUrl(resourceId: string): void;
     }

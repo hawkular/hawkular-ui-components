@@ -19,6 +19,8 @@ module HawkularMetrics {
 
   export var pluginName = "hawkular-metrics";
 
+  export var tenantId = "rest-test";
+
   export var log:Logging.Logger = Logger.get(pluginName);
 
   export var templatePath = "plugins/metrics/html";

@@ -17,12 +17,11 @@
 
 module HawkularMetrics {
 
+
     export class AddUrlController {
         public static $inject = ['$location', '$scope', '$log', 'HawkularInventory'];
 
-        ///@todo: fixed tenant until we get it from KeyCloak
-        tenantId = 'test';
-        httpUriPart = 'http://';
+        private httpUriPart = 'http://';
 
         constructor(private $location:ng.ILocationService,
                     private $scope:any,
@@ -43,26 +42,29 @@ module HawkularMetrics {
                     url: resourceId
                 }
             };
-            var metrics = [{
-                name: 'status.time',
-                unit: 'MILLI_SECOND',
-                description: 'Response Time in ms.'
-            }, {
-                name: 'status.code',
-                unit: 'NONE',
-                description: 'Status Code'
-            }];
 
-            this.$log.info("Adding new Resource Url to backend: " + cleanedResourceId);
+            this.$log.info("Adding new Resource Url to Hawkular-inventory: " + cleanedResourceId);
 
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: this.tenantId}, resource).$promise
+            this.HawkularInventory.Resource.save({tenantId: tenantId}, resource).$promise
                 .then((newResource) => {
+                    // we now have a resourceId from this call
                     this.$log.info("New Resource ID: " + newResource.id);
+                    var metrics = [{
+                        name: newResource.id + 'status.duration',
+                        unit: 'MILLI_SECOND',
+                        description: 'Response Time in ms.'
+                    }, {
+                        name: newResource.id + 'status.code',
+                        unit: 'NONE',
+                        description: 'Status Code'
+                    }];
+
+
                     /// @todo: this will become the 'Metrics Selection' screen once we get that
                     /// For right now we will just Register a couple of metrics automatically
                     this.HawkularInventory.Metric.save({
-                        tenantId: this.tenantId,
+                        tenantId: tenantId,
                         resourceId: newResource.id
                     }, metrics).$promise.then((newMetrics) => {
                             /// Hop on over to the metricsView page for charting

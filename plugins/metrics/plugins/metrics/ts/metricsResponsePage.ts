@@ -84,7 +84,6 @@ module HawkularMetrics {
         searchId = '';
         showPreviousRangeDataOverlay = false;
         showContextZoom = true;
-        private tenantId = 'test';
 
         constructor(private $scope:any,
                     private $rootScope:ng.IRootScopeService,
@@ -97,9 +96,9 @@ module HawkularMetrics {
                     public dateRange:string) {
             $scope.vm = this;
 
-            this.startTimeStamp = moment().subtract(72, 'hours').toDate();
+            this.startTimeStamp = moment().subtract(24, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(72, 'hours').from(moment());
+            this.dateRange = moment().subtract(24, 'hours').from(moment());
 
             $scope.$watch('vm.searchId', (newValue, oldValue)  => {
                 this.refreshChartDataNow();
@@ -181,7 +180,7 @@ module HawkularMetrics {
 
 
         refreshChartDataNow(startTime?:Date):void {
-            var metricList = this.HawkularInventory.Resource.query({tenantId: this.tenantId});
+            var metricList = this.HawkularInventory.Resource.query({tenantId: tenantId});
             console.dir(metricList);
 
             var adjStartTimeStamp:Date = moment().subtract('hours', 72).toDate(); //default time period set to 24 hours
@@ -212,7 +211,7 @@ module HawkularMetrics {
 
             if (this.searchId !== '') {
 
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
                    .then((response) => {
                         console.dir(response);
                         // we want to isolate the response from the data we are feeding to the chart
@@ -270,7 +269,7 @@ module HawkularMetrics {
             var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
 
             if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets:  60}).$promise
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets:  60}).$promise
                     .then((response) => {
                         // we want to isolate the response from the data we are feeding to the chart
                         var prevTimeRangeBucketedDataPoints = this.formatPreviousBucketedOutput(response);
@@ -337,7 +336,7 @@ module HawkularMetrics {
                 }
 
 
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
+                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
                     .then((response) => {
 
                         this.chartData.contextDataPoints = this.formatContextOutput(response);

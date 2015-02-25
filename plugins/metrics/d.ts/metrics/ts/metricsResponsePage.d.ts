@@ -44,7 +44,6 @@ declare module HawkularMetrics {
         searchId: string;
         showPreviousRangeDataOverlay: boolean;
         showContextZoom: boolean;
-        private tenantId;
         constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, HawkularMetric: any, HawkularInventory: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
         private bucketedDataPoints;
         private contextDataPoints;

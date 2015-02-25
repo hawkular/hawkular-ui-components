@@ -17,6 +17,7 @@
 var HawkularMetrics;
 (function (HawkularMetrics) {
     HawkularMetrics.pluginName = "hawkular-metrics";
+    HawkularMetrics.tenantId = "rest-test";
     HawkularMetrics.log = Logger.get(HawkularMetrics.pluginName);
     HawkularMetrics.templatePath = "plugins/metrics/html";
 })(HawkularMetrics || (HawkularMetrics = {}));
@@ -60,7 +61,6 @@ var HawkularMetrics;
             this.$log = $log;
             this.HawkularInventory = HawkularInventory;
             this.resourceUrl = resourceUrl;
-            this.tenantId = 'test';
             this.httpUriPart = 'http://';
             $scope.vm = this;
             this.resourceUrl = this.httpUriPart;
@@ -75,20 +75,20 @@ var HawkularMetrics;
                     url: resourceId
                 }
             };
-            var metrics = [{
-                name: 'status.time',
-                unit: 'MILLI_SECOND',
-                description: 'Response Time in ms.'
-            }, {
-                name: 'status.code',
-                unit: 'NONE',
-                description: 'Status Code'
-            }];
-            this.$log.info("Adding new Resource Url to backend: " + cleanedResourceId);
-            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, resource).$promise.then(function (newResource) {
+            this.$log.info("Adding new Resource Url to Hawkular-inventory: " + cleanedResourceId);
+            this.HawkularInventory.Resource.save({ tenantId: HawkularMetrics.tenantId }, resource).$promise.then(function (newResource) {
                 _this.$log.info("New Resource ID: " + newResource.id);
+                var metrics = [{
+                    name: newResource.id + 'status.duration',
+                    unit: 'MILLI_SECOND',
+                    description: 'Response Time in ms.'
+                }, {
+                    name: newResource.id + 'status.code',
+                    unit: 'NONE',
+                    description: 'Status Code'
+                }];
                 _this.HawkularInventory.Metric.save({
-                    tenantId: _this.tenantId,
+                    tenantId: HawkularMetrics.tenantId,
                     resourceId: newResource.id
                 }, metrics).$promise.then(function (newMetrics) {
                     _this.$location.url("/metrics/metricsResponse");
@@ -119,13 +119,12 @@ var HawkularMetrics;
             this.searchId = '';
             this.showPreviousRangeDataOverlay = false;
             this.showContextZoom = true;
-            this.tenantId = 'test';
             this.bucketedDataPoints = [];
             this.contextDataPoints = [];
             $scope.vm = this;
-            this.startTimeStamp = moment().subtract(72, 'hours').toDate();
+            this.startTimeStamp = moment().subtract(24, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(72, 'hours').from(moment());
+            this.dateRange = moment().subtract(24, 'hours').from(moment());
             $scope.$watch('vm.searchId', function (newValue, oldValue) {
                 _this.refreshChartDataNow();
             });
@@ -171,7 +170,7 @@ var HawkularMetrics;
             return nextTimeRange[1].getTime() < new Date().getTime();
         };
         MetricsViewController.prototype.refreshChartDataNow = function (startTime) {
-            var metricList = this.HawkularInventory.Resource.query({ tenantId: this.tenantId });
+            var metricList = this.HawkularInventory.Resource.query({ tenantId: HawkularMetrics.tenantId });
             console.dir(metricList);
             var adjStartTimeStamp = moment().subtract('hours', 72).toDate();
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
@@ -190,7 +189,7 @@ var HawkularMetrics;
                 startTime = this.startTimeStamp.getTime();
             }
             if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     console.dir(response);
                     _this.bucketedDataPoints = _this.formatBucketedChartOutput(response);
                     console.dir(_this.bucketedDataPoints);
@@ -237,7 +236,7 @@ var HawkularMetrics;
             var _this = this;
             var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
             if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets: 60 }).$promise.then(function (response) {
                     var prevTimeRangeBucketedDataPoints = _this.formatPreviousBucketedOutput(response);
                     if (angular.isDefined(prevTimeRangeBucketedDataPoints) && prevTimeRangeBucketedDataPoints.length !== 0) {
                         _this.chartData = {
@@ -290,7 +289,7 @@ var HawkularMetrics;
                     this.$log.warn('Start Date was >= End Date');
                     return;
                 }
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     _this.chartData.contextDataPoints = _this.formatContextOutput(response);
                     if (angular.isUndefined(_this.chartData.contextDataPoints) || _this.chartData.contextDataPoints.length === 0) {
                         _this.noDataFoundForId(_this.searchId);
