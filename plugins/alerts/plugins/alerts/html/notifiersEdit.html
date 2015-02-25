@@ -1,0 +1,42 @@
+<h1>{{ notifier.notifierId }}</h1>
+<div class="col-md-12">
+  <form class="form-horizontal" name="editNotifierForm" ng-submit="nc.saveNotifier()">
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="notifierId">
+        Notifier Id
+      </label>
+      <div class="col-md-6">
+        <input type="text" id="notifierId" ng-model="notifier.notifierId" class="form-control" ng-minlength="1" disabled>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="notifierType">
+        Notifier Type
+      </label>
+      <div class="col-md-6">
+        <select ng-model="notifier.notifierType" id="notifierType">
+          <option ng-repeat="notifierType in notifierTypes" ng-selected="notifier.notifierType == notifierType"> {{ notifierType }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="notifierDescription">
+        Description
+      </label>
+      <div class="col-md-6">
+        <input type="text" id="notifierDescription" ng-model="notifier.description" class="form-control" ng-minlength="1" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-md-offset-2 col-md-6">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" ng-click="nc.allNotifiers()" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-md-offset-2 col-md-6">
+        <alert ng-repeat="alertMsg in msgs" type="{{alertMsg.type}}" close="nc.closeAlertMsg($index)">{{alertMsg.msg}}</alert>
+      </div>
+    </div>
+  </form>
+</div>
