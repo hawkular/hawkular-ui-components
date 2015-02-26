@@ -51,11 +51,11 @@ module HawkularMetrics {
                     // we now have a resourceId from this call
                     this.$log.info("New Resource ID: " + newResource.id);
                     var metrics = [{
-                        name: newResource.id + 'status.duration',
+                        name: newResource.id + '.status.duration',
                         unit: 'MILLI_SECOND',
                         description: 'Response Time in ms.'
                     }, {
-                        name: newResource.id + 'status.code',
+                        name: newResource.id + '.status.code',
                         unit: 'NONE',
                         description: 'Status Code'
                     }];
