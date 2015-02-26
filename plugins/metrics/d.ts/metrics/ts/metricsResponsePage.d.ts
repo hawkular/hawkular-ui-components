@@ -12,25 +12,11 @@ declare module HawkularMetrics {
         min: number;
         max: number;
     }
-    interface IMetricsViewController {
-        searchId: string;
-        startTimeStamp: Date;
-        endTimeStamp: Date;
-        dateRange: string;
-        showPreviousRangeDataOverlay: boolean;
-        showContextZoom: boolean;
-        showPreviousTimeRange(): void;
-        showNextTimeRange(): void;
-        hasNext(): boolean;
-        refreshChartDataNow(startTime: Date): void;
-        refreshHistoricalChartData(startDate: Date, endDate: Date): void;
-        refreshHistoricalChartDataForTimestamp(startTime?: number, endTime?: number): void;
-        overlayPreviousRangeData(): void;
-        togglePreviousRangeDataOverlay(): void;
-        toggleContextZoom(): void;
-        refreshContextChart(): void;
+    interface IDateTimeRangeDropDown {
+        range: string;
+        rangeInSeconds: number;
     }
-    class MetricsViewController implements IMetricsViewController {
+    class MetricsViewController {
         private $scope;
         private $rootScope;
         private $interval;
@@ -41,28 +27,30 @@ declare module HawkularMetrics {
         endTimeStamp: Date;
         dateRange: string;
         static $inject: string[];
-        searchId: string;
-        showPreviousRangeDataOverlay: boolean;
-        showContextZoom: boolean;
         constructor($scope: any, $rootScope: ng.IRootScopeService, $interval: ng.IIntervalService, $log: ng.ILogService, HawkularMetric: any, HawkularInventory: any, startTimeStamp: Date, endTimeStamp: Date, dateRange: string);
         private bucketedDataPoints;
         private contextDataPoints;
         private chartData;
+        private isResponseTab;
+        private autoRefreshPromise;
+        currentUrl: any;
+        dateTimeRanges: IDateTimeRangeDropDown[];
+        private onCreate();
+        setupResourceList(): void;
+        cancelAutoRefresh(): void;
+        autoRefresh(intervalInSeconds: number): void;
         private noDataFoundForId(id);
         private static calculatePreviousTimeRange(startDate, endDate);
         showPreviousTimeRange(): void;
         private static calculateNextTimeRange(startDate, endDate);
         showNextTimeRange(): void;
         hasNext(): boolean;
-        refreshChartDataNow(startTime?: Date): void;
-        refreshHistoricalChartData(startDate: Date, endDate: Date): void;
-        refreshHistoricalChartDataForTimestamp(startTime?: number, endTime?: number): void;
+        refreshChartDataNow(metricId: string, startTime?: Date): void;
+        refreshHistoricalChartData(metricId: string, startDate: Date, endDate: Date): void;
+        getMetricId(): string;
+        private getResourceDurationMetricId();
+        private getResourceCodeMetricId();
+        refreshHistoricalChartDataForTimestamp(metricId: string, startTime?: number, endTime?: number): void;
         private formatBucketedChartOutput(response);
-        togglePreviousRangeDataOverlay(): void;
-        overlayPreviousRangeData(): void;
-        private formatPreviousBucketedOutput(response);
-        toggleContextZoom(): void;
-        refreshContextChart(): void;
-        private formatContextOutput(response);
     }
 }

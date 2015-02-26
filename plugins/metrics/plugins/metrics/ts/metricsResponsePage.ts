@@ -31,42 +31,10 @@ module HawkularMetrics {
         max: number;
     }
 
-///    export interface IChartParams {
-///        searchId: string;
-///        startTimeStamp: Date;
-///        endTimeStamp: Date;
-///        dateRange: string;
-///        updateEndTimeStampToNow: boolean;
-///        collapseTable: boolean;
-///        showAvgLine: boolean;
-///        hideHighLowValues:boolean;
-///        showPreviousRangeDataOverlay: boolean;
-///        showContextZoom: boolean;
-///        showAutoRefreshCancel:boolean;
-///        chartType: string;
-///        chartTypes: string[];
-///
-///    }
-    export interface IMetricsViewController {
-        searchId: string;
-        startTimeStamp: Date;
-        endTimeStamp: Date;
-        dateRange: string;
-        showPreviousRangeDataOverlay: boolean;
-        showContextZoom: boolean;
-
-        showPreviousTimeRange():void;
-        showNextTimeRange():void;
-        hasNext():boolean;
-        refreshChartDataNow(startTime:Date):void;
-        refreshHistoricalChartData(startDate:Date, endDate:Date):void;
-        refreshHistoricalChartDataForTimestamp(startTime?:number, endTime?:number):void;
-        overlayPreviousRangeData():void;
-        togglePreviousRangeDataOverlay():void;
-        toggleContextZoom():void ;
-        refreshContextChart():void;
+    export interface IDateTimeRangeDropDown {
+        range: string;
+        rangeInSeconds:number;
     }
-
 
     /**
      * @ngdoc controller
@@ -78,12 +46,8 @@ module HawkularMetrics {
      * @param $log
      * @param metricDataService
      */
-    export class MetricsViewController implements IMetricsViewController {
+    export class MetricsViewController {
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
-
-        searchId = '100';
-        showPreviousRangeDataOverlay = false;
-        showContextZoom = true;
 
         constructor(private $scope:any,
                     private $rootScope:ng.IRootScopeService,
@@ -96,39 +60,74 @@ module HawkularMetrics {
                     public dateRange:string) {
             $scope.vm = this;
 
-            this.startTimeStamp = moment().subtract(24, 'hours').toDate();
+            this.startTimeStamp = moment().subtract(1, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(24, 'hours').from(moment());
+            this.dateRange = moment().subtract(1, 'hours').from(moment());
 
-            $scope.$watch('vm.searchId', (newValue, oldValue)  => {
-                this.refreshChartDataNow();
+            $scope.$on('RefreshChart', (event) => {
+                $scope.vm.refreshChartDataNow(this.getMetricId());
             });
 
-            $scope.$on('GraphTimeRangeChangedEvent', (event, timeRange) => {
-                $scope.vm.startTimeStamp = timeRange[0];
-                $scope.vm.endTimeStamp = timeRange[1];
-                $scope.vm.dateRange = moment(timeRange[0]).from(moment(timeRange[1]));
-                $scope.vm.refreshHistoricalChartDataForTimestamp(startTimeStamp.getTime(), endTimeStamp.getTime());
-            });
+            $scope.vm.onCreate();
 
+            this.currentUrl = globalResourceUrl;
 
         }
 
         private bucketedDataPoints:IChartDataPoint[] = [];
         private contextDataPoints:IChartDataPoint[] = [];
         private chartData:any;
+        private isResponseTab = true;
+        private autoRefreshPromise:ng.IPromise<number>;
 
+        /// expose this to the View
+        currentUrl;
 
-        ///@todo: refactor out vars to I/F object
-        ///chartInputParams:IChartInputParams ;
+        /// @todo: pull this out to its own directive
+        dateTimeRanges:IDateTimeRangeDropDown[] = [
+            { 'range': '1h', 'rangeInSeconds': 60 * 60 } ,
+            { 'range': '12h', 'rangeInSeconds': 12 * 60 * 60 },
+            { 'range': 'Day', 'rangeInSeconds': 24 * 60 * 60 },
+            { 'range': 'Week', 'rangeInSeconds': 7 * 24 * 60 * 60 },
+            { 'range': 'Month', 'rangeInSeconds': 30 * 24 * 60 * 60 },
+            { 'range': 'Year', 'rangeInSeconds': 12 * 30 * 24 * 60 * 60 }
+        ];
 
-///       $rootScope.$on('DateRangeMove', (event, message) =>  {
-///            $log.debug('DateRangeMove on chart Detected.');
-///        });
+        private onCreate(){
+            this.$log.debug("executing MetricsViewController.onCreate");
+
+            /// setup autorefresh for every minute
+            this.autoRefresh(60);
+            this.refreshChartDataNow(this.getMetricId());
+            this.setupResourceList();
+            console.debug("GlobalResourceList: ");
+            console.dir(globalResourceList);
+        }
+
+        setupResourceList(){
+            globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
+        }
+
+        cancelAutoRefresh():void {
+            this.$interval.cancel(this.autoRefreshPromise);
+            toastr.info('Canceling Auto Refresh');
+        }
+
+        autoRefresh(intervalInSeconds:number):void {
+            this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
+            this.autoRefreshPromise = this.$interval(()  => {
+                this.endTimeStamp = new Date();
+                this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
+            }, intervalInSeconds * 1000);
+
+            this.$scope.$on('$destroy', () => {
+                this.$interval.cancel(this.autoRefreshPromise);
+            });
+        }
 
         private noDataFoundForId(id:string):void {
             this.$log.warn('No Data found for id: ' + id);
-            toastr.warning('No Data found for id: ' + id);
+            ///toastr.warning('No Data found for id: ' + id);
         }
 
         private static calculatePreviousTimeRange(startDate:Date, endDate:Date):any {
@@ -145,7 +144,7 @@ module HawkularMetrics {
 
             this.startTimeStamp = previousTimeRange[0];
             this.endTimeStamp = previousTimeRange[1];
-            this.refreshHistoricalChartData(this.startTimeStamp, this.endTimeStamp);
+            this.refreshHistoricalChartData(this.getMetricId(), this.startTimeStamp, this.endTimeStamp);
 
         }
 
@@ -165,7 +164,7 @@ module HawkularMetrics {
 
             this.startTimeStamp = nextTimeRange[0];
             this.endTimeStamp = nextTimeRange[1];
-            this.refreshHistoricalChartData(this.startTimeStamp, this.endTimeStamp);
+            this.refreshHistoricalChartData(this.getMetricId(), this.startTimeStamp, this.endTimeStamp);
 
         }
 
@@ -179,22 +178,33 @@ module HawkularMetrics {
         }
 
 
-        refreshChartDataNow(startTime?:Date):void {
-            var metricList = this.HawkularInventory.Resource.query({tenantId: tenantId});
+        refreshChartDataNow(metricId:string, startTime?:Date):void {
+            var metricList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
             console.dir(metricList);
 
-            var adjStartTimeStamp:Date = moment().subtract('hours', 72).toDate(); //default time period set to 24 hours
-            this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
+            var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
+            //this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
-            this.refreshHistoricalChartData(angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
+            this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
         }
 
-        refreshHistoricalChartData(startDate:Date, endDate:Date):void {
-            this.refreshHistoricalChartDataForTimestamp(startDate.getTime(), endDate.getTime());
+        refreshHistoricalChartData(metricId:string, startDate:Date, endDate:Date):void {
+            this.refreshHistoricalChartDataForTimestamp(metricId, startDate.getTime(), endDate.getTime());
         }
 
+        getMetricId() {
+            return this.isResponseTab ? this.getResourceDurationMetricId() : this.getResourceCodeMetricId();
+        }
 
-        refreshHistoricalChartDataForTimestamp(startTime?:number, endTime?:number):void {
+        private getResourceDurationMetricId() {
+            return globalResourceId + '.status.duration';
+        }
+
+        private getResourceCodeMetricId() {
+            return globalResourceId + '.status.code';
+        }
+
+        refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
             // calling refreshChartData without params use the model values
             if (angular.isUndefined(endTime)) {
                 endTime = this.endTimeStamp.getTime();
@@ -203,40 +213,36 @@ module HawkularMetrics {
                 startTime = this.startTimeStamp.getTime();
             }
 
-///
-///       if (startTime >= endTime) {
-///            $log.warn('Start Date was >= End Date');
-///            return;
-///        }
+            this.HawkularMetric.NumericMetricData.queryMetrics({
+                tenantId: globalTenantId,
+                numericId: metricId,
+                start: startTime,
+                end: endTime,
+                buckets: 60
+            }).$promise
+                .then((response) => {
+                    // we want to isolate the response from the data we are feeding to the chart
+                    this.bucketedDataPoints = this.formatBucketedChartOutput(response);
+                    console.dir(this.bucketedDataPoints);
 
-            if (this.searchId !== '') {
+                    if (this.bucketedDataPoints.length !== 0) {
+                        // this is basically the DTO for the chart
+                        this.chartData = {
+                            id: metricId,
+                            startTimeStamp: this.startTimeStamp,
+                            endTimeStamp: this.endTimeStamp,
+                            dataPoints: this.bucketedDataPoints,
+                            contextDataPoints: this.contextDataPoints,
+                            annotationDataPoints: []
+                        };
 
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
-                   .then((response) => {
-                        console.dir(response);
-                        // we want to isolate the response from the data we are feeding to the chart
-                        this.bucketedDataPoints = this.formatBucketedChartOutput(response);
-                        console.dir(this.bucketedDataPoints);
+                    } else {
+                        this.noDataFoundForId(this.getMetricId());
+                    }
 
-                        if (this.bucketedDataPoints.length !== 0) {
-                            // this is basically the DTO for the chart
-                            this.chartData = {
-                                id: this.searchId,
-                                startTimeStamp: this.startTimeStamp,
-                                endTimeStamp: this.endTimeStamp,
-                                dataPoints: this.bucketedDataPoints,
-                                contextDataPoints: this.contextDataPoints,
-                                annotationDataPoints: []
-                            };
-
-                        } else {
-                            this.noDataFoundForId(this.searchId);
-                        }
-
-                    }, (error) => {
-                        toastr.error('Error Loading Chart Data: ' + error);
-                    });
-            }
+                }, (error) => {
+                    toastr.error('Error Loading Chart Data: ' + error);
+                });
 
         }
 
@@ -255,113 +261,6 @@ module HawkularMetrics {
             });
         }
 
-
-        togglePreviousRangeDataOverlay():void {
-            if (this.showPreviousRangeDataOverlay) {
-                this.chartData.prevDataPoints = [];
-            } else {
-                this.overlayPreviousRangeData();
-            }
-        }
-
-
-        overlayPreviousRangeData():void {
-            var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
-
-            if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets:  60}).$promise
-                    .then((response) => {
-                        // we want to isolate the response from the data we are feeding to the chart
-                        var prevTimeRangeBucketedDataPoints = this.formatPreviousBucketedOutput(response);
-
-                        if (angular.isDefined(prevTimeRangeBucketedDataPoints) && prevTimeRangeBucketedDataPoints.length !== 0) {
-
-                            // this is basically the DTO for the chart
-                            this.chartData = {
-                                id: this.searchId,
-                                prevStartTimeStamp: previousTimeRange[0],
-                                prevEndTimeStamp: previousTimeRange[1],
-                                prevDataPoints: prevTimeRangeBucketedDataPoints,
-                                dataPoints: this.bucketedDataPoints,
-                                contextDataPoints: this.contextDataPoints,
-                                annotationDataPoints: []
-                            };
-
-                        } else {
-                            this.noDataFoundForId(this.searchId);
-                        }
-
-                    }, (error) => {
-                        toastr.error('Error loading Prev Range graph data', 'Status: ' + error);
-                    });
-            }
-        }
-
-        private formatPreviousBucketedOutput(response) {
-            //  The schema is different for bucketed output
-            var mappedNew = _.map(response, (point:IChartDataPoint, i:number)  => {
-                return {
-                    timestamp: this.bucketedDataPoints[i].timestamp,
-                    originalTimestamp: point.timestamp,
-                    value: !angular.isNumber(point.value) ? 0 : point.value,
-                    avg: (point.empty) ? 0 : point.avg,
-                    min: !angular.isNumber(point.min) ? 0 : point.min,
-                    max: !angular.isNumber(point.max) ? 0 : point.max,
-                    empty: point.empty
-                };
-            });
-            return mappedNew;
-        }
-
-
-        toggleContextZoom():void {
-            if (this.showContextZoom) {
-                this.chartData.contextDataPoints = [];
-            } else {
-                this.refreshContextChart();
-            }
-        }
-
-        refreshContextChart():void {
-            // unsophisticated default time range to avoid DB checking right now
-            // @fixme: add a real service to determine unbounded range
-            var endTime = moment().valueOf(),
-                startTime = moment().subtract('months', 24).valueOf();
-
-            this.$log.debug('refreshChartContext');
-            if (this.searchId !== '') {
-                if (startTime >= endTime) {
-                    this.$log.warn('Start Date was >= End Date');
-                    return;
-                }
-
-
-                this.HawkularMetric.NumericMetricData.queryMetrics({tenantId: tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets:  60}).$promise
-                    .then((response) => {
-
-                        this.chartData.contextDataPoints = this.formatContextOutput(response);
-
-                        if (angular.isUndefined(this.chartData.contextDataPoints) || this.chartData.contextDataPoints.length === 0) {
-                            this.noDataFoundForId(this.searchId);
-                        }
-
-                    }, (error) => {
-                        toastr.error('Error loading Context graph data', 'Status: ' + error);
-                    });
-            }
-        }
-
-        private formatContextOutput(response) {
-            //  The schema is different for bucketed output
-            return _.map(response, (point:IChartDataPoint) => {
-                return {
-                    timestamp: point.timestamp,
-                    value: !angular.isNumber(point.value) ? 0 : point.value,
-                    avg: (point.empty) ? 0 : point.avg,
-                    empty: point.empty
-                };
-            });
-        }
     }
 
     _module.controller('MetricsViewController', MetricsViewController);

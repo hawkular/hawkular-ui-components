@@ -19,12 +19,14 @@ module HawkularMetrics {
 
 
     export class AddUrlController {
-        public static $inject = ['$location', '$scope', '$log', 'HawkularInventory'];
+        /// this is for minification purposes
+        public static $inject = ['$location', '$scope', '$rootScope', '$log', 'HawkularInventory'];
 
         private httpUriPart = 'http://';
 
         constructor(private $location:ng.ILocationService,
                     private $scope:any,
+                    private $rootScope:ng.IRootScopeService,
                     private $log:ng.ILogService,
                     private HawkularInventory:any,
                     public resourceUrl:string) {
@@ -33,29 +35,31 @@ module HawkularMetrics {
 
         }
 
-        addUrl(resourceId:string):void {
-            var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
+        addUrl(url:string):void {
             var resource = {
                 type: 'URL',
                 id: '',
                 parameters: {
-                    url: resourceId
+                    url: url
                 }
             };
 
-            this.$log.info("Adding new Resource Url to Hawkular-inventory: " + cleanedResourceId);
+            this.$log.info("Adding new Resource Url to Hawkular-inventory: " + url);
 
             /// Add the Resource
-            this.HawkularInventory.Resource.save({tenantId: tenantId}, resource).$promise
+            this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
                 .then((newResource) => {
                     // we now have a resourceId from this call
-                    this.$log.info("New Resource ID: " + newResource.id);
+                    globalResourceId = newResource.id;
+                    globalResourceUrl = resource.parameters.url;
+                    console.dir(newResource);
+                    this.$log.info("New Resource ID: " + globalResourceId + " created for url: " + globalResourceUrl);
                     var metrics = [{
-                        name: newResource.id + '.status.duration',
+                        name: globalResourceId + '.status.duration',
                         unit: 'MILLI_SECOND',
                         description: 'Response Time in ms.'
                     }, {
-                        name: newResource.id + '.status.code',
+                        name: globalResourceId + '.status.code',
                         unit: 'NONE',
                         description: 'Status Code'
                     }];
@@ -64,9 +68,10 @@ module HawkularMetrics {
                     /// @todo: this will become the 'Metrics Selection' screen once we get that
                     /// For right now we will just Register a couple of metrics automatically
                     this.HawkularInventory.Metric.save({
-                        tenantId: tenantId,
+                        tenantId: globalTenantId,
                         resourceId: newResource.id
                     }, metrics).$promise.then((newMetrics) => {
+                            toastr.info("Your data is being collected. Please be patient (should be about another minute).");
                             /// Hop on over to the metricsView page for charting
                             this.$location.url("/metrics/metricsResponse");
                         });

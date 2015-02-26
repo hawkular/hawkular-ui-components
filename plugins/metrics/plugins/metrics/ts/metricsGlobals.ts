@@ -17,13 +17,24 @@
 
 module HawkularMetrics {
 
+  /// some config vars
   export var pluginName = "hawkular-metrics";
-
-  /// @todo: this will go away once we have KeyCloak integration
-  export var tenantId = "test";
 
   export var log:Logging.Logger = Logger.get(pluginName);
 
   export var templatePath = "plugins/metrics/html";
-  
+
+
+  /// These are plugin globals used across several screens (think session vars from server side programming)
+
+  /// @todo: this will go away once we have KeyCloak integration
+  export var globalTenantId = "test";
+
+  export var globalResourceId = "";
+  export var globalResourceUrl = "";
+
+  export var globalResourceList = [];
+
+
+
 }

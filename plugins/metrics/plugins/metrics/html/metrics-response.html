@@ -1,6 +1,4 @@
-<div  ng-controller="MetricsViewController as vm">
-
-
+<div ng-controller="MetricsViewController as vm">
     <!--
     <div class="panel-top clearfix">
         <div class="col-md-3 col-sm-4">
@@ -24,135 +22,41 @@
 
 
     <div class="col-sm-9 col-md-10 content">
-        <h1>Response Time</h1>
-        <p class="update-info pull-right"><i class="fa fa-refresh"></i> Last update 3 minutes ago</p>
-        <ul class="nav nav-tabs nav-tabs-pf">
-            <li class="active"><a href="#">Response Time</a></li>
-            <li><a href="#">Responsiveness</a></li>
-        </ul>
-        <div id="stackedBarChart" style="height:270px">
-            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->
-            <hawkular-chart
-                    data="{{vm.chartData.dataPoints}}"
-                    chart-type="line"
-                    show-avg-line="false"
-                    hide-high-low-values="true"
-                    chart-title="{{'Metrics Id: '+vm.searchId}}"
-                    chart-height="250"></hawkular-chart>
-        </div>
-    </div>
+            <h1>Response Time</h1>
 
-
-    <div class="panel-body">
-        <div class="well">
-            <small style="margin-left: 15px" class="graphDateTimeRangeLabel"></small>
-
-            <form class="form-horizontal" name="chartForm" role="form" novalidate>
-
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Metric ID:</label>
-
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" name="searchId" ng-model="vm.searchId"
-                               ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 700, 'blur': 0 } }"
-                               placeholder="Enter Id..." required ng-minlength="1">
-                        <span class="error-message"
-                              ng-show="chartForm.searchId.$dirty && chartForm.searchId.$error.required"> * Required.</span>
-                        <span class="help-block">Example: 100, apache3.cpu1  </span>
-                    </div>
-                </div>
-
-                <!--<div class="row">-->
-                <!--<div class="col-md-12">-->
-                <!--<relative-time-range-button-bar style="margin-left: 140px;"-->
-                <!--start-time-stamp="vm.startTimestamp"-->
-                <!--end-time-stamp="vm..endTimeStamp">-->
-                <!--</relative-time-range-button-bar>-->
-
-                <!--<input type="text" style="margin-left: 20px;text-align: center;" ng-model="vm.dateRange" readonly disbabled/>-->
-                <!--<p></p>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--<div class="form-group">-->
-                <!--<label class="col-sm-2 control-label">Start</label>-->
-
-                <!--<div class="col-sm-6">-->
-                <!--<div class="dropdown">-->
-                <!--<a class="dropdown-toggle" id="dropdownStart" role="button" data-toggle="dropdown"-->
-                <!--data-target="#" href="#">-->
-                <!--<div class="input-group">-->
-                <!--<input type="text" class="form-control"-->
-                <!--data-ng-model="vm.startTimeStamp">-->
-                <!--<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>-->
-                <!--</div>-->
-                <!--</a>-->
-                <!--<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">-->
-                <!--<datetimepicker data-ng-model="vm.startTimeStamp"-->
-                <!--data-datetimepicker-config="{ dropdownSelector: '#dropdownStart' }"/>-->
-                <!--</ul>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-
-
-                <!--<div class="form-group">-->
-                <!--<label class="col-sm-2 control-label">End</label>-->
-
-                <!--<div class="col-sm-6">-->
-
-                <!--<div class="dropdown">-->
-                <!--<a class="dropdown-toggle" id="dropdownEnd" role="button" data-toggle="dropdown"-->
-                <!--data-target="#" href="#">-->
-                <!--<div class="input-group">-->
-                <!--<input type="text" class="form-control"-->
-                <!--data-ng-model="vm.endTimeStamp">-->
-                <!--<span class="input-group-addon"><i-->
-                <!--class="glyphicon glyphicon-calendar"></i></span>-->
-                <!--</div>-->
-                <!--</a>-->
-                <!--<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">-->
-                <!--<datetimepicker data-ng-model="vm.endTimeStamp"-->
-                <!--data-datetimepicker-config="{ dropdownSelector: '#dropdownEnd' }"/>-->
-                <!--</ul>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" class="btn btn-primary"
-                                ng-disabled="!chartForm.$valid"
-                                ng-click="vm.refreshChartDataNow()">Refresh
-                        </button>
-                    </div>
-                </div>
-        </div>
-        </form>
-    </div>
-
-
-    <div ng-show="vm.chartData.dataPoints.length > 1">
-        <div id="stackedBarChart" style="height:270px">
-            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->
-            <hawkular-chart
-                    data="{{vm.chartData.dataPoints}}"
-                    chart-type="bar"
-                    show-avg-line="{{vm.showAvgLine}}"
-                    hide-high-low-values="{{vm.hideHighLowValues}}"
-                    chart-title="{{'Metrics Id: '+vm.searchId}}"
-                    chart-height="250"></hawkular-chart>
-        </div>
-
-        <div style="margin-top: 30px;">
-            <button class="btn btn-sm" ng-click="vm.showPreviousTimeRange()" style="margin-left:90px;"
-                    ng-show="vm.chartData.dataPoints.length > 2">&lt;&lt; Prev.
-            </button>
-            <button class="btn btn-sm" style="float:right;margin-right: 90px;" ng-click="vm.showNextTimeRange()"
-                    ng-show="vm.chartData.dataPoints.length > 2" ng-disabled="!vm.hasNext();">Next &gt;&gt;</button>
-        </div>
-        <br/>
+            <p class="update-info pull-right"><i class="fa fa-refresh"></i>
+                <a ng-click="vm.refreshChartDataNow(vm.getMetricId())">Last update 1 minutes ago</a>
+            </p>
+            <ul class="nav nav-tabs nav-tabs-pf">
+                <li class="active"><a href="#">Response Time</a></li>
+                <li><a href="#">Responsiveness</a></li>
+            </ul>
+        <div style="width:800px;">
+            <div id="stackedBarChart" style="height:270px">
+                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+                <hawkular-chart
+                        data="{{vm.chartData.dataPoints}}"
+                        chart-type="line"
+                        show-avg-line="false"
+                        hide-high-low-values="true"
+                        chart-title="Metrics for: {{vm.currentUrl}}"
+                        chart-height="250">
+                </hawkular-chart>
+            </div>
+            <!--
+            <div style="margin-top: 30px;">
+                <button class="btn btn-sm" ng-click="vm.showPreviousTimeRange()" style="margin-left:90px;"
+                        ng-show="vm.chartData.dataPoints.length > 2">&lt;&lt; Prev.
+                </button>
+                <button class="btn btn-sm" style="float:right;margin-right: 50px;" ng-click="vm.showNextTimeRange()"
+                        ng-show="vm.chartData.dataPoints.length > 2" ng-disabled="!vm.hasNext();">Next &gt;&gt;</button>
+            </div>
+            <br/>
+            -->
+            </div>
 
     </div>
+
+
 </div>
 </div>
