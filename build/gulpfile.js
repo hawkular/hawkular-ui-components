@@ -125,43 +125,52 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
-    plugins.watch(['libs/**/*.js', 'libs/**/*.css', 'index.html', config.dist + '/' + config.js(pluginName)], function() {
-      gulp.start(['reload' + pluginName, 'connect-prepare-' + pluginName]);
+
+    plugins.watch(['.tmp/gulp-connect-server/index.html', '.tmp/gulp-connect-server/dist/' + config.js(pluginName)], function() {
+      gulp.start(['reload']);
     });
     plugins.watch(['libs/**/*.d.ts', config.ts(pluginName), config.templates(pluginName)], function() {
-      gulp.start(['tslint-watch' + pluginName, 'tsc' + pluginName, 'template' + pluginName, 'concat' + pluginName,
-        'clean' + pluginName, 'connect-prepare-' + pluginName]);
+      gulp.start(['tslint-watch-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
+        'clean-' + pluginName, 'connect-prepare-dist-' + pluginName]);
     });
   });
 
-  gulp.task('connect-prepare-' + pluginName, function() {
-    var indexPath = path.resolve(__dirname, '../plugins/'+pluginName+'/index.html');
+  gulp.task('connect-prepare-libs-' + pluginName, ['tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
+    'clean-' + pluginName], function() {
     var libPath = path.resolve(__dirname, '../libs/**');
-    var distPath = path.resolve(__dirname, '../dist/**');
 
-    gulp.src([indexPath])
-      .pipe(gulp.dest('.tmp/gulp-connect-server'));
-
-    gulp.src([libPath, distPath], { "base" : '.' })
+    gulp.src([libPath], { "base" : '.' })
       .pipe(gulp.dest('.tmp/gulp-connect-server'));
   });
 
-  gulp.task('connect-' + pluginName, ['connect-prepare-' + pluginName, 'watch-' + pluginName], function() {
+  gulp.task('connect-prepare-dist-' + pluginName, ['tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
+    'clean-' + pluginName], function() {
+    var distPath = path.resolve(__dirname, '../dist/**');
+
+    gulp.src([distPath], { "base" : '.' })
+      .pipe(gulp.dest('.tmp/gulp-connect-server'));
+  });
+
+  gulp.task('bower-' + pluginName, function () {
+    var indexPath = path.resolve(__dirname, '../plugins/' + pluginName + '/index.html');
+
+    gulp.src(indexPath)
+      .pipe(wiredep({
+        ignorePath: '../../'
+      }))
+      .pipe(gulp.dest('.tmp/gulp-connect-server/'));
+  });
+
+  gulp.task('connect-' + pluginName, ['connect-prepare-libs-' + pluginName, 'connect-prepare-dist-' + pluginName, 'bower-' + pluginName, 'watch-' + pluginName], function() {
     var staticPath = path.resolve(__dirname, '../.tmp/gulp-connect-server/');
-    console.log(staticPath);
 
     plugins.connect.server({
       root: staticPath,
-      //livereload: true,
-      port: 2772
+      livereload: true,
+      port: 2772,
+      fallback: staticPath + '/index.html'
     });
   });
 
-  gulp.task('reload-' + pluginName, function() {
-    gulp.src('.')
-      .pipe(plugins.connect.reload());
-  });
-
-  console.log('creating ', 'build-' + pluginName);
-  gulp.task('build-' + pluginName, ['bower', 'path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
+  gulp.task('build-' + pluginName, ['path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
 };

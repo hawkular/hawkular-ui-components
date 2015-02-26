@@ -63,14 +63,15 @@ for (var i = 0; i < pluginFolders.length; i++){
   pluginBuildTasks.push('build-' + pluginName);
 }
 
-gulp.task('clean', function() {
-  del(['.tmp/**']);
+gulp.task('reload', function() {
+  var staticPath = path.resolve(__dirname, '.tmp/gulp-connect-server/');
+
+  gulp.src(staticPath)
+    .pipe(plugins.connect.reload());
 });
 
-gulp.task('bower', function () {
-  gulp.src('./tmp/gulp-server-connect/index.html')
-    .pipe(wiredep({}))
-    .pipe(gulp.dest('.'));
+gulp.task('clean', function() {
+  del(['.tmp/**']);
 });
 
 gulp.task('default', pluginBuildTasks);
