@@ -19,6 +19,7 @@ module HawkularMetrics {
 
   export var pluginName = "hawkular-metrics";
 
+  /// @todo: this will go away once we have KeyCloak integration
   export var tenantId = "test";
 
   export var log:Logging.Logger = Logger.get(pluginName);

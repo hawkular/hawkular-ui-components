@@ -17,7 +17,7 @@
 var HawkularMetrics;
 (function (HawkularMetrics) {
     HawkularMetrics.pluginName = "hawkular-metrics";
-    HawkularMetrics.tenantId = "rest-test";
+    HawkularMetrics.tenantId = "test";
     HawkularMetrics.log = Logger.get(HawkularMetrics.pluginName);
     HawkularMetrics.templatePath = "plugins/metrics/html";
 })(HawkularMetrics || (HawkularMetrics = {}));
@@ -79,11 +79,11 @@ var HawkularMetrics;
             this.HawkularInventory.Resource.save({ tenantId: HawkularMetrics.tenantId }, resource).$promise.then(function (newResource) {
                 _this.$log.info("New Resource ID: " + newResource.id);
                 var metrics = [{
-                    name: newResource.id + 'status.duration',
+                    name: newResource.id + '.status.duration',
                     unit: 'MILLI_SECOND',
                     description: 'Response Time in ms.'
                 }, {
-                    name: newResource.id + 'status.code',
+                    name: newResource.id + '.status.code',
                     unit: 'NONE',
                     description: 'Status Code'
                 }];
