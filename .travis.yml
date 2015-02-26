@@ -5,7 +5,7 @@ node_js:
 notifications:
   irc:
     channels:
-#    - chat.freenode.net#hawkular
+    - chat.freenode.net#hawkular
     on_success: change
     
 before_install:
