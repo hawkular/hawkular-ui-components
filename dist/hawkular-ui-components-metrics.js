@@ -17,6 +17,7 @@
 var HawkularMetrics;
 (function (HawkularMetrics) {
     HawkularMetrics.pluginName = "hawkular-metrics";
+    HawkularMetrics.tenantId = "rest-test";
     HawkularMetrics.log = Logger.get(HawkularMetrics.pluginName);
     HawkularMetrics.templatePath = "plugins/metrics/html";
 })(HawkularMetrics || (HawkularMetrics = {}));
@@ -28,7 +29,7 @@ var HawkularMetrics;
     HawkularMetrics._module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($httpProvider, $locationProvider, $routeProvider, navBuilder) {
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
-        metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html')).subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html')).subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html')).subPath("Metrics View", "metricsView", navBuilder.join(HawkularMetrics.templatePath, 'metrics-view.html')).build();
+        metricsTab = navBuilder.create().id(HawkularMetrics.pluginName).title(function () { return "Metrics"; }).href(function () { return "/metrics"; }).subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html')).subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html')).subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html')).build();
         navBuilder.configureRouting($routeProvider, metricsTab);
         $locationProvider.html5Mode(true);
     }]);
@@ -60,19 +61,39 @@ var HawkularMetrics;
             this.$log = $log;
             this.HawkularInventory = HawkularInventory;
             this.resourceUrl = resourceUrl;
-            this.tenantId = 'test';
             this.httpUriPart = 'http://';
             $scope.vm = this;
             this.resourceUrl = this.httpUriPart;
         }
         AddUrlController.prototype.addUrl = function (resourceId) {
+            var _this = this;
             var cleanedResourceId = resourceId.substr(this.httpUriPart.length);
-            this.$log.debug("Adding Url to backend: " + cleanedResourceId);
-            this.HawkularInventory.Resource.save({ tenantId: this.tenantId }, cleanedResourceId);
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.time');
-            this.HawkularInventory.Metric.save({ tenantId: this.tenantId, resourceId: cleanedResourceId }, 'status.code');
-            this.$log.debug("Current url: " + this.$location.url());
-            this.$location.url("/metrics/metricsView");
+            var resource = {
+                type: 'URL',
+                id: '',
+                parameters: {
+                    url: resourceId
+                }
+            };
+            this.$log.info("Adding new Resource Url to Hawkular-inventory: " + cleanedResourceId);
+            this.HawkularInventory.Resource.save({ tenantId: HawkularMetrics.tenantId }, resource).$promise.then(function (newResource) {
+                _this.$log.info("New Resource ID: " + newResource.id);
+                var metrics = [{
+                    name: newResource.id + 'status.duration',
+                    unit: 'MILLI_SECOND',
+                    description: 'Response Time in ms.'
+                }, {
+                    name: newResource.id + 'status.code',
+                    unit: 'NONE',
+                    description: 'Status Code'
+                }];
+                _this.HawkularInventory.Metric.save({
+                    tenantId: HawkularMetrics.tenantId,
+                    resourceId: newResource.id
+                }, metrics).$promise.then(function (newMetrics) {
+                    _this.$location.url("/metrics/metricsResponse");
+                });
+            });
         };
         AddUrlController.$inject = ['$location', '$scope', '$log', 'HawkularInventory'];
         return AddUrlController;
@@ -83,36 +104,27 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
-        $scope.overview = "Over View";
-    }]);
-})(HawkularMetrics || (HawkularMetrics = {}));
-
-var HawkularMetrics;
-(function (HawkularMetrics) {
     var MetricsViewController = (function () {
-        function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, startTimeStamp, endTimeStamp, dateRange) {
+        function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, HawkularInventory, startTimeStamp, endTimeStamp, dateRange) {
             var _this = this;
             this.$scope = $scope;
             this.$rootScope = $rootScope;
             this.$interval = $interval;
             this.$log = $log;
             this.HawkularMetric = HawkularMetric;
+            this.HawkularInventory = HawkularInventory;
             this.startTimeStamp = startTimeStamp;
             this.endTimeStamp = endTimeStamp;
             this.dateRange = dateRange;
             this.searchId = '';
-            this.showAvgLine = true;
-            this.hideHighLowValues = false;
             this.showPreviousRangeDataOverlay = false;
             this.showContextZoom = true;
-            this.tenantId = 'test';
             this.bucketedDataPoints = [];
             this.contextDataPoints = [];
             $scope.vm = this;
-            this.startTimeStamp = moment().subtract(72, 'hours').toDate();
+            this.startTimeStamp = moment().subtract(24, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(72, 'hours').from(moment());
+            this.dateRange = moment().subtract(24, 'hours').from(moment());
             $scope.$watch('vm.searchId', function (newValue, oldValue) {
                 _this.refreshChartDataNow();
             });
@@ -158,6 +170,8 @@ var HawkularMetrics;
             return nextTimeRange[1].getTime() < new Date().getTime();
         };
         MetricsViewController.prototype.refreshChartDataNow = function (startTime) {
+            var metricList = this.HawkularInventory.Resource.query({ tenantId: HawkularMetrics.tenantId });
+            console.dir(metricList);
             var adjStartTimeStamp = moment().subtract('hours', 72).toDate();
             this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
@@ -175,7 +189,7 @@ var HawkularMetrics;
                 startTime = this.startTimeStamp.getTime();
             }
             if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     console.dir(response);
                     _this.bucketedDataPoints = _this.formatBucketedChartOutput(response);
                     console.dir(_this.bucketedDataPoints);
@@ -222,7 +236,7 @@ var HawkularMetrics;
             var _this = this;
             var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
             if (this.searchId !== '') {
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: previousTimeRange[0], end: previousTimeRange[1], buckets: 60 }).$promise.then(function (response) {
                     var prevTimeRangeBucketedDataPoints = _this.formatPreviousBucketedOutput(response);
                     if (angular.isDefined(prevTimeRangeBucketedDataPoints) && prevTimeRangeBucketedDataPoints.length !== 0) {
                         _this.chartData = {
@@ -275,7 +289,7 @@ var HawkularMetrics;
                     this.$log.warn('Start Date was >= End Date');
                     return;
                 }
-                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: this.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
+                this.HawkularMetric.NumericMetricData.queryMetrics({ tenantId: HawkularMetrics.tenantId, numericId: this.searchId, start: startTime, end: endTime, buckets: 60 }).$promise.then(function (response) {
                     _this.chartData.contextDataPoints = _this.formatContextOutput(response);
                     if (angular.isUndefined(_this.chartData.contextDataPoints) || _this.chartData.contextDataPoints.length === 0) {
                         _this.noDataFoundForId(_this.searchId);
@@ -295,11 +309,18 @@ var HawkularMetrics;
                 };
             });
         };
-        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric'];
+        MetricsViewController.$inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
         return MetricsViewController;
     })();
     HawkularMetrics.MetricsViewController = MetricsViewController;
     HawkularMetrics._module.controller('MetricsViewController', MetricsViewController);
+})(HawkularMetrics || (HawkularMetrics = {}));
+
+var HawkularMetrics;
+(function (HawkularMetrics) {
+    HawkularMetrics.MetricsSelectionController = HawkularMetrics._module.controller("HawkularMetrics.MetricsSelectionController", ['$scope', function ($scope) {
+        $scope.overview = "Over View";
+    }]);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 var HawkularMetrics;
@@ -310,6 +331,6 @@ var HawkularMetrics;
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 angular.module("hawkular-ui-components-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/add-url.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AddUrlController\" style=\"margin-left: 10px;\">\n    <h1>Welcome Brian!</h1>\n\n    <h2>Collect metrics from a website that you want to monitor.</h2>\n\n    <form class=\"form-horizontal\" name=\"addUrlForm\" role=\"form\" novalidate>\n        <div class=\"form-group input\">\n            <div class=\"col-lg-6 col-sm-8 col-xs-12 align-center\">\n                <div class=\"input-group\">\n                    <input type=\"url\" class=\"form-control input-lg\" name=\"resourceUrl\" ng-model=\"vm.resourceUrl\"\n                           ng-model-options=\"{ updateOn: \'default blur\'}\"\n                           ng-enter=\"vm.addUrl(vm.resourceUrl)\"\n                           placeholder=\"Enter a website URL (e.g., http://mysite.com/home)\" required >\n                      <span class=\"error-message\"\n                            ng-show=\"addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required\">The URL you entered is not valid. Please enter a valid URL.</span>\n\n              <span class=\"input-group-btn\">\n                <button class=\"btn btn-primary btn-lg\" type=\"button\" ng-disabled=\"!addUrlForm.$valid\"\n                        ng-click=\"vm.addUrl(vm.resourceUrl)\">Get Metrics\n                </button>\n              </span>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n");
-$templateCache.put("plugins/metrics/html/metrics-selection.html","<div class=\"row\" ng-controller=\"HawkularMetrics.MetricsSelectionController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Selection: TBD</h1>\n       TBD\n    </div>\n</div>\n");
-$templateCache.put("plugins/metrics/html/metrics-view.html","<div class=\"panel panel-default\" style=\"width:880px\" ng-controller=\"MetricsViewController as vm\">\n    <div class=\"panel-body\">\n        <div class=\"well\">\n            <small style=\"margin-left: 15px\" class=\"graphDateTimeRangeLabel\"></small>\n\n            <form class=\"form-horizontal\" name=\"chartForm\" role=\"form\" novalidate>\n\n                <div class=\"form-group\">\n                    <label class=\"col-sm-2 control-label\">Metric ID:</label>\n\n                    <div class=\"col-sm-5\">\n                        <input type=\"text\" class=\"form-control\" name=\"searchId\" ng-model=\"vm.searchId\"\n                               ng-model-options=\"{ updateOn: \'default blur\', debounce: { \'default\': 700, \'blur\': 0 } }\"\n                               placeholder=\"Enter Id...\" required ng-minlength=\"1\">\n                        <span class=\"error-message\"\n                              ng-show=\"chartForm.searchId.$dirty && chartForm.searchId.$error.required\"> * Required.</span>\n                        <span class=\"help-block\">Example: 100, apache3.cpu1  </span>\n                    </div>\n                </div>\n\n                <!--<div class=\"row\">-->\n                <!--<div class=\"col-md-12\">-->\n                <!--<relative-time-range-button-bar style=\"margin-left: 140px;\"-->\n                <!--start-time-stamp=\"vm.startTimestamp\"-->\n                <!--end-time-stamp=\"vm..endTimeStamp\">-->\n                <!--</relative-time-range-button-bar>-->\n\n                <!--<input type=\"text\" style=\"margin-left: 20px;text-align: center;\" ng-model=\"vm.dateRange\" readonly disbabled/>-->\n                <!--<p></p>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">Start</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownStart\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.startTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.startTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownStart\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">End</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownEnd\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.endTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i-->\n                <!--class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.endTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownEnd\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2 col-sm-10\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                                ng-disabled=\"!chartForm.$valid\"\n                                ng-click=\"vm.refreshChartDataNow()\">Refresh\n                        </button>\n                    </div>\n                </div>\n        </div>\n        </form>\n    </div>\n\n\n    <div ng-show=\"vm.chartData.dataPoints.length > 1\">\n        <div id=\"stackedBarChart\" style=\"height:270px\">\n            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->\n            <hawkular-chart\n                    data=\"{{vm.chartData.dataPoints}}\"\n                    chart-type=\"bar\"\n                    show-avg-line=\"{{vm.showAvgLine}}\"\n                    hide-high-low-values=\"{{vm.hideHighLowValues}}\"\n                    chart-title=\"{{\'Metrics Id: \'+vm.searchId}}\"\n                    chart-height=\"250\"></hawkular-chart>\n        </div>\n\n        <div style=\"margin-top: 30px;\">\n            <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n            </button>\n            <button class=\"btn btn-sm\" style=\"float:right;margin-right: 90px;\" ng-click=\"vm.showNextTimeRange()\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n        </div>\n        <br/>\n\n    </div>\n</div>\n</div>\n");
+$templateCache.put("plugins/metrics/html/metrics-response.html","<div class=\"panel panel-default\" style=\"width:880px\" ng-controller=\"MetricsViewController as vm\">\n    <div class=\"panel-body\">\n        <div class=\"well\">\n            <small style=\"margin-left: 15px\" class=\"graphDateTimeRangeLabel\"></small>\n\n            <form class=\"form-horizontal\" name=\"chartForm\" role=\"form\" novalidate>\n\n                <div class=\"form-group\">\n                    <label class=\"col-sm-2 control-label\">Metric ID:</label>\n\n                    <div class=\"col-sm-5\">\n                        <input type=\"text\" class=\"form-control\" name=\"searchId\" ng-model=\"vm.searchId\"\n                               ng-model-options=\"{ updateOn: \'default blur\', debounce: { \'default\': 700, \'blur\': 0 } }\"\n                               placeholder=\"Enter Id...\" required ng-minlength=\"1\">\n                        <span class=\"error-message\"\n                              ng-show=\"chartForm.searchId.$dirty && chartForm.searchId.$error.required\"> * Required.</span>\n                        <span class=\"help-block\">Example: 100, apache3.cpu1  </span>\n                    </div>\n                </div>\n\n                <!--<div class=\"row\">-->\n                <!--<div class=\"col-md-12\">-->\n                <!--<relative-time-range-button-bar style=\"margin-left: 140px;\"-->\n                <!--start-time-stamp=\"vm.startTimestamp\"-->\n                <!--end-time-stamp=\"vm..endTimeStamp\">-->\n                <!--</relative-time-range-button-bar>-->\n\n                <!--<input type=\"text\" style=\"margin-left: 20px;text-align: center;\" ng-model=\"vm.dateRange\" readonly disbabled/>-->\n                <!--<p></p>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">Start</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownStart\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.startTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.startTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownStart\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n\n                <!--<div class=\"form-group\">-->\n                <!--<label class=\"col-sm-2 control-label\">End</label>-->\n\n                <!--<div class=\"col-sm-6\">-->\n\n                <!--<div class=\"dropdown\">-->\n                <!--<a class=\"dropdown-toggle\" id=\"dropdownEnd\" role=\"button\" data-toggle=\"dropdown\"-->\n                <!--data-target=\"#\" href=\"#\">-->\n                <!--<div class=\"input-group\">-->\n                <!--<input type=\"text\" class=\"form-control\"-->\n                <!--data-ng-model=\"vm.endTimeStamp\">-->\n                <!--<span class=\"input-group-addon\"><i-->\n                <!--class=\"glyphicon glyphicon-calendar\"></i></span>-->\n                <!--</div>-->\n                <!--</a>-->\n                <!--<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dLabel\">-->\n                <!--<datetimepicker data-ng-model=\"vm.endTimeStamp\"-->\n                <!--data-datetimepicker-config=\"{ dropdownSelector: \'#dropdownEnd\' }\"/>-->\n                <!--</ul>-->\n                <!--</div>-->\n                <!--</div>-->\n                <!--</div>-->\n\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-2 col-sm-10\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                                ng-disabled=\"!chartForm.$valid\"\n                                ng-click=\"vm.refreshChartDataNow()\">Refresh\n                        </button>\n                    </div>\n                </div>\n        </div>\n        </form>\n    </div>\n\n\n    <div ng-show=\"vm.chartData.dataPoints.length > 1\">\n        <div id=\"stackedBarChart\" style=\"height:270px\">\n            <!-- HINT: colors for the chart can be changed in the d3-chart.css -->\n            <hawkular-chart\n                    data=\"{{vm.chartData.dataPoints}}\"\n                    chart-type=\"bar\"\n                    show-avg-line=\"{{vm.showAvgLine}}\"\n                    hide-high-low-values=\"{{vm.hideHighLowValues}}\"\n                    chart-title=\"{{\'Metrics Id: \'+vm.searchId}}\"\n                    chart-height=\"250\"></hawkular-chart>\n        </div>\n\n        <div style=\"margin-top: 30px;\">\n            <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n            </button>\n            <button class=\"btn btn-sm\" style=\"float:right;margin-right: 90px;\" ng-click=\"vm.showNextTimeRange()\"\n                    ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n        </div>\n        <br/>\n\n    </div>\n</div>\n</div>\n");
+$templateCache.put("plugins/metrics/html/metrics-selection.html","<div class=\"row\" ng-controller=\"HawkularMetrics.MetricsSelectionController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Selection: TBD</h1>\n       Screen: TBD\n    </div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/overview.html","<div class=\"row\" ng-controller=\"HawkularMetrics.OverviewController\">\n    <div class=\"col-md-12\">\n        <h1>Overview: TBD</h1>\n       TBD\n    </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-ui-components-templates");
