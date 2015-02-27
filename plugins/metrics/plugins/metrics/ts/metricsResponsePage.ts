@@ -93,7 +93,7 @@ module HawkularMetrics {
             { 'range': 'Year', 'rangeInSeconds': 12 * 30 * 24 * 60 * 60 }
         ];
 
-        private onCreate(){
+        private onCreate() {
             this.$log.debug("executing MetricsViewController.onCreate");
 
             /// setup autorefresh for every minute
@@ -104,7 +104,7 @@ module HawkularMetrics {
             console.dir(globalResourceList);
         }
 
-        setupResourceList(){
+        setupResourceList() {
             globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
         }
 
