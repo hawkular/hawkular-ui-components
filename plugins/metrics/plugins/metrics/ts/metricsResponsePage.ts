@@ -62,7 +62,8 @@ module HawkularMetrics {
 
             this.startTimeStamp = moment().subtract(1, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(1, 'hours').from(moment());
+            this.dateRange =  moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
+                + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
             $scope.$on('RefreshChart', (event) => {
                 $scope.vm.refreshChartDataNow(this.getMetricId());
