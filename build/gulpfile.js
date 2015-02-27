@@ -110,6 +110,13 @@ module.exports = function(gulp, config, pluginName){
       .pipe(gulp.dest('.tmp/' + pluginName + '/'));
   });
 
+  gulp.task('less-' + pluginName, function(){
+    return gulp.src(config.less(pluginName))
+      .pipe(plugins.less())
+      .pipe(plugins.concat(config.css(pluginName)))
+      .pipe(gulp.dest(config.dist));
+  });
+
   gulp.task('concat-' + pluginName, ['template-' + pluginName], function() {
     var license = tslintRules.rules['license-header'][1];
     return gulp.src([
@@ -126,12 +133,15 @@ module.exports = function(gulp, config, pluginName){
 
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
 
-    plugins.watch(['.tmp/gulp-connect-server/index.html', '.tmp/gulp-connect-server/dist/' + config.js(pluginName)], function() {
+    plugins.watch(['.tmp/gulp-connect-server/index.html', '.tmp/gulp-connect-server/dist/**'], function() {
       gulp.start(['reload']);
     });
     plugins.watch(['libs/**/*.d.ts', config.ts(pluginName), config.templates(pluginName)], function() {
       gulp.start(['tslint-watch-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
         'clean-' + pluginName, 'connect-prepare-dist-' + pluginName]);
+    });
+    plugins.watch(config.less(pluginName), function() {
+      gulp.start(['less-' + pluginName, 'connect-prepare-dist-' + pluginName]);
     });
   });
 
@@ -172,5 +182,5 @@ module.exports = function(gulp, config, pluginName){
     });
   });
 
-  gulp.task('build-' + pluginName, ['path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
+  gulp.task('build-' + pluginName, ['path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'less-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
 };

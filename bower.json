@@ -10,6 +10,7 @@
   "main": [
     "dist/hawkular-ui-components-metrics.js",
     "dist/hawkular-ui-components-alerts.js",
+    "dist/hawkular-ui-components-alerts.css",
     "dist/hawkular-ui-components-inventory.js"
   ],
   "ignore": [

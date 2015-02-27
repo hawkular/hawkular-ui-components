@@ -32,9 +32,11 @@ var config = {
   main: '.',
   ts: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.ts'];},
   templates: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.html'];},
+  less: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.less'];},
   templateModule: pkg.name + '-templates',
   dist: './dist/',
   js: function(pluginName){ return pkg.name + '-' + pluginName +'.js'; },
+  css: function(pluginName){ return pkg.name + '-' + pluginName +'.css'; },
   jsMain: pkg.name +'.js',
   tsProject: plugins.typescript.createProject({
     target: 'ES5',
