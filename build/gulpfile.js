@@ -104,8 +104,8 @@ module.exports = function(gulp, config, pluginName){
         filename: 'templates.js',
         root: 'plugins/',
         standalone: true,
-        module: config.templateModule,
-        templateFooter: '}]); hawtioPluginLoader.addModule("' + config.templateModule + '");'
+        module: config.templateModule(pluginName),
+        templateFooter: '}]); hawtioPluginLoader.addModule("' + config.templateModule(pluginName) + '");'
       }))
       .pipe(gulp.dest('.tmp/' + pluginName + '/'));
   });

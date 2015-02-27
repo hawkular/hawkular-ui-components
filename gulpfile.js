@@ -33,7 +33,7 @@ var config = {
   ts: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.ts'];},
   templates: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.html'];},
   less: function (pluginName){ return ['./plugins/' + pluginName + '/plugins/**/*.less'];},
-  templateModule: pkg.name + '-templates',
+  templateModule: function(pluginName){ return pkg.name + '-' + pluginName +'-templates'; },
   dist: './dist/',
   js: function(pluginName){ return pkg.name + '-' + pluginName +'.js'; },
   css: function(pluginName){ return pkg.name + '-' + pluginName +'.css'; },
