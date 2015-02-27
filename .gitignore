@@ -11,6 +11,7 @@ pids
 .lock-wscript
 
 .tmp/
+.bower/
 libs/
 node_modules/
 
