@@ -31,37 +31,22 @@ Assuming http://nodejs.org/[node.js/npm] is already installed:
 
 ....
 sudo npm install -g bower gulp typescript
-cd into the appropriate plugin directory `cd plugins/metrics`
 npm install
 bower install 
 gulp
-In web browser: Navigate to http://localhost:2772/
+....
+
+If you want to build a single component use the suffix -[name_of_the_component] (names are based on the names of
+directories in the plugins directory) to the build task, like:
+
+....
+gulp build-metrics
+....
+
+To test your component in browser, use the respective connect task, i.e.:
+
+....
+gulp connect-metrics
 ....
 
 For further detail the Hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
-
-== Publish Builds
-
-The publish builds process make content available to the consumer of the bower package (muliple consumers can be using this package).
-
-cd into the appropriate plugin directory `cd plugins/metrics`
-
-`gulp build`
-
-This will build the assets into the _hawkular-ui-components/dist_ directory. The artefacts are now ready for publishing via bower.
-
-_Note: if you are adding new assets make sure they get added to the *main* section of the ../bower.json file._
-
-And from root of this git repo:
-
- git ci -m "Checkin new artefacts" 
- bower version [patch|release]
-
-which bumps the version and tags it.
-
- git push && git push --tags
-
-This pushes and publishes the _hawkular-ui-components_ bower component so it can be used in the Hawkular UI hawkular-console or any other Hawt.io 2 console.
-
-
-

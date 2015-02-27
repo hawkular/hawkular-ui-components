@@ -10,6 +10,8 @@ pids
 # Users Environment Variables
 .lock-wscript
 
+.tmp/
+.bower/
 libs/
 node_modules/
 
