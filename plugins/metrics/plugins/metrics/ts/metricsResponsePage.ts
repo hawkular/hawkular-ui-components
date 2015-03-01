@@ -31,10 +31,6 @@ module HawkularMetrics {
         max: number;
     }
 
-    export interface IDateTimeRangeDropDown {
-        range: string;
-        rangeInSeconds:number;
-    }
 
     /**
      * @ngdoc controller
@@ -47,6 +43,7 @@ module HawkularMetrics {
      * @param metricDataService
      */
     export class MetricsViewController {
+        /// for minification only
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
 
         constructor(private $scope:any,
@@ -62,10 +59,17 @@ module HawkularMetrics {
 
             this.startTimeStamp = moment().subtract(1, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange =  moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
-                + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
+            this.dateRange = moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
+            + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
             $scope.$on('RefreshChart', (event) => {
+                $scope.vm.refreshChartDataNow(this.getMetricId());
+            });
+
+            $scope.$watch('vm.selectedResource', (resource) => {
+                console.debug("*** Selected Resource url:" + resource.parameters.url);
+                globalResourceId = resource.id;
+                this.selectedResource = resource;
                 $scope.vm.refreshChartDataNow(this.getMetricId());
             });
 
@@ -83,26 +87,19 @@ module HawkularMetrics {
 
         /// expose this to the View
         currentUrl;
+        resourceList = [];
+        selectedResource;
 
-        /// @todo: pull this out to its own directive
-        dateTimeRanges:IDateTimeRangeDropDown[] = [
-            { 'range': '1h', 'rangeInSeconds': 60 * 60 } ,
-            { 'range': '12h', 'rangeInSeconds': 12 * 60 * 60 },
-            { 'range': 'Day', 'rangeInSeconds': 24 * 60 * 60 },
-            { 'range': 'Week', 'rangeInSeconds': 7 * 24 * 60 * 60 },
-            { 'range': 'Month', 'rangeInSeconds': 30 * 24 * 60 * 60 },
-            { 'range': 'Year', 'rangeInSeconds': 12 * 30 * 24 * 60 * 60 }
-        ];
 
         private onCreate() {
-            this.$log.debug("executing MetricsViewController.onCreate");
-
             /// setup autorefresh for every minute
             this.autoRefresh(60);
             this.refreshChartDataNow(this.getMetricId());
             this.setupResourceList();
-            console.debug("GlobalResourceList: ");
-            console.dir(globalResourceList);
+            this.resourceList = globalResourceList;
+            this.selectedResource = this.resourceList[this.resourceList.length];
+            //console.debug("GlobalResourceList: ");
+            //console.dir(globalResourceList);
         }
 
         setupResourceList() {
