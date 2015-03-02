@@ -67,15 +67,24 @@ module HawkularMetrics {
             });
 
             $scope.$watch('vm.selectedResource', (resource) => {
-                console.debug("*** Selected Resource url:" + resource.parameters.url);
-                globalResourceId = resource.id;
-                this.selectedResource = resource;
-                $scope.vm.refreshChartDataNow(this.getMetricId());
+                if (angular.isUndefined(resource)) {
+                    /// case when coming from addUrl screen
+                    globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
+                        then((resources)=> {
+                        this.resourceList = resources;
+                        this.selectedResource = resources[resources.length - 1];
+                        $scope.vm.refreshChartDataNow(this.getMetricId());
+                    });
+
+                } else {
+                    /// made a selection from url switcher
+                    globalResourceId = resource.id;
+                    $scope.vm.refreshChartDataNow(this.getMetricId());
+                }
+
             });
 
             $scope.vm.onCreate();
-
-            this.currentUrl = globalResourceUrl;
 
         }
 
@@ -86,7 +95,6 @@ module HawkularMetrics {
         private autoRefreshPromise:ng.IPromise<number>;
 
         /// expose this to the View
-        currentUrl;
         resourceList = [];
         selectedResource;
 
@@ -94,16 +102,15 @@ module HawkularMetrics {
         private onCreate() {
             /// setup autorefresh for every minute
             this.autoRefresh(60);
-            this.refreshChartDataNow(this.getMetricId());
             this.setupResourceList();
             this.resourceList = globalResourceList;
-            this.selectedResource = this.resourceList[this.resourceList.length];
-            //console.debug("GlobalResourceList: ");
-            //console.dir(globalResourceList);
+            this.selectedResource = this.resourceList[this.resourceList.length - 1];
+            this.refreshChartDataNow(this.getMetricId());
         }
 
         setupResourceList() {
             globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
+            this.resourceList = globalResourceList;
         }
 
         cancelAutoRefresh():void {
@@ -177,9 +184,6 @@ module HawkularMetrics {
 
 
         refreshChartDataNow(metricId:string, startTime?:Date):void {
-            var metricList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
-            console.dir(metricList);
-
             var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
             //this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();

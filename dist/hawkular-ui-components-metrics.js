@@ -158,25 +158,30 @@ var HawkularMetrics;
                 $scope.vm.refreshChartDataNow(_this.getMetricId());
             });
             $scope.$watch('vm.selectedResource', function (resource) {
-                console.debug("*** Selected Resource url:" + resource.parameters.url);
-                HawkularMetrics.globalResourceId = resource.id;
-                _this.selectedResource = resource;
-                $scope.vm.refreshChartDataNow(_this.getMetricId());
+                if (angular.isUndefined(resource)) {
+                    HawkularMetrics.globalResourceList = _this.HawkularInventory.Resource.query({ tenantId: HawkularMetrics.globalTenantId }).$promise.then(function (resources) {
+                        _this.resourceList = resources;
+                        _this.selectedResource = resources[resources.length - 1];
+                        $scope.vm.refreshChartDataNow(_this.getMetricId());
+                    });
+                }
+                else {
+                    HawkularMetrics.globalResourceId = resource.id;
+                    $scope.vm.refreshChartDataNow(_this.getMetricId());
+                }
             });
             $scope.vm.onCreate();
-            this.currentUrl = HawkularMetrics.globalResourceUrl;
         }
         MetricsViewController.prototype.onCreate = function () {
             this.autoRefresh(60);
-            this.refreshChartDataNow(this.getMetricId());
             this.setupResourceList();
             this.resourceList = HawkularMetrics.globalResourceList;
-            this.selectedResource = this.resourceList[this.resourceList.length];
-            console.debug("GlobalResourceList: ");
-            console.dir(HawkularMetrics.globalResourceList);
+            this.selectedResource = this.resourceList[this.resourceList.length - 1];
+            this.refreshChartDataNow(this.getMetricId());
         };
         MetricsViewController.prototype.setupResourceList = function () {
             HawkularMetrics.globalResourceList = this.HawkularInventory.Resource.query({ tenantId: HawkularMetrics.globalTenantId });
+            this.resourceList = HawkularMetrics.globalResourceList;
         };
         MetricsViewController.prototype.cancelAutoRefresh = function () {
             this.$interval.cancel(this.autoRefreshPromise);
@@ -227,8 +232,6 @@ var HawkularMetrics;
             return nextTimeRange[1].getTime() < new Date().getTime();
         };
         MetricsViewController.prototype.refreshChartDataNow = function (metricId, startTime) {
-            var metricList = this.HawkularInventory.Resource.query({ tenantId: HawkularMetrics.globalTenantId });
-            console.dir(metricList);
             var adjStartTimeStamp = moment().subtract('hours', 1).toDate();
             this.endTimeStamp = new Date();
             this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
@@ -299,13 +302,6 @@ var HawkularMetrics;
     HawkularMetrics._module.controller('MetricsViewController', MetricsViewController);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
-var HawkularMetrics;
-(function (HawkularMetrics) {
-    HawkularMetrics.OverviewController = HawkularMetrics._module.controller("HawkularMetrics.OverviewController", ['$scope', function ($scope) {
-        $scope.overview = "Over View";
-    }]);
-})(HawkularMetrics || (HawkularMetrics = {}));
-
 angular.module("hawkular-ui-components-metrics-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/add-url.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AddUrlController\" style=\"margin-left: 10px;\">\n\n    <h2>Collect metrics from a website that you want to monitor.</h2>\n\n    <form class=\"form-horizontal\" name=\"addUrlForm\" role=\"form\" novalidate>\n        <div class=\"form-group input\">\n            <div class=\"col-lg-6 col-sm-8 col-xs-12 align-center\">\n                <div class=\"input-group\">\n                    <input type=\"url\" class=\"form-control input-lg\" name=\"resourceUrl\" ng-model=\"vm.resourceUrl\"\n                           ng-model-options=\"{ updateOn: \'default blur\'}\"\n                           ng-enter=\"vm.addUrl(vm.resourceUrl)\"\n                           placeholder=\"Enter a website URL (e.g., http://mysite.com/home)\" required >\n                      <span class=\"error-message\"\n                            ng-show=\"addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required\">The URL you entered is not valid. Please enter a valid URL.</span>\n\n              <span class=\"input-group-btn\">\n                <button class=\"btn btn-primary btn-lg\" type=\"button\" ng-disabled=\"!addUrlForm.$valid\"\n                        ng-click=\"vm.addUrl(vm.resourceUrl)\">Get Metrics\n                </button>\n              </span>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n");
-$templateCache.put("plugins/metrics/html/metrics-response.html","<div ng-controller=\"MetricsViewController as vm\">\n\n    <div class=\"col-sm-9 col-md-10 content\">\n\n        <div class=\"well\">\n            <span class=\"col-md-3 col-sm-4\" style=\"margin:-10px 0 0 -20px;\">\n                <select class=\"form-control input-sm\" ng-model=\"vm.selectedResource\"\n                        ng-options=\"rs.parameters.url for rs in vm.resourceList\" style=\"width:100%;\"></select>\n            </span>\n            <span class=\"col-md-3 col-sm-2 pull-right\" style=\"margin:-10px;\">\n                <span class=\"input-group input-group-sm\" style=\"width:100%;\">\n                    <input type=\"text\" class=\"form-control input-sm\" value=\"{{vm.dateRange}}\"  readonly>\n                </span>\n            </span>\n        </div>\n        <h1>Response Time</h1>\n\n        <p class=\"update-info pull-right\"><i class=\"fa fa-refresh\"></i>\n            <a ng-click=\"vm.refreshChartDataNow(vm.getMetricId())\">Last update 1 minutes ago</a>\n        </p>\n        <ul class=\"nav nav-tabs nav-tabs-pf\">\n            <li class=\"active\"><a href=\"#\">Response Time</a></li>\n            <li><a href=\"#\">Responsiveness</a></li>\n        </ul>\n        <div style=\"width:800px;\" ng-switch=\"vm.chartData.dataPoints.length > 1\">\n            <p class=\"label label-info\" ng-switch-when=\"false\">The data is being collected. Please be patient(could be up to a minute)...</p>\n\n            <div id=\"stackedBarChart\" style=\"height:270px\" ng-switch-when=\"true\">\n                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->\n                <hawkular-chart\n                        data=\"{{vm.chartData.dataPoints}}\"\n                        chart-type=\"line\"\n                        show-avg-line=\"false\"\n                        hide-high-low-values=\"true\"\n                        y-axis-units=\"Response time (ms)\"\n                        chart-title=\"Monitored Resource: {{vm.selectedResource.parameters.url}}\"\n                        chart-height=\"250\">\n                </hawkular-chart>\n            </div>\n            <!--\n            <div style=\"margin-top: 30px;\">\n                <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n                </button>\n                <button class=\"btn btn-sm\" style=\"float:right;margin-right: 50px;\" ng-click=\"vm.showNextTimeRange()\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n            </div>\n            <br/>\n            -->\n        </div>\n\n    </div>\n\n\n</div>\n</div>\n");
+$templateCache.put("plugins/metrics/html/metrics-response.html","<div ng-controller=\"MetricsViewController as vm\">\n\n    <div class=\"col-sm-9 col-md-10 content\">\n\n        <div class=\"well\">\n            <span class=\"col-md-3 col-sm-4\" style=\"margin:-10px 0 0 -20px;\">\n                <select class=\"form-control input-sm\" ng-model=\"vm.selectedResource\"\n                        ng-options=\"rs.parameters.url for rs in vm.resourceList\" style=\"width:100%;\"></select>\n            </span>\n            <span class=\"col-md-3 col-sm-2 pull-right\" style=\"margin:-10px;\">\n                <span class=\"input-group input-group-sm\" style=\"width:100%;\">\n                    <input type=\"text\" class=\"form-control input-sm\" value=\"{{vm.dateRange}}\"  readonly>\n                </span>\n            </span>\n        </div>\n        <h1>Response Time</h1>\n\n        <p class=\"update-info pull-right\"><i class=\"fa fa-refresh\"></i>\n            <a ng-click=\"vm.refreshChartDataNow(vm.getMetricId())\">Last update 1 minutes ago</a>\n        </p>\n        <ul class=\"nav nav-tabs nav-tabs-pf\">\n            <li class=\"active\"><a href=\"#\">Response Time</a></li>\n            <li><a href=\"#\">Responsiveness</a></li>\n        </ul>\n        <div style=\"width:800px;\" ng-switch=\"vm.chartData.dataPoints.length > 1\">\n            <p class=\"label label-info\" ng-switch-when=\"false\">We are collecting your initial data. Please be patient(could be up to a minute)...</p>\n\n            <div id=\"stackedBarChart\" style=\"height:270px\" ng-switch-when=\"true\">\n                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->\n                <hawkular-chart\n                        data=\"{{vm.chartData.dataPoints}}\"\n                        chart-type=\"line\"\n                        show-avg-line=\"false\"\n                        hide-high-low-values=\"true\"\n                        y-axis-units=\"Response time (ms)\"\n                        chart-title=\"Monitored Resource: {{vm.selectedResource.parameters.url}}\"\n                        chart-height=\"250\">\n                </hawkular-chart>\n            </div>\n            <!--\n            <div style=\"margin-top: 30px;\">\n                <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n                </button>\n                <button class=\"btn btn-sm\" style=\"float:right;margin-right: 50px;\" ng-click=\"vm.showNextTimeRange()\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n            </div>\n            <br/>\n            -->\n        </div>\n\n    </div>\n\n\n</div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/overview.html","<div class=\"row\" ng-controller=\"HawkularMetrics.OverviewController as vm\">\n    <div class=\"col-md-12\">\n        <h1>TBD: Metrics Overview</h1>\n    </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-ui-components-metrics-templates");
