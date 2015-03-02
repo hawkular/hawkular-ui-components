@@ -27,7 +27,7 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
-    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'hawkularCharts', 'hawkular.services']);
+    HawkularMetrics._module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts', 'hawkular.services']);
     var metricsTab;
     HawkularMetrics._module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', function ($httpProvider, $locationProvider, $routeProvider, navBuilder) {
         $httpProvider.defaults.useXDomain = true;
@@ -111,6 +111,7 @@ var HawkularMetrics;
 
 var HawkularMetrics;
 (function (HawkularMetrics) {
+    var sharedMetricId;
     var MetricsViewController = (function () {
         function MetricsViewController($scope, $rootScope, $interval, $log, HawkularMetric, HawkularInventory, startTimeStamp, endTimeStamp, dateRange) {
             var _this = this;
@@ -214,7 +215,9 @@ var HawkularMetrics;
             this.refreshHistoricalChartDataForTimestamp(metricId, startDate.getTime(), endDate.getTime());
         };
         MetricsViewController.prototype.getMetricId = function () {
-            return this.isResponseTab ? this.getResourceDurationMetricId() : this.getResourceCodeMetricId();
+            var metricId = this.isResponseTab ? this.getResourceDurationMetricId() : this.getResourceCodeMetricId();
+            sharedMetricId = metricId;
+            return metricId;
         };
         MetricsViewController.prototype.getResourceDurationMetricId = function () {
             return HawkularMetrics.globalResourceId + '.status.duration';
@@ -274,6 +277,101 @@ var HawkularMetrics;
     })();
     HawkularMetrics.MetricsViewController = MetricsViewController;
     HawkularMetrics._module.controller('MetricsViewController', MetricsViewController);
+    var QuickAlertController = (function () {
+        function QuickAlertController($scope, HawkularAlert) {
+            this.$scope = $scope;
+            this.HawkularAlert = HawkularAlert;
+            this.$scope.showQuickAlert = false;
+            this.$scope.quickTrigger = {
+                operator: 'LT',
+                threshold: 0
+            };
+            this.allNotifiers();
+            console.log('Notifiers: ' + this.$scope.notifiers);
+        }
+        QuickAlertController.prototype.toggleQuickAlert = function () {
+            this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
+        };
+        QuickAlertController.prototype.allNotifiers = function () {
+            var _this = this;
+            this.$scope.notifiers = [];
+            this.HawkularAlert.Notifier.query(function (result) {
+                _this.$scope.notifiers = result;
+            }, function (error) {
+                if (error.data.errorMsg) {
+                    toastr.error(error.data.errorMsg);
+                }
+                else {
+                    toastr.error('Error loading Alerts Notifiers: ' + error);
+                }
+            });
+        };
+        QuickAlertController.prototype.saveQuickAlert = function () {
+            var _this = this;
+            if (sharedMetricId !== '.status.duration' && sharedMetricId !== '.status.code') {
+                var newTrigger = {};
+                newTrigger.id = sharedMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
+                newTrigger.name = newTrigger.id;
+                newTrigger.description = 'Created on ' + new Date();
+                newTrigger.match = 'ALL';
+                newTrigger.enabled = true;
+                newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
+                var newDampening = { triggerId: newTrigger.id, type: 'RELAXED_COUNT', evalTrueSetting: 1, evalTotalSetting: 1, evalTimeSetting: 0 };
+                this.HawkularAlert.Trigger.save(newTrigger, function (trigger) {
+                    newDampening.triggerId = trigger.id;
+                    _this.HawkularAlert.Dampening.save(newDampening, function (dampening) {
+                        var newThresholdCondition = {
+                            triggerId: newDampening.triggerId,
+                            dataId: sharedMetricId,
+                            conditionSetSize: 1,
+                            conditionSetIndex: 1,
+                            operator: _this.$scope.quickTrigger.operator,
+                            threshold: _this.$scope.quickTrigger.threshold
+                        };
+                        _this.HawkularAlert['ThresholdCondition'].save(newThresholdCondition, function () {
+                            _this.HawkularAlert.Alert.reload(function (errorReload) {
+                                if (errorReload.data.errorMsg) {
+                                    toastr.error(errorReload.data.errorMsg);
+                                }
+                                else {
+                                    toastr.error('Error reloading alerts' + errorReload);
+                                }
+                            });
+                            _this.toggleQuickAlert();
+                        }, function (errorCondition) {
+                            if (errorCondition.data.errorMsg) {
+                                toastr.error(errorCondition.data.errorMsg);
+                            }
+                            else {
+                                toastr.error('Error loading Saving Trigger Condition' + errorCondition);
+                            }
+                        });
+                    }, function (errorDampening) {
+                        if (errorDampening.data.errorMsg) {
+                            toastr.error(errorDampening.data.errorMsg);
+                        }
+                        else {
+                            toastr.error('Error loading Saving Trigger Dampening ' + errorDampening);
+                        }
+                    });
+                }, function (error) {
+                    if (error.data.errorMsg) {
+                        toastr.error(error.data.errorMsg);
+                    }
+                    else {
+                        toastr.error('Error loading Saving Trigger ' + error);
+                    }
+                });
+            }
+            else {
+                toastr.warning('No metric selected');
+            }
+        };
+        QuickAlertController.$inject = ['$scope', 'HawkularAlert'];
+        return QuickAlertController;
+    })();
+    HawkularMetrics.QuickAlertController = QuickAlertController;
+    HawkularMetrics._module.controller('QuickAlertController', QuickAlertController);
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 var HawkularMetrics;
@@ -291,6 +389,6 @@ var HawkularMetrics;
 })(HawkularMetrics || (HawkularMetrics = {}));
 
 angular.module("hawkular-ui-components-metrics-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/metrics/html/add-url.html","<div class=\"row\" ng-controller=\"HawkularMetrics.AddUrlController\" style=\"margin-left: 10px;\">\n\n    <h2>Collect metrics from a website that you want to monitor.</h2>\n\n    <form class=\"form-horizontal\" name=\"addUrlForm\" role=\"form\" novalidate>\n        <div class=\"form-group input\">\n            <div class=\"col-lg-6 col-sm-8 col-xs-12 align-center\">\n                <div class=\"input-group\">\n                    <input type=\"url\" class=\"form-control input-lg\" name=\"resourceUrl\" ng-model=\"vm.resourceUrl\"\n                           ng-model-options=\"{ updateOn: \'default blur\'}\"\n                           ng-enter=\"vm.addUrl(vm.resourceUrl)\"\n                           placeholder=\"Enter a website URL (e.g., http://mysite.com/home)\" required >\n                      <span class=\"error-message\"\n                            ng-show=\"addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required\">The URL you entered is not valid. Please enter a valid URL.</span>\n\n              <span class=\"input-group-btn\">\n                <button class=\"btn btn-primary btn-lg\" type=\"button\" ng-disabled=\"!addUrlForm.$valid\"\n                        ng-click=\"vm.addUrl(vm.resourceUrl)\">Get Metrics\n                </button>\n              </span>\n                </div>\n            </div>\n        </div>\n    </form>\n</div>\n");
-$templateCache.put("plugins/metrics/html/metrics-response.html","<div ng-controller=\"MetricsViewController as vm\">\n    <!--\n    <div class=\"panel-top clearfix\">\n        <div class=\"col-md-3 col-sm-4\">\n            <div class=\"input-group input-group-lg\">\n                <input type=\"text\" class=\"form-control input-lg\" value=\"http://example-app.com\">\n            <span class=\"input-group-btn\">\n              <button class=\"btn btn-default btn-lg\" type=\"button\"><i class=\"fa fa-chevron-right\"></i></button>\n            </span>\n            </div>\n        </div>\n        <div class=\"col-md-3 col-sm-4 pull-right\">\n            <div class=\"input-group input-group-lg\">\n                <input type=\"text\" class=\"form-control input-lg\" value=\"3 Feb - 10 Feb, 2015\">\n            <span class=\"input-group-btn\">\n              <button class=\"btn btn-default btn-lg\" type=\"button\"><i class=\"fa fa-calendar\"></i></button>\n            </span>\n            </div>\n        </div>\n    </div>\n    -->\n\n\n    <div class=\"col-sm-9 col-md-10 content\">\n            <h1>Response Time</h1>\n\n            <p class=\"update-info pull-right\"><i class=\"fa fa-refresh\"></i>\n                <a ng-click=\"vm.refreshChartDataNow(vm.getMetricId())\">Last update 1 minutes ago</a>\n            </p>\n            <ul class=\"nav nav-tabs nav-tabs-pf\">\n                <li class=\"active\"><a href=\"#\">Response Time</a></li>\n                <li><a href=\"#\">Responsiveness</a></li>\n            </ul>\n        <div style=\"width:800px;\">\n            <div id=\"stackedBarChart\" style=\"height:270px\">\n                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->\n                <hawkular-chart\n                        data=\"{{vm.chartData.dataPoints}}\"\n                        chart-type=\"line\"\n                        show-avg-line=\"false\"\n                        hide-high-low-values=\"true\"\n                        chart-title=\"Metrics for: {{vm.currentUrl}}\"\n                        chart-height=\"250\">\n                </hawkular-chart>\n            </div>\n            <!--\n            <div style=\"margin-top: 30px;\">\n                <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n                </button>\n                <button class=\"btn btn-sm\" style=\"float:right;margin-right: 50px;\" ng-click=\"vm.showNextTimeRange()\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n            </div>\n            <br/>\n            -->\n            </div>\n\n    </div>\n\n\n</div>\n</div>\n");
+$templateCache.put("plugins/metrics/html/metrics-response.html","<div ng-controller=\"MetricsViewController as vm\">\n    <!--\n    <div class=\"panel-top clearfix\">\n        <div class=\"col-md-3 col-sm-4\">\n            <div class=\"input-group input-group-lg\">\n                <input type=\"text\" class=\"form-control input-lg\" value=\"http://example-app.com\">\n            <span class=\"input-group-btn\">\n              <button class=\"btn btn-default btn-lg\" type=\"button\"><i class=\"fa fa-chevron-right\"></i></button>\n            </span>\n            </div>\n        </div>\n        <div class=\"col-md-3 col-sm-4 pull-right\">\n            <div class=\"input-group input-group-lg\">\n                <input type=\"text\" class=\"form-control input-lg\" value=\"3 Feb - 10 Feb, 2015\">\n            <span class=\"input-group-btn\">\n              <button class=\"btn btn-default btn-lg\" type=\"button\"><i class=\"fa fa-calendar\"></i></button>\n            </span>\n            </div>\n        </div>\n    </div>\n    -->\n\n\n    <div class=\"col-sm-9 col-md-10 content\">\n            <h1>Response Time</h1>\n\n            <p class=\"update-info pull-right\"><i class=\"fa fa-refresh\"></i>\n                <a ng-click=\"vm.refreshChartDataNow(vm.getMetricId())\">Last update 1 minutes ago</a>\n            </p>\n            <ul class=\"nav nav-tabs nav-tabs-pf\">\n                <li class=\"active\"><a href=\"#\">Response Time</a></li>\n                <li><a href=\"#\">Responsiveness</a></li>\n            </ul>\n        <div style=\"width:800px;\">\n            <div id=\"stackedBarChart\" style=\"height:270px\">\n                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->\n                <hawkular-chart\n                        data=\"{{vm.chartData.dataPoints}}\"\n                        chart-type=\"line\"\n                        show-avg-line=\"false\"\n                        hide-high-low-values=\"true\"\n                        chart-title=\"Metrics for: {{vm.currentUrl}}\"\n                        chart-height=\"250\">\n                </hawkular-chart>\n            </div>\n            <!--\n            <div style=\"margin-top: 30px;\">\n                <button class=\"btn btn-sm\" ng-click=\"vm.showPreviousTimeRange()\" style=\"margin-left:90px;\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\">&lt;&lt; Prev.\n                </button>\n                <button class=\"btn btn-sm\" style=\"float:right;margin-right: 50px;\" ng-click=\"vm.showNextTimeRange()\"\n                        ng-show=\"vm.chartData.dataPoints.length > 2\" ng-disabled=\"!vm.hasNext();\">Next &gt;&gt;</button>\n            </div>\n            <br/>\n            -->\n            </div>\n\n    </div>\n\n\n</div>\n<div ng-controller=\"QuickAlertController as qac\">\n  <div ng-if=\"!showQuickAlert\" class=\"col-sm-9 col-md-10 content\">\n    <button class=\"btn btn-primary\" ng-click=\"qac.toggleQuickAlert()\">Add an Alert</button>\n  </div>\n  <div ng-if=\"showQuickAlert\" class=\"col-sm-9 col-md-10 content\">\n      <h1>Add an Alert</h1>\n      <form class=\"form-horizontal\" name=\"addQuickAlertForm\" role=\"form\">\n        <div class=\"form-group\">\n          <label class=\"col-md-4 control-label\">\n            Fire when metric is\n          </label>\n          <div class=\"col-md-6\">\n            <label class=\"radio-inline\">\n              <input type=\"radio\" ng-model=\"quickTrigger.operator\" class=\"radio\" value=\"LT\"> <\n            </label>\n            <label class=\"radio-inline\">\n              <input type=\"radio\" ng-model=\"quickTrigger.operator\" class=\"radio\" value=\"GT\"> >\n            </label>\n            <label class=\"radio-inline\">\n              <input type=\"radio\" ng-model=\"quickTrigger.operator\" class=\"radio\" value=\"LTE\"> <=\n            </label>\n            <label class=\"radio-inline\">\n              <input type=\"radio\" ng-model=\"quickTrigger.operator\" class=\"radio\" value=\"GTE\"> >=\n            </label>\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <label class=\"col-md-4 control-label\" for=\"threshold\">\n            Of threshold\n          </label>\n          <div class=\"col-md-6\">\n            <input type=\"number\" id=\"threshold\" ng-model=\"quickTrigger.threshold\" class=\"form-control\" ng-minlength=\"1\" required>\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <label class=\"col-md-4 control-label\" for=\"notifiers\">\n            Notify to:\n          </label>\n          <div class=\"col-md-6\">\n            <ui-select id=\"notifiers\" multiple ng-model=\"quickTrigger.notifiers\" theme=\"bootstrap\" ng-disabled=\"disabled\" close-on-select=\"false\">\n              <ui-select-match placeholder=\"Select notifier...\">{{$item}}</ui-select-match>\n              <ui-select-choices repeat=\"notifier in notifiers | filter:$select.search\">\n                {{ notifier }}\n              </ui-select-choices>\n            </ui-select>\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <div class=\"col-md-offset-4 col-md-6\">\n            <button class=\"btn btn-primary\" ng-click=\"qac.saveQuickAlert()\">Create Alert</button>\n            <button type=\"button\" class=\"btn btn-default\" ng-click=\"qac.toggleQuickAlert()\">Cancel</button>\n          </div>\n        </div>\n      </form>\n  </div>\n</div>\n\n</div>\n");
 $templateCache.put("plugins/metrics/html/metrics-selection.html","<div class=\"row\" ng-controller=\"HawkularMetrics.MetricsSelectionController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Selection: TBD</h1>\n       Screen: TBD\n    </div>\n</div>\n");
 $templateCache.put("plugins/metrics/html/overview.html","<div class=\"row\" ng-controller=\"HawkularMetrics.OverviewController\">\n    <div class=\"col-md-12\">\n        <h1>Metrics Overview</h1>\n        <p class=\"update-info pull-right\"><i class=\"fa fa-refresh\"></i> Last update 3 minutes ago</p>\n        <ul class=\"list-unstyled metrics-boxes\">\n            <li class=\"availability\">\n                <a href=\"#availability\">\n                    <div class=\"metric-box-content\">\n                        <h2>Availability</h2>\n                        <div class=\"data one-line\">99.992<span>%</span></div>\n                    </div>\n                    <span class=\"nav-arrow\"></span>\n                </a>\n            </li>\n            <li>\n                <a href=\"#response-time\" id=\"link-response-time\">\n                    <div class=\"metric-box-content\">\n                        <h2>Response Time</h2>\n                        <div class=\"data one-line\">2.762 s</div>\n                    </div>\n                    <span class=\"nav-arrow\"></span>\n                </a>\n            </li>\n            <li>\n                <a href=\"#downtime\">\n                    <div class=\"metric-box-content\">\n                        <h2>Up/down time</h2>\n                        <div class=\"data two-lines\">\n                            <div class=\"upper-line\"><i class=\"fa fa-arrow-up\"></i> 30 days up</div>\n                            <div><i class=\"fa fa-arrow-down\"></i> 1 down</div>\n                        </div>\n                    </div>\n                    <span class=\"nav-arrow\"></span>\n                </a>\n            </li>\n        </ul>\n\n        <a href=\"#response-time\" class=\"next-page\">\n            <span class=\"hide\">Go to response time</span>\n            <i class=\"fa fa-chevron-down\"></i>\n        </a>\n    </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawkular-ui-components-metrics-templates");
