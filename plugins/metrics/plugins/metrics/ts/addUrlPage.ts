@@ -46,6 +46,8 @@ module HawkularMetrics {
 
             this.$log.info("Adding new Resource Url to Hawkular-inventory: " + url);
 
+            globalChartTimeRange = new ChartTimeRange(1);
+
             /// Add the Resource
             this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
                 .then((newResource) => {

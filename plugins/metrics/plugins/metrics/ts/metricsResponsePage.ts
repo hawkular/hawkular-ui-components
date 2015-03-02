@@ -31,10 +31,6 @@ module HawkularMetrics {
         max: number;
     }
 
-    export interface IDateTimeRangeDropDown {
-        range: string;
-        rangeInSeconds:number;
-    }
 
     /**
      * @ngdoc controller
@@ -47,6 +43,7 @@ module HawkularMetrics {
      * @param metricDataService
      */
     export class MetricsViewController {
+        /// for minification only
         public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
 
         constructor(private $scope:any,
@@ -62,15 +59,32 @@ module HawkularMetrics {
 
             this.startTimeStamp = moment().subtract(1, 'hours').toDate();
             this.endTimeStamp = new Date();
-            this.dateRange = moment().subtract(1, 'hours').from(moment());
+            this.dateRange = moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
+            + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
             $scope.$on('RefreshChart', (event) => {
                 $scope.vm.refreshChartDataNow(this.getMetricId());
             });
 
-            $scope.vm.onCreate();
+            $scope.$watch('vm.selectedResource', (resource) => {
+                if (angular.isUndefined(resource)) {
+                    /// case when coming from addUrl screen
+                    globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
+                        then((resources)=> {
+                        this.resourceList = resources;
+                        this.selectedResource = resources[resources.length - 1];
+                        $scope.vm.refreshChartDataNow(this.getMetricId());
+                    });
 
-            this.currentUrl = globalResourceUrl;
+                } else {
+                    /// made a selection from url switcher
+                    globalResourceId = resource.id;
+                    $scope.vm.refreshChartDataNow(this.getMetricId());
+                }
+
+            });
+
+            $scope.vm.onCreate();
 
         }
 
@@ -81,31 +95,22 @@ module HawkularMetrics {
         private autoRefreshPromise:ng.IPromise<number>;
 
         /// expose this to the View
-        currentUrl;
+        resourceList = [];
+        selectedResource;
 
-        /// @todo: pull this out to its own directive
-        dateTimeRanges:IDateTimeRangeDropDown[] = [
-            { 'range': '1h', 'rangeInSeconds': 60 * 60 } ,
-            { 'range': '12h', 'rangeInSeconds': 12 * 60 * 60 },
-            { 'range': 'Day', 'rangeInSeconds': 24 * 60 * 60 },
-            { 'range': 'Week', 'rangeInSeconds': 7 * 24 * 60 * 60 },
-            { 'range': 'Month', 'rangeInSeconds': 30 * 24 * 60 * 60 },
-            { 'range': 'Year', 'rangeInSeconds': 12 * 30 * 24 * 60 * 60 }
-        ];
 
         private onCreate() {
-            this.$log.debug("executing MetricsViewController.onCreate");
-
             /// setup autorefresh for every minute
             this.autoRefresh(60);
-            this.refreshChartDataNow(this.getMetricId());
             this.setupResourceList();
-            console.debug("GlobalResourceList: ");
-            console.dir(globalResourceList);
+            this.resourceList = globalResourceList;
+            this.selectedResource = this.resourceList[this.resourceList.length - 1];
+            this.refreshChartDataNow(this.getMetricId());
         }
 
         setupResourceList() {
             globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
+            this.resourceList = globalResourceList;
         }
 
         cancelAutoRefresh():void {
@@ -179,9 +184,6 @@ module HawkularMetrics {
 
 
         refreshChartDataNow(metricId:string, startTime?:Date):void {
-            var metricList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
-            console.dir(metricList);
-
             var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
             //this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
             this.endTimeStamp = new Date();
