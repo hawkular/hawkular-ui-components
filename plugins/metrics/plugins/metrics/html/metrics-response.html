@@ -9,7 +9,7 @@
             </span>
             <span class="col-md-3 col-sm-2 pull-right" style="margin:-10px;">
                 <span class="input-group input-group-sm" style="width:100%;">
-                    <input type="text" class="form-control input-sm" value="{{vm.dateRange}}"  readonly>
+                    <input type="text" class="form-control input-sm" value="{{vm.dateRange}}" readonly>
                 </span>
             </span>
         </div>
@@ -23,7 +23,8 @@
             <li><a href="#">Responsiveness</a></li>
         </ul>
         <div style="width:800px;" ng-switch="vm.chartData.dataPoints.length > 1">
-            <p class="label label-info" ng-switch-when="false">We are collecting your initial data. Please be patient(could be up to a minute)...</p>
+            <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
+                initial data. Please be patient(could be up to a minute)...</p>
 
             <div id="stackedBarChart" style="height:270px" ng-switch-when="true">
                 <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
@@ -51,6 +52,69 @@
 
     </div>
 
+    <div ng-controller="QuickAlertController as qac" ng-show="vm.chartData.dataPoints.length > 1">
+        <div ng-if="!showQuickAlert" class="col-sm-9 col-md-10 content">
+            <button class="btn btn-primary" ng-click="qac.toggleQuickAlert()">Add an Alert</button>
+        </div>
+        <div ng-if="showQuickAlert" class="col-sm-9 col-md-10 content">
+            <h1>Add an Alert</h1>
+
+            <form class="form-horizontal" name="addQuickAlertForm" role="form">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">
+                        Fire when metric is
+                    </label>
+
+                    <div class="col-md-6">
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="LT"> <
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="GT"> >
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="LTE"> <=
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="quickTrigger.operator" class="radio" value="GTE"> >=
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="threshold">
+                        Of threshold
+                    </label>
+
+                    <div class="col-md-6">
+                        <input type="number" id="threshold" ng-model="quickTrigger.threshold" class="form-control"
+                               ng-minlength="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="notifiers">
+                        Notify to:
+                    </label>
+
+                    <div class="col-md-6">
+                        <ui-select id="notifiers" multiple ng-model="quickTrigger.notifiers" theme="bootstrap"
+                                   ng-disabled="disabled" close-on-select="false">
+                            <ui-select-match placeholder="Select notifier...">{{$item}}</ui-select-match>
+                            <ui-select-choices repeat="notifier in notifiers | filter:$select.search">
+                                {{ notifier }}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-6">
+                        <button class="btn btn-primary" ng-click="qac.saveQuickAlert()">Create Alert</button>
+                        <button type="button" class="btn btn-default" ng-click="qac.toggleQuickAlert()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
-</div>
+
+

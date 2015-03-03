@@ -117,6 +117,7 @@ module HawkularAlerts {
                     () => {
                         this.HawkularAlert.Dampening.delete({triggerId: id},
                             () => {
+                                this.deleteAllConditions(id);
                                 this.allDefinitions();
                             }, (reasonDampening) => {
                                 this.addAlertMsg(reasonDampening);
@@ -359,6 +360,25 @@ module HawkularAlerts {
                 );
 
             }
+        }
+
+        private deleteAllConditions(triggerId: string):void {
+            this.HawkularAlert.Trigger.conditions({triggerId: triggerId},
+                (conditionsList) => {
+                    var conditionClass:any = {};
+                    for (var i = 0; i < conditionsList.length; i++) {
+                        conditionClass[conditionsList[i].conditionId] = conditionsList[i].className;
+                    }
+                    for (i = 0; i < conditionsList.length; i++) {
+                        var condition = conditionsList[i];
+                        this.HawkularAlert[condition.className].delete({conditionId: condition.conditionId},
+                            (reasonType) => {
+                                this.addAlertMsg(reasonType);
+                            });
+                    }
+                }, (reasonList) => {
+                    this.addAlertMsg(reasonList);
+                });
         }
 
         cancelCondition():void {
