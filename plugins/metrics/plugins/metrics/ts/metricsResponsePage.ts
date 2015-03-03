@@ -73,10 +73,10 @@ module HawkularMetrics {
                     /// case when coming from addUrl screen
                     globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
                         then((resources)=> {
-                        this.resourceList = resources;
-                        this.selectedResource = resources[resources.length - 1];
-                        $scope.vm.refreshChartDataNow(this.getMetricId());
-                    });
+                            this.resourceList = resources;
+                            this.selectedResource = resources[resources.length - 1];
+                            $scope.vm.refreshChartDataNow(this.getMetricId());
+                        });
 
                 } else {
                     /// made a selection from url switcher
@@ -280,7 +280,7 @@ module HawkularMetrics {
         public static  $inject = ['$scope', 'HawkularAlert'];
 
         constructor(private $scope:any,
-                    private HawkularAlert: any) {
+                    private HawkularAlert:any) {
             this.$scope.showQuickAlert = false;
             this.$scope.quickTrigger = {
                 operator: 'LT',
@@ -319,7 +319,8 @@ module HawkularMetrics {
                 newTrigger.enabled = true;
                 newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
 
-                var newDampening:any = { triggerId: newTrigger.id,
+                var newDampening:any = {
+                    triggerId: newTrigger.id,
                     type: 'RELAXED_COUNT',
                     evalTrueSetting: 1,
                     evalTotalSetting: 1,
