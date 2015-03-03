@@ -280,6 +280,7 @@ var HawkularAlerts;
                 this.$scope.msgs = [];
                 this.HawkularAlert.Trigger.delete({ triggerId: id }, function () {
                     _this.HawkularAlert.Dampening.delete({ triggerId: id }, function () {
+                        _this.deleteAllConditions(id);
                         _this.allDefinitions();
                     }, function (reasonDampening) {
                         _this.addAlertMsg(reasonDampening);
@@ -497,6 +498,23 @@ var HawkularAlerts;
                     _this.addAlertMsg(reasonDelete);
                 });
             }
+        };
+        DefinitionsController.prototype.deleteAllConditions = function (triggerId) {
+            var _this = this;
+            this.HawkularAlert.Trigger.conditions({ triggerId: triggerId }, function (conditionsList) {
+                var conditionClass = {};
+                for (var i = 0; i < conditionsList.length; i++) {
+                    conditionClass[conditionsList[i].conditionId] = conditionsList[i].className;
+                }
+                for (i = 0; i < conditionsList.length; i++) {
+                    var condition = conditionsList[i];
+                    _this.HawkularAlert[condition.className].delete({ conditionId: condition.conditionId }, function (reasonType) {
+                        _this.addAlertMsg(reasonType);
+                    });
+                }
+            }, function (reasonList) {
+                _this.addAlertMsg(reasonList);
+            });
         };
         DefinitionsController.prototype.cancelCondition = function () {
             this.$scope.statusCondition = { status: '' };
