@@ -50,6 +50,7 @@ module.exports = function(gulp, config, pluginName){
   gulp.task('tsc-' + pluginName, function() {
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts(pluginName))
+      .pipe(plugins.sourcemaps.init())
       .pipe(plugins.typescript(plugins.typescript.createProject({
         target: 'ES5',
         module: 'commonjs',
@@ -71,6 +72,7 @@ module.exports = function(gulp, config, pluginName){
           }
         }))
         .pipe(plugins.concat('compiled.js'))
+        .pipe(plugins.sourcemaps.write())
         .pipe(gulp.dest('.tmp/' + pluginName + '/')),
 
       tsResult.dts.pipe(gulp.dest('.tmp/' + pluginName + '/d.ts')))
