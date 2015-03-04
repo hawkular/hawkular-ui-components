@@ -2,13 +2,13 @@
 
     <div class="col-sm-9 col-md-10 content">
 
-        <div class="well">
-            <span class="col-md-3 col-sm-4" style="margin:-10px 0 0 -20px;">
-                <select class="form-control input-sm" ng-model="vm.selectedResource"
-                        ng-options="rs.parameters.url for rs in vm.resourceList" style="width:100%;"></select>
+        <div class="well" id="control-bar">
+            <span  class="col-md-3 col-sm-4 select-url-container" >
+                <select class="form-control input-sm select-url" ng-model="vm.selectedResource"
+                        ng-options="rs.parameters.url for rs in vm.resourceList"></select>
             </span>
-            <span class="col-md-3 col-sm-2 pull-right" style="margin:-10px;">
-                <span class="input-group input-group-sm" style="width:100%;">
+            <span id="date-range-container" class="col-md-3 col-sm-2 pull-right" >
+                <span id="date-range" class="input-group input-group-sm" >
                     <input type="text" class="form-control input-sm" value="{{vm.dateRange}}" readonly>
                 </span>
             </span>
@@ -22,11 +22,11 @@
             <li class="active"><a href="#">Response Time</a></li>
             <li><a href="#">Responsiveness</a></li>
         </ul>
-        <div style="width:800px;" ng-switch="vm.chartData.dataPoints.length > 1">
+        <div id="metrics-chart-container" ng-switch="vm.chartData.dataPoints.length > 1">
             <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
                 initial data. Please be patient(could be up to a minute)...</p>
 
-            <div id="stackedBarChart" style="height:270px" ng-switch-when="true">
+            <div  style="height:270px" ng-switch-when="true">
                 <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
                 <hawkular-chart
                         data="{{vm.chartData.dataPoints}}"
@@ -54,7 +54,7 @@
 
     <div ng-controller="QuickAlertController as qac" ng-show="vm.chartData.dataPoints.length > 1">
         <div ng-if="!showQuickAlert" class="col-sm-9 col-md-10 content">
-            <button class="btn btn-primary" ng-click="qac.toggleQuickAlert()">Add an Alert</button>
+            <button class="btn btn-primary pull-left" ng-click="qac.toggleQuickAlert()">Add an Alert</button>
         </div>
         <div ng-if="showQuickAlert" class="col-sm-9 col-md-10 content">
             <h1>Add an Alert</h1>
