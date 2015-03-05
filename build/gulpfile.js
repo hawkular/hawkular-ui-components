@@ -147,6 +147,11 @@ module.exports = function(gulp, config, pluginName){
     plugins.watch(config.less(pluginName), function() {
       gulp.start(['less-' + pluginName, 'connect-prepare-dist-' + pluginName]);
     });
+
+    var indexPath = path.resolve(__dirname, '../plugins/' + pluginName + '/index.html');
+    plugins.watch(indexPath, function(){
+      gulp.start(['bower-' + pluginName]);
+    });
   });
 
   gulp.task('connect-prepare-libs-' + pluginName, ['tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
