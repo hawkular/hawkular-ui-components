@@ -350,6 +350,7 @@ module HawkularMetrics {
                                                     toastr.error('Error reloading alerts' + errorReload);
                                                 }
                                             });
+                                        toastr.success('Alert Created!');
                                         this.toggleQuickAlert();
                                     },
                                     (errorCondition) => {

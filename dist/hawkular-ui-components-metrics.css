@@ -76,3 +76,6 @@ h2 {
 .response-time h1 {
   margin-top: 10px;
 }
+#alert-radio-container {
+  text-align: left;
+}

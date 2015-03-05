@@ -18,15 +18,11 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource','ui.select', 'hawkularCharts', 'hawkular.services']);
+    export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts', 'hawkular.services']);
 
     var metricsTab:any;
 
-    _module.config(['$httpProvider','$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
-
-        /// enable CORS
-        $httpProvider.defaults.useXDomain = true;
-        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
 
         metricsTab = navBuilder.create()
             .id(HawkularMetrics.pluginName)
@@ -51,8 +47,8 @@ module HawkularMetrics {
     _module.directive('ngEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
-                if(event.which === 13) {
-                    scope.$apply(function (){
+                if (event.which === 13) {
+                    scope.$apply(function () {
                         scope.$eval(attrs.ngEnter);
                     });
 

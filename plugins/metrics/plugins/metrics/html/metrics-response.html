@@ -53,10 +53,10 @@
     </div>
 
     <div ng-controller="QuickAlertController as qac" ng-show="vm.chartData.dataPoints.length > 1">
-        <div ng-if="!showQuickAlert" class="col-sm-9 col-md-10 content">
+        <div ng-show="!showQuickAlert" class="col-sm-9 col-md-10 content">
             <button class="btn btn-primary pull-left" ng-click="qac.toggleQuickAlert()">Add an Alert</button>
         </div>
-        <div ng-if="showQuickAlert" class="col-sm-9 col-md-10 content">
+        <div ng-show="showQuickAlert" class="col-sm-9 col-md-10 content">
             <h1>Add an Alert</h1>
 
             <form class="form-horizontal" name="addQuickAlertForm" role="form">
@@ -65,7 +65,7 @@
                         Fire when metric is
                     </label>
 
-                    <div class="col-md-6">
+                    <div id="alert-radio-container" class="col-md-4">
                         <label class="radio-inline">
                             <input type="radio" ng-model="quickTrigger.operator" class="radio" value="LT"> <
                         </label>
@@ -85,7 +85,7 @@
                         Of threshold
                     </label>
 
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <input type="number" id="threshold" ng-model="quickTrigger.threshold" class="form-control"
                                ng-minlength="1" required>
                     </div>
@@ -95,7 +95,7 @@
                         Notify to:
                     </label>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <ui-select id="notifiers" multiple ng-model="quickTrigger.notifiers" theme="bootstrap"
                                    ng-disabled="disabled" close-on-select="false">
                             <ui-select-match placeholder="Select notifier...">{{$item}}</ui-select-match>
