@@ -9,6 +9,7 @@
   ],
   "main": [
     "dist/hawkular-ui-components-metrics.js",
+    "dist/hawkular-ui-components-metrics.css",
     "dist/hawkular-ui-components-alerts.js",
     "dist/hawkular-ui-components-alerts.css",
     "dist/hawkular-ui-components-inventory.js"
@@ -24,7 +25,7 @@
     "bootstrap-select": "1.6",
     "d3": "3.4.8",
     "event-drops": "0.1.1",
-    "hawkular-charts": "0.1.16",
+    "hawkular-charts": "hawkular/hawkular-charts#master",
     "hawkular-ui-services": "hawkular/hawkular-ui-services#master",
     "hawtio-core-navigation": "2.0.17",
     "hawtio-core": "2.0.9",

@@ -1,0 +1,78 @@
+.container {
+  text-align: center;
+  margin-top: 2.5px;
+}
+h1 {
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+.input-group-lg .input-group-btn {
+  vertical-align: top;
+}
+.input-group-lg .input-group-btn .btn {
+  line-height: 1.2857142857;
+}
+.pg-insert-url .container {
+  margin-top: 30px;
+}
+.pg-insert-url h1 {
+  padding-bottom: 20px;
+}
+.pg-insert-url .input-group .form-control.input-lg {
+  margin-bottom: 5px;
+}
+h2 {
+  margin: 0 auto;
+  float: none;
+  font-size: 450;
+  margin-bottom: 5px;
+}
+.align-center {
+  margin: 0 auto;
+  float: none;
+}
+.form-inline.fluid > div {
+  display: table;
+  width: 100%;
+}
+.form-inline.fluid > div .form-group {
+  display: table-cell;
+  width: 100%;
+}
+.form-inline.fluid > div .form-control {
+  width: inherit;
+}
+.help-block {
+  text-align: left;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.form-group .spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+.content {
+  margin: 0 auto;
+  text-align: center;
+}
+#metric-chart-container {
+  width: 800px;
+}
+#metrics-chart {
+  height: 270px;
+}
+#control-bar .select-url-container {
+  margin: -10px 0 0 -20px;
+}
+#control-bar .select-url-container .select-url {
+  width: 100%;
+}
+#control-bar #date-range-container {
+  margin: -10px;
+}
+#control-bar #date-range-container #date-range {
+  width: 100%;
+}
+.response-time h1 {
+  margin-top: 10px;
+}

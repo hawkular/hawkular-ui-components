@@ -1,0 +1,116 @@
+@grid-gutter-width: 10px;
+@font-size-base: 300;
+
+//general styles
+
+.container {
+  text-align: center;
+  margin-top: @grid-gutter-width/4;
+}
+
+h1 {
+  margin-bottom: @grid-gutter-width;
+  margin-top: 0;
+}
+
+.input-group-lg {
+
+  .input-group-btn {
+    vertical-align: top;
+
+    .btn {
+      line-height: 1.2857142857;
+    }
+  }
+}
+
+//initial page
+
+.pg-insert-url {
+
+  .container {
+    margin-top: @grid-gutter-width*3;
+  }
+
+  h1 {
+    //    background: url(img/ic-welcome.png) no-repeat center bottom;
+    padding-bottom: @grid-gutter-width*2;
+  }
+
+  .input-group .form-control.input-lg {
+    margin-bottom: 5px;
+  }
+}
+
+h2 {
+  .align-center;
+  font-size: ceil(@font-size-base * 1.5);
+  margin-bottom: @grid-gutter-width/2;
+}
+
+.align-center {
+  margin: 0 auto;
+  float: none;
+}
+
+.form-inline.fluid > div {
+  display: table;
+  width: 100%;
+
+  .form-group {
+    display: table-cell;
+    width: 100%;
+  }
+
+  .form-control {
+    width: inherit;
+  }
+}
+
+.help-block {
+  text-align: left;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.form-group .spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// response-time section
+
+.content {
+  margin: 0 auto;
+  text-align: center;
+}
+
+#metric-chart-container {
+  width: 800px;
+}
+
+#metrics-chart {
+  height: 270px;
+}
+
+#control-bar {
+
+  .select-url-container {
+    margin: -10px 0 0 -20px;
+
+    .select-url {
+      width: 100%;
+    }
+  }
+  #date-range-container {
+    margin: -10px;
+    #date-range {
+      width: 100%;
+    }
+  }
+}
+
+.response-time h1 {
+  margin-top: @grid-gutter-width;
+}
+
