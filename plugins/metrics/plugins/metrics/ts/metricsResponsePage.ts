@@ -210,6 +210,19 @@ module HawkularMetrics {
             return globalResourceId + '.status.code';
         }
 
+        getChartType() {
+            return this.isResponseTab ? 'line' : 'histogram';
+        }
+
+        getYAxisUnits() {
+            return this.isResponseTab ? 'Response time (ms)' : 'Status Code';
+        }
+
+        responseTabClick() {
+            this.isResponseTab = !this.isResponseTab;
+            this.refreshChartDataNow(this.getMetricId());
+        }
+
         refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
             // calling refreshChartData without params use the model values
             if (angular.isUndefined(endTime)) {

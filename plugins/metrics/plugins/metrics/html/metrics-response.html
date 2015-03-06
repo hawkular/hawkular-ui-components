@@ -13,27 +13,30 @@
                 </span>
             </span>
         </div>
-        <h1>Response Time</h1>
+        <div ng-switch="vm.isResponseTab">
+            <h1 ng-switch-when="true">Response Time</h1>
+            <h1 ng-switch-when="false">Responsiveness </h1>
+        </div>
 
         <p class="update-info pull-right"><i class="fa fa-refresh"></i>
             <a ng-click="vm.refreshChartDataNow(vm.getMetricId())">Last update 1 minutes ago</a>
         </p>
         <ul class="nav nav-tabs nav-tabs-pf">
-            <li class="active"><a href="#">Response Time</a></li>
-            <li><a href="#">Responsiveness</a></li>
+            <li ng-class="{'active': vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Response Time</a></li>
+            <li ng-class="{'active': !vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Responsiveness</a></li>
         </ul>
         <div id="metrics-chart-container" ng-switch="vm.chartData.dataPoints.length > 1">
             <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
                 initial data. Please be patient(could be up to a minute)...</p>
 
-            <div  style="height:270px" ng-switch-when="true">
+            <div  id="metrics-chart" ng-switch-when="true">
                 <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
                 <hawkular-chart
                         data="{{vm.chartData.dataPoints}}"
-                        chart-type="line"
+                        chart-type="{{vm.getChartType()}}"
                         show-avg-line="false"
                         hide-high-low-values="true"
-                        y-axis-units="Response time (ms)"
+                        y-axis-units="{{vm.getYAxisUnits()}}"
                         chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
                         chart-height="250">
                 </hawkular-chart>
