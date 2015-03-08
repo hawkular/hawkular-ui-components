@@ -32,14 +32,14 @@ module HawkularMetrics {
     }
 
 
-    var sharedMetricId;
+    export var sharedMetricId : string;
 
     /**
      * @ngdoc controller
      * @name ChartController
      * @description This controller is responsible for handling activity related to the Chart tab.
      * @param $scope
-     * @param $rootScope
+     * @param $rootScope for publishing $broadcast events only
      * @param $interval
      * @param $log
      * @param metricDataService
@@ -69,7 +69,11 @@ module HawkularMetrics {
             });
 
             $scope.$watch('vm.selectedResource', (resource) => {
-                if (angular.isUndefined(resource)) {
+                if (resource) {
+                  /// made a selection from url switcher
+                  globalResourceId = resource.id;
+                  $scope.vm.refreshChartDataNow(this.getMetricId());
+                } else {
                     /// case when coming from addUrl screen
                     globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
                         then((resources)=> {
@@ -78,10 +82,6 @@ module HawkularMetrics {
                             $scope.vm.refreshChartDataNow(this.getMetricId());
                         });
 
-                } else {
-                    /// made a selection from url switcher
-                    globalResourceId = resource.id;
-                    $scope.vm.refreshChartDataNow(this.getMetricId());
                 }
 
             });
@@ -196,39 +196,39 @@ module HawkularMetrics {
             this.refreshHistoricalChartDataForTimestamp(metricId, startDate.getTime(), endDate.getTime());
         }
 
-        getMetricId() {
-            var metricId = this.isResponseTab ? this.getResourceDurationMetricId() : this.getResourceCodeMetricId();
+        getMetricId():string {
+            var metricId = this.isResponseTab ? MetricsViewController.getResourceDurationMetricId() : MetricsViewController.getResourceCodeMetricId();
             sharedMetricId = metricId;
             return metricId;
         }
 
-        private getResourceDurationMetricId() {
+        private static getResourceDurationMetricId() {
             return globalResourceId + '.status.duration';
         }
 
-        private getResourceCodeMetricId() {
+        private static getResourceCodeMetricId() {
             return globalResourceId + '.status.code';
         }
 
-        getChartType() {
+        getChartType():string {
             return this.isResponseTab ? 'line' : 'histogram';
         }
 
-        getYAxisUnits() {
+        getYAxisUnits():string {
             return this.isResponseTab ? 'Response time (ms)' : 'Status Code';
         }
 
-        responseTabClick() {
+        responseTabClick():void {
             this.isResponseTab = !this.isResponseTab;
             this.refreshChartDataNow(this.getMetricId());
         }
 
         refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
             // calling refreshChartData without params use the model values
-            if (angular.isUndefined(endTime)) {
+            if (!endTime) {
                 endTime = this.endTimeStamp.getTime();
             }
-            if (angular.isUndefined(startTime)) {
+            if (!startTime) {
                 startTime = this.startTimeStamp.getTime();
             }
 
@@ -283,121 +283,6 @@ module HawkularMetrics {
     }
 
     _module.controller('MetricsViewController', MetricsViewController);
-
-    export interface IQuickAlertController {
-        toggleQuickAlert():void
-        saveQuickAlert():void
-    }
-
-    export class QuickAlertController implements IQuickAlertController {
-        public static  $inject = ['$scope', 'HawkularAlert'];
-
-        constructor(private $scope:any,
-                    private HawkularAlert:any) {
-            this.$scope.showQuickAlert = false;
-            this.$scope.quickTrigger = {
-                operator: 'LT',
-                threshold: 0
-            };
-            this.allNotifiers();
-            console.log('Notifiers: ' + this.$scope.notifiers);
-        }
-
-        toggleQuickAlert():void {
-            this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
-        }
-
-        private allNotifiers():void {
-            this.$scope.notifiers = [];
-            this.HawkularAlert.Notifier.query(
-                (result) => {
-                    this.$scope.notifiers = result;
-                }, (error) => {
-                    if (error.data.errorMsg) {
-                        toastr.error(error.data.errorMsg);
-                    } else {
-                        toastr.error('Error loading Alerts Notifiers: ' + error);
-                    }
-                }
-            );
-        }
-
-        saveQuickAlert():void {
-            if (sharedMetricId !== '.status.duration' && sharedMetricId !== '.status.code') {
-                var newTrigger:any = {};
-                newTrigger.id = sharedMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
-                newTrigger.name = newTrigger.id;
-                newTrigger.description = 'Created on ' + new Date();
-                newTrigger.match = 'ALL';
-                newTrigger.enabled = true;
-                newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
-
-                var newDampening:any = {
-                    triggerId: newTrigger.id,
-                    type: 'RELAXED_COUNT',
-                    evalTrueSetting: 1,
-                    evalTotalSetting: 1,
-                    evalTimeSetting: 0
-                };
-
-                this.HawkularAlert.Trigger.save(newTrigger,
-                    (trigger) => {
-                        newDampening.triggerId = trigger.id;
-                        this.HawkularAlert.Dampening.save(newDampening,
-                            (dampening) => {
-                                var newThresholdCondition = {
-                                    triggerId: newDampening.triggerId,
-                                    dataId: sharedMetricId,
-                                    conditionSetSize: 1,
-                                    conditionSetIndex: 1,
-                                    operator: this.$scope.quickTrigger.operator,
-                                    threshold: this.$scope.quickTrigger.threshold
-                                };
-                                this.HawkularAlert['ThresholdCondition'].save(newThresholdCondition,
-                                    () => {
-                                        this.HawkularAlert.Alert.reload(
-                                            (errorReload) => {
-                                                if (errorReload.data.errorMsg) {
-                                                    toastr.error(errorReload.data.errorMsg);
-                                                } else {
-                                                    toastr.error('Error reloading alerts' + errorReload);
-                                                }
-                                            });
-                                        toastr.success('Alert Created!');
-                                        this.toggleQuickAlert();
-                                    },
-                                    (errorCondition) => {
-                                        if (errorCondition.data.errorMsg) {
-                                            toastr.error(errorCondition.data.errorMsg);
-                                        } else {
-                                            toastr.error('Error loading Saving Trigger Condition' + errorCondition);
-                                        }
-                                    });
-                            }, (errorDampening) => {
-                                if (errorDampening.data.errorMsg) {
-                                    toastr.error(errorDampening.data.errorMsg);
-                                } else {
-                                    toastr.error('Error loading Saving Trigger Dampening ' + errorDampening);
-                                }
-                            }
-                        );
-                    }, (error) => {
-                        if (error.data.errorMsg) {
-                            toastr.error(error.data.errorMsg);
-                        } else {
-                            toastr.error('Error loading Saving Trigger ' + error);
-                        }
-                    }
-                );
-            } else {
-                toastr.warning('No metric selected');
-            }
-
-        }
-
-    }
-
-    _module.controller('QuickAlertController', QuickAlertController);
 
 
 }

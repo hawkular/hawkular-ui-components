@@ -1,6 +1,6 @@
-<div class="pg-insert-url" ng-controller="HawkularMetrics.AddUrlController">
+<div class="pg-insert-url" ng-controller="HawkularMetrics.AddUrlController as vm">
     <div class="container">
-        <!--<h1>Welcome Brian!</h1>-->
+        <h1>Welcome!</h1>
         <h2>Collect metrics from a website that you want to monitor.</h2>
         <form class="form-horizontal" name="addUrlForm" role="form" novalidate>
             <div class="form-group input">
@@ -10,9 +10,9 @@
                                ng-model-options="{ updateOn: 'default blur'}"
                                ng-enter="vm.addUrl(vm.resourceUrl)"
                                placeholder="Enter a website URL (e.g., http://mysite.com/home)" required>
-                        <span class="help-block hide"  ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$error.required">The URL you entered is not valid. Please enter a valid URL.</span>
+                        <span class="help-block hide"  ng-show="vm.addUrlForm.resourceUrl.$dirty && vm.addUrlForm.resourceUrl.$error.required">The URL you entered is not valid. Please enter a valid URL.</span>
               <span class="input-group-btn">
-                   <button class="btn btn-primary btn-lg" type="button" ng-disabled="!addUrlForm.$valid"
+                   <button class="btn btn-primary btn-lg" type="button" ng-disabled="!vm.addUrlForm.$valid"
                            ng-click="vm.addUrl(vm.resourceUrl)">Get Metrics
                    </button>
               </span>
