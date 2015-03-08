@@ -18,46 +18,46 @@
 
 module HawkularMetrics {
 
-    export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts', 'hawkular.services']);
+  export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts', 'hawkular.services']);
 
-    var metricsTab:any;
+  var metricsTab:any;
 
-    _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
+  _module.config(['$httpProvider', '$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($httpProvider, $locationProvider, $routeProvider:ng.route.IRouteProvider, navBuilder:HawtioMainNav.BuilderFactory) => {
 
-        metricsTab = navBuilder.create()
-            .id(HawkularMetrics.pluginName)
-            .title(() => "Metrics")
-            .href(() => "/metrics")
-            .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-            //.subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
-            .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
-            .subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html'))
-            .build();
+    metricsTab = navBuilder.create()
+      .id(HawkularMetrics.pluginName)
+      .title(() => "Metrics")
+      .href(() => "/metrics")
+      .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+      //.subPath("Metrics Selection", "metricsSelection", navBuilder.join(HawkularMetrics.templatePath, 'metrics-selection.html'))
+      .subPath("Overview", "overview", navBuilder.join(HawkularMetrics.templatePath, 'overview.html'))
+      .subPath("Metrics Response", "metricsResponse", navBuilder.join(HawkularMetrics.templatePath, 'metrics-response.html'))
+      .build();
 
-        navBuilder.configureRouting($routeProvider, metricsTab);
+    navBuilder.configureRouting($routeProvider, metricsTab);
 
-        $locationProvider.html5Mode(true);
-    }]);
+    $locationProvider.html5Mode(true);
+  }]);
 
-    _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
-        HawtioNav.add(metricsTab);
-        log.debug("loaded Metrics Plugin");
-    }]);
+  _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
+    HawtioNav.add(metricsTab);
+    log.debug("loaded Metrics Plugin");
+  }]);
 
-    _module.directive('ngEnter', function () {
-        return function (scope, element, attrs) {
-            element.bind("keydown keypress", function (event) {
-                if (event.which === 13) {
-                    scope.$apply(function () {
-                        scope.$eval(attrs.ngEnter);
-                    });
+  _module.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+      element.bind("keydown keypress", function (event) {
+        if (event.which === 13) {
+          scope.$apply(function () {
+            scope.$eval(attrs.ngEnter);
+          });
 
-                    event.preventDefault();
-                }
-            });
-        };
-    });
+          event.preventDefault();
+        }
+      });
+    };
+  });
 
 
-    hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
+  hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
 }

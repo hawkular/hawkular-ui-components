@@ -18,9 +18,9 @@
 module HawkularMetrics {
 
 
-    export var OverviewController = _module.controller("HawkularMetrics.OverviewController", ['$scope', ($scope) => {
-        $scope.overview = "Over View";
+  export var OverviewController = _module.controller("HawkularMetrics.OverviewController", ['$scope', ($scope) => {
+    $scope.overview = "Over View";
 
-    }]);
+  }]);
 
 }

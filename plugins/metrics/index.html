@@ -2,43 +2,43 @@
 <html>
 
 <head>
-    <title>hawkular-metrics</title>
-    <base href='/'>
-    <meta charset="UTF8">
+  <title>hawkular-metrics</title>
+  <base href='/'>
+  <meta charset="UTF8">
 
 
-    <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css"/>
-    <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css"/>
-    <link rel="stylesheet" href="libs/hawkular-charts/css/hawkular-chart.css"/>
-    <link rel="stylesheet" href="../../dist/hawkular-ui-components-metrics.css"/>
+  <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css"/>
+  <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css"/>
+  <link rel="stylesheet" href="libs/hawkular-charts/css/hawkular-chart.css"/>
+  <link rel="stylesheet" href="../../dist/hawkular-ui-components-metrics.css"/>
 
-    <!-- bower:css -->
-    <link rel="stylesheet" href="libs/toastr/toastr.css" />
-    <!-- endbower -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="libs/toastr/toastr.css"/>
+  <!-- endbower -->
 
-    <!-- ES6/ES6 shim -->
-    <!--[if IE 8]>
-    <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
-    <![endif]-->
-    <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
+  <!-- ES6/ES6 shim -->
+  <!--[if IE 8]>
+  <script src="libs/es5-dom-shim/__COMIPLE/a.ie8.js"></script>
+  <![endif]-->
+  <script src="libs/es5-dom-shim/__COMPILE/a.js"></script>
 
-    <!-- bower:js -->
-    <!-- endbower -->
+  <!-- bower:js -->
+  <!-- endbower -->
 
-    <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="libs/patternfly/dist/js/patternfly.js"></script>
-    <script type="node_modules/angular-hint/hint.js"></script>
+  <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="libs/patternfly/dist/js/patternfly.js"></script>
+  <script type="node_modules/angular-hint/hint.js"></script>
 
 </head>
 
 <body data-ng-strict-di>
 <nav class="navbar navbar-default navbar-pf" role="navigation">
-    <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
-    <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
+  <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
+  <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
 </nav>
 
 <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
-    <div ng-include src="viewPartial"></div>
+  <div ng-include src="viewPartial"></div>
 </div>
 
 <!-- add any scripts under dist/ here -->

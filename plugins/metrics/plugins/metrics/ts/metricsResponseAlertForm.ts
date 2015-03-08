@@ -18,119 +18,119 @@
 
 module HawkularMetrics {
 
-    export interface IQuickAlertController {
-        toggleQuickAlert():void
-        saveQuickAlert():void
+  export interface IQuickAlertController {
+    toggleQuickAlert():void
+    saveQuickAlert():void
+  }
+
+  export class QuickAlertController implements IQuickAlertController {
+    public static  $inject = ['$scope', 'HawkularAlert'];
+
+    constructor(private $scope:any,
+                private HawkularAlert:any) {
+      this.$scope.showQuickAlert = false;
+      this.$scope.quickTrigger = {
+        operator: 'LT',
+        threshold: 0
+      };
+      this.allNotifiers();
+      console.log('Notifiers: ' + this.$scope.notifiers);
     }
 
-    export class QuickAlertController implements IQuickAlertController {
-        public static  $inject = ['$scope', 'HawkularAlert'];
+    toggleQuickAlert():void {
+      this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
+    }
 
-        constructor(private $scope:any,
-                    private HawkularAlert:any) {
-            this.$scope.showQuickAlert = false;
-            this.$scope.quickTrigger = {
-                operator: 'LT',
-                threshold: 0
-            };
-            this.allNotifiers();
-            console.log('Notifiers: ' + this.$scope.notifiers);
+    private allNotifiers():void {
+      this.$scope.notifiers = [];
+      this.HawkularAlert.Notifier.query(
+        (result) => {
+          this.$scope.notifiers = result;
+        }, (error) => {
+          if (error.data.errorMsg) {
+            toastr.error(error.data.errorMsg);
+          } else {
+            toastr.error('Error loading Alerts Notifiers: ' + error);
+          }
         }
+      );
+    }
 
-        toggleQuickAlert():void {
-            this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
-        }
+    saveQuickAlert():void {
+      if (sharedMetricId !== '.status.duration' && sharedMetricId !== '.status.code') {
+        var newTrigger:any = {};
+        newTrigger.id = sharedMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
+        newTrigger.name = newTrigger.id;
+        newTrigger.description = 'Created on ' + new Date();
+        newTrigger.match = 'ALL';
+        newTrigger.enabled = true;
+        newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
 
-        private allNotifiers():void {
-            this.$scope.notifiers = [];
-            this.HawkularAlert.Notifier.query(
-                (result) => {
-                    this.$scope.notifiers = result;
-                }, (error) => {
-                    if (error.data.errorMsg) {
-                        toastr.error(error.data.errorMsg);
-                    } else {
-                        toastr.error('Error loading Alerts Notifiers: ' + error);
-                    }
-                }
-            );
-        }
+        var newDampening:any = {
+          triggerId: newTrigger.id,
+          type: 'RELAXED_COUNT',
+          evalTrueSetting: 1,
+          evalTotalSetting: 1,
+          evalTimeSetting: 0
+        };
 
-        saveQuickAlert():void {
-            if (sharedMetricId !== '.status.duration' && sharedMetricId !== '.status.code') {
-                var newTrigger:any = {};
-                newTrigger.id = sharedMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
-                newTrigger.name = newTrigger.id;
-                newTrigger.description = 'Created on ' + new Date();
-                newTrigger.match = 'ALL';
-                newTrigger.enabled = true;
-                newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
-
-                var newDampening:any = {
-                    triggerId: newTrigger.id,
-                    type: 'RELAXED_COUNT',
-                    evalTrueSetting: 1,
-                    evalTotalSetting: 1,
-                    evalTimeSetting: 0
+        this.HawkularAlert.Trigger.save(newTrigger,
+          (trigger) => {
+            newDampening.triggerId = trigger.id;
+            this.HawkularAlert.Dampening.save(newDampening,
+              (dampening) => {
+                var newThresholdCondition = {
+                  triggerId: newDampening.triggerId,
+                  dataId: sharedMetricId,
+                  conditionSetSize: 1,
+                  conditionSetIndex: 1,
+                  operator: this.$scope.quickTrigger.operator,
+                  threshold: this.$scope.quickTrigger.threshold
                 };
-
-                this.HawkularAlert.Trigger.save(newTrigger,
-                    (trigger) => {
-                        newDampening.triggerId = trigger.id;
-                        this.HawkularAlert.Dampening.save(newDampening,
-                            (dampening) => {
-                                var newThresholdCondition = {
-                                    triggerId: newDampening.triggerId,
-                                    dataId: sharedMetricId,
-                                    conditionSetSize: 1,
-                                    conditionSetIndex: 1,
-                                    operator: this.$scope.quickTrigger.operator,
-                                    threshold: this.$scope.quickTrigger.threshold
-                                };
-                                this.HawkularAlert['ThresholdCondition'].save(newThresholdCondition,
-                                    () => {
-                                        this.HawkularAlert.Alert.reload(
-                                            (errorReload) => {
-                                                if (errorReload.data.errorMsg) {
-                                                    toastr.error(errorReload.data.errorMsg);
-                                                } else {
-                                                    toastr.error('Error reloading alerts' + errorReload);
-                                                }
-                                            });
-                                        toastr.success('Alert Created!');
-                                        this.toggleQuickAlert();
-                                    },
-                                    (errorCondition) => {
-                                        if (errorCondition.data.errorMsg) {
-                                            toastr.error(errorCondition.data.errorMsg);
-                                        } else {
-                                            toastr.error('Error loading Saving Trigger Condition' + errorCondition);
-                                        }
-                                    });
-                            }, (errorDampening) => {
-                                if (errorDampening.data.errorMsg) {
-                                    toastr.error(errorDampening.data.errorMsg);
-                                } else {
-                                    toastr.error('Error loading Saving Trigger Dampening ' + errorDampening);
-                                }
-                            }
-                        );
-                    }, (error) => {
-                        if (error.data.errorMsg) {
-                            toastr.error(error.data.errorMsg);
+                this.HawkularAlert['ThresholdCondition'].save(newThresholdCondition,
+                  () => {
+                    this.HawkularAlert.Alert.reload(
+                      (errorReload) => {
+                        if (errorReload.data.errorMsg) {
+                          toastr.error(errorReload.data.errorMsg);
                         } else {
-                            toastr.error('Error loading Saving Trigger ' + error);
+                          toastr.error('Error reloading alerts' + errorReload);
                         }
+                      });
+                    toastr.success('Alert Created!');
+                    this.toggleQuickAlert();
+                  },
+                  (errorCondition) => {
+                    if (errorCondition.data.errorMsg) {
+                      toastr.error(errorCondition.data.errorMsg);
+                    } else {
+                      toastr.error('Error loading Saving Trigger Condition' + errorCondition);
                     }
-                );
+                  });
+              }, (errorDampening) => {
+                if (errorDampening.data.errorMsg) {
+                  toastr.error(errorDampening.data.errorMsg);
+                } else {
+                  toastr.error('Error loading Saving Trigger Dampening ' + errorDampening);
+                }
+              }
+            );
+          }, (error) => {
+            if (error.data.errorMsg) {
+              toastr.error(error.data.errorMsg);
             } else {
-                toastr.warning('No metric selected');
+              toastr.error('Error loading Saving Trigger ' + error);
             }
-
-        }
+          }
+        );
+      } else {
+        toastr.warning('No metric selected');
+      }
 
     }
 
-    _module.controller('QuickAlertController', QuickAlertController);
+  }
+
+  _module.controller('QuickAlertController', QuickAlertController);
 }
 

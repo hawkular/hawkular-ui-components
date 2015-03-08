@@ -1,61 +1,62 @@
 <div ng-controller="MetricsViewController as vm">
 
-    <div class="col-sm-9 col-md-10 content">
+  <div class="col-sm-9 col-md-10 content">
 
-        <div class="well" id="control-bar">
-            <span  class="col-md-3 col-sm-4 select-url-container" >
+    <div class="well" id="control-bar">
+            <span class="col-md-3 col-sm-4 select-url-container">
                 <select class="form-control input-sm select-url" ng-model="vm.selectedResource"
                         ng-options="rs.parameters.url for rs in vm.resourceList"></select>
             </span>
-            <span id="date-range-container" class="col-md-3 col-sm-2 pull-right" >
-                <span id="date-range" class="input-group input-group-sm" >
+            <span id="date-range-container" class="col-md-3 col-sm-2 pull-right">
+                <span id="date-range" class="input-group input-group-sm">
                     <input type="text" class="form-control input-sm" value="{{vm.dateRange}}" readonly>
                 </span>
             </span>
-        </div>
-        <div ng-switch="vm.isResponseTab">
-            <h1 ng-switch-when="true">Response Time</h1>
-            <h1 ng-switch-when="false">Responsiveness </h1>
-        </div>
+    </div>
+    <div ng-switch="vm.isResponseTab">
+      <h1 ng-switch-when="true">Response Time</h1>
 
-        <p class="update-info pull-right"><i class="fa fa-refresh"></i>
-            <a ng-click="vm.refreshChartDataNow(vm.getMetricId())">Last update 1 minutes ago</a>
-        </p>
-        <ul class="nav nav-tabs nav-tabs-pf">
-            <li ng-class="{'active': vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Response Time</a></li>
-            <li ng-class="{'active': !vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Responsiveness</a></li>
-        </ul>
-        <div id="metrics-chart-container" ng-switch="vm.chartData.dataPoints.length > 1">
-            <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
-                initial data. Please be patient(could be up to a minute)...</p>
-
-            <div  id="metrics-chart" ng-switch-when="true">
-                <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-                <hawkular-chart
-                        data="{{vm.chartData.dataPoints}}"
-                        chart-type="{{vm.getChartType()}}"
-                        show-avg-line="false"
-                        hide-high-low-values="true"
-                        y-axis-units="{{vm.getYAxisUnits()}}"
-                        chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
-                        chart-height="250">
-                </hawkular-chart>
-            </div>
-            <!--
-            <div style="margin-top: 30px;">
-                <button class="btn btn-sm" ng-click="vm.showPreviousTimeRange()" style="margin-left:90px;"
-                        ng-show="vm.chartData.dataPoints.length > 2">&lt;&lt; Prev.
-                </button>
-                <button class="btn btn-sm" style="float:right;margin-right: 50px;" ng-click="vm.showNextTimeRange()"
-                        ng-show="vm.chartData.dataPoints.length > 2" ng-disabled="!vm.hasNext();">Next &gt;&gt;</button>
-            </div>
-            <br/>
-            -->
-        </div>
-
+      <h1 ng-switch-when="false">Responsiveness </h1>
     </div>
 
-    <ng-include src="'plugins/metrics/html/create-alert-form.html'"></ng-include>
+    <p class="update-info pull-right"><i class="fa fa-refresh"></i>
+      <a ng-click="vm.refreshChartDataNow(vm.getMetricId())">Last update 1 minutes ago</a>
+    </p>
+    <ul class="nav nav-tabs nav-tabs-pf">
+      <li ng-class="{'active': vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Response Time</a></li>
+      <li ng-class="{'active': !vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Responsiveness</a></li>
+    </ul>
+    <div id="metrics-chart-container" ng-switch="vm.chartData.dataPoints.length > 1">
+      <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
+        initial data. Please be patient(could be up to a minute)...</p>
+
+      <div id="metrics-chart" ng-switch-when="true">
+        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+        <hawkular-chart
+          data="{{vm.chartData.dataPoints}}"
+          chart-type="{{vm.getChartType()}}"
+          show-avg-line="false"
+          hide-high-low-values="true"
+          y-axis-units="{{vm.getYAxisUnits()}}"
+          chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
+          chart-height="250">
+        </hawkular-chart>
+      </div>
+      <!--
+      <div style="margin-top: 30px;">
+          <button class="btn btn-sm" ng-click="vm.showPreviousTimeRange()" style="margin-left:90px;"
+                  ng-show="vm.chartData.dataPoints.length > 2">&lt;&lt; Prev.
+          </button>
+          <button class="btn btn-sm" style="float:right;margin-right: 50px;" ng-click="vm.showNextTimeRange()"
+                  ng-show="vm.chartData.dataPoints.length > 2" ng-disabled="!vm.hasNext();">Next &gt;&gt;</button>
+      </div>
+      <br/>
+      -->
+    </div>
+
+  </div>
+
+  <ng-include src="'plugins/metrics/html/create-alert-form.html'"></ng-include>
 
 </div>
 

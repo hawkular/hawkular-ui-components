@@ -1,28 +1,31 @@
 <div class="pg-insert-url" ng-controller="HawkularMetrics.AddUrlController as vm">
-    <div class="container">
-        <h1>Welcome!</h1>
-        <h2>Collect metrics from a website that you want to monitor.</h2>
-        <form class="form-horizontal" name="addUrlForm" role="form" novalidate>
-            <div class="form-group input">
-                <div class="col-lg-6 col-sm-8 col-xs-12 align-center">
-                    <div class="input-group input-group-lg">
-                        <input type="url" class="form-control input-lg" name="resourceUrl" ng-model="vm.resourceUrl"
-                               ng-model-options="{ updateOn: 'default blur'}"
-                               ng-enter="vm.addUrl(vm.resourceUrl)"
-                               placeholder="Enter a website URL (e.g., http://mysite.com/home)" required>
-                        <span class="help-block hide"  ng-show="vm.addUrlForm.resourceUrl.$dirty && vm.addUrlForm.resourceUrl.$error.required">The URL you entered is not valid. Please enter a valid URL.</span>
+  <div class="container">
+    <h1>Welcome!</h1>
+
+    <h2>Collect metrics from a website that you want to monitor.</h2>
+
+    <form class="form-horizontal" name="addUrlForm" role="form" novalidate>
+      <div class="form-group input">
+        <div class="col-lg-6 col-sm-8 col-xs-12 align-center">
+          <div class="input-group input-group-lg">
+            <input type="url" class="form-control input-lg" name="resourceUrl" ng-model="vm.resourceUrl"
+                   ng-model-options="{ updateOn: 'default blur'}"
+                   ng-enter="vm.addUrl(vm.resourceUrl)"
+                   placeholder="Enter a website URL (e.g., http://mysite.com/home)" required>
+            <span class="help-block hide"
+                  ng-show="vm.addUrlForm.resourceUrl.$dirty && vm.addUrlForm.resourceUrl.$error.required">The URL you entered is not valid. Please enter a valid URL.</span>
               <span class="input-group-btn">
                    <button class="btn btn-primary btn-lg" type="button" ng-disabled="!vm.addUrlForm.$valid"
                            ng-click="vm.addUrl(vm.resourceUrl)">Get Metrics
                    </button>
               </span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group loading hide">
-                <div class="spinner spinner-lg"></div>
-                <button type="button" class="btn btn-link">Cancel</button>
-            </div>
-        </form>
-    </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group loading hide">
+        <div class="spinner spinner-lg"></div>
+        <button type="button" class="btn btn-link">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>

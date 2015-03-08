@@ -17,57 +17,57 @@
 
 module HawkularMetrics {
 
-    /// some config vars
-    export var pluginName = "hawkular-metrics";
+  /// some config vars
+  export var pluginName = "hawkular-metrics";
 
-    export var log:Logging.Logger = Logger.get(pluginName);
+  export var log:Logging.Logger = Logger.get(pluginName);
 
-    export var templatePath = "plugins/metrics/html";
+  export var templatePath = "plugins/metrics/html";
 
 
-    /// These are plugin globals used across several screens (think session vars from server side programming)
+  /// These are plugin globals used across several screens (think session vars from server side programming)
 
-    /// @todo: this will go away once we have KeyCloak integration
-    export var globalTenantId = "test";
+  /// @todo: this will go away once we have KeyCloak integration
+  export var globalTenantId = "test";
 
-    export var globalResourceId = "";
-    export var globalResourceUrl = "";
+  export var globalResourceId = "";
+  export var globalResourceUrl = "";
 
-    export var globalResourceList = [];
+  export var globalResourceList = [];
 
-    export var globalChartTimeRange:ChartTimeRange;
+  export var globalChartTimeRange:ChartTimeRange;
 
-    export class ChartTimeRange {
-        startTimestamp:number;
-        endTimestamp:number;
+  export class ChartTimeRange {
+    startTimestamp:number;
+    endTimestamp:number;
 
-        constructor(private initialHoursDifference:number) {
-            /// just set a default if no ctors given
-            this.init();
-        }
-
-        init() {
-            this.endTimestamp = moment().valueOf();
-            this.startTimestamp = moment().subtract('hour', this.initialHoursDifference).valueOf();
-        }
-
-        getStartDate():Date {
-            return new Date(this.startTimestamp);
-        }
-
-        getEndDate():Date {
-            return new Date(this.endTimestamp);
-        }
-
-        getFormattedTimeRange():string {
-            ///@todo: if less < 24 hr show times otherwise dates
-            ///return moment(this.startTimestamp).format('MMM do') + ' - ' + moment(this.endTimestamp).format('MMM do')
-            /// if within 7 days
-            //return moment(this.startTimestamp).format('ddd, hA') + ' - ' + moment(this.endTimestamp).format('ddd, hA');
-            // if within 24 hours
-            return moment(this.startTimestamp).format('H:mm') + ' - ' + moment(this.endTimestamp).format('H:mm')
-                + ' (' + moment(this.endTimestamp).from(moment(this.startTimestamp), true) + ')';
-        }
+    constructor(private initialHoursDifference:number) {
+      /// just set a default if no ctors given
+      this.init();
     }
+
+    init() {
+      this.endTimestamp = moment().valueOf();
+      this.startTimestamp = moment().subtract('hour', this.initialHoursDifference).valueOf();
+    }
+
+    getStartDate():Date {
+      return new Date(this.startTimestamp);
+    }
+
+    getEndDate():Date {
+      return new Date(this.endTimestamp);
+    }
+
+    getFormattedTimeRange():string {
+      ///@todo: if less < 24 hr show times otherwise dates
+      ///return moment(this.startTimestamp).format('MMM do') + ' - ' + moment(this.endTimestamp).format('MMM do')
+      /// if within 7 days
+      //return moment(this.startTimestamp).format('ddd, hA') + ' - ' + moment(this.endTimestamp).format('ddd, hA');
+      // if within 24 hours
+      return moment(this.startTimestamp).format('H:mm') + ' - ' + moment(this.endTimestamp).format('H:mm')
+        + ' (' + moment(this.endTimestamp).from(moment(this.startTimestamp), true) + ')';
+    }
+  }
 
 }
