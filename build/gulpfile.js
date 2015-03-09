@@ -180,14 +180,7 @@ module.exports = function(gulp, config, pluginName){
       .pipe(gulp.dest('.tmp/gulp-connect-server/'));
   });
 
-  gulp.task('assets-' + pluginName, function () {
-    var assets = path.resolve(__dirname, '../plugins/' + pluginName + '/*.json');
-
-    gulp.src(assets)
-      .pipe(gulp.dest('.tmp/gulp-connect-server/'));
-  });
-
-  gulp.task('connect-' + pluginName, ['connect-prepare-libs-' + pluginName, 'connect-prepare-dist-' + pluginName, 'bower-' + pluginName, 'assets-' + pluginName, 'watch-' + pluginName], function() {
+  gulp.task('connect-' + pluginName, ['connect-prepare-libs-' + pluginName, 'connect-prepare-dist-' + pluginName, 'bower-' + pluginName, 'watch-' + pluginName], function() {
     var staticPath = path.resolve(__dirname, '../.tmp/gulp-connect-server/');
 
     plugins.connect.server({
