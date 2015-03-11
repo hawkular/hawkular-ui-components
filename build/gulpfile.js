@@ -156,27 +156,26 @@ module.exports = function(gulp, config, pluginName){
 
   gulp.task('connect-prepare-libs-' + pluginName, ['tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
     'clean-' + pluginName], function() {
-    var libPath = path.resolve(__dirname, '../libs/**');
+    var libPath = path.resolve(__dirname, '../libs');
 
-    gulp.src([libPath], { "base" : '.' })
-      .pipe(gulp.dest('.tmp/gulp-connect-server'));
+    gulp.src([libPath])
+      .pipe(plugins.symlink('.tmp/gulp-connect-server/libs', { force: true }));
+
   });
 
   gulp.task('connect-prepare-dist-' + pluginName, ['tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
     'clean-' + pluginName], function() {
-    var distPath = path.resolve(__dirname, '../dist/**');
+    var distPath = path.resolve(__dirname, '../dist');
 
-    gulp.src([distPath], { "base" : '.' })
-      .pipe(gulp.dest('.tmp/gulp-connect-server'));
+    gulp.src([distPath])
+      .pipe(plugins.symlink('.tmp/gulp-connect-server/dist', { force: true }));
   });
 
   gulp.task('bower-' + pluginName, function () {
     var indexPath = path.resolve(__dirname, '../plugins/' + pluginName + '/index.html');
 
     gulp.src(indexPath)
-      .pipe(wiredep({
-        ignorePath: '../../'
-      }))
+      .pipe(wiredep())
       .pipe(gulp.dest('.tmp/gulp-connect-server/'));
   });
 

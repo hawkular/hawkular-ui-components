@@ -48,6 +48,11 @@
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-ui-components-inventory.js"></script>
+    <script>
+      angular.module('inventory').config(["HawkularInventoryProvider", function(HawkularInventoryProvider) {
+        HawkularInventoryProvider.setPort(8080);
+      }]);
+    </script>
 
   </body>
 </html>
