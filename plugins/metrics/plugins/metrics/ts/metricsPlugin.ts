@@ -29,7 +29,7 @@ module HawkularMetrics {
       .title(() => "Metrics")
       .href(() => "/metrics")
       .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-      .subPath("Home List", "homeList", navBuilder.join(HawkularMetrics.templatePath, 'home-list.html'))
+      .subPath("Home", "home", navBuilder.join(HawkularMetrics.templatePath, 'home.html'))
       .subPath("Response Time", "responseTime", navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
       .subPath("Up/Downtime", "upDowntime", navBuilder.join(HawkularMetrics.templatePath, 'up-downtime.html'))
       .subPath("Alerts", "alerts", navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
