@@ -40,6 +40,11 @@
 
     <!-- add any scripts under dist/ here -->
     <script src="dist/hawkular-ui-components-alerts.js"></script>
+    <script>
+      angular.module('hawkular-alerts').config(["HawkularAlertProvider", function(HawkularAlertProvider) {
+        HawkularAlertProvider.setPort(8080);
+      }]);
+    </script>
 
   </body>
 </html>
