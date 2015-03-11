@@ -13,10 +13,9 @@
 
 /* Side menu (1st column) */
 
-aside.hk-sidebar {
+hawkular-sidebar.hk-sidebar {
   background-color: @c_snav;
   padding: 0;
-  padding-right: 0;
 
   margin-bottom: -99999px;
   padding-bottom: 99999px;
@@ -66,7 +65,14 @@ aside.hk-sidebar {
             font-size: 42px;
           }
 
-          &:hover, &:focus {
+        }
+      }
+
+      &:hover, &:focus {
+        a {
+          color: @c_white;
+
+          .fa {
             color: #23A7E6;
           }
         }

@@ -14,14 +14,12 @@
 /// limitations under the License.
 
 /// <reference path="../../includes.ts"/>
-/// <reference path="sidebarGlobals.ts"/>
 module Sidebar {
 
-  export var _module = angular.module(pluginName, []);
+  export var pluginName = "sidebar";
 
-  _module.directive('hawkularSidebar', function () {
-    return new Sidebar.SidebarDirective();
-  });
+  export var log:Logging.Logger = Logger.get(pluginName);
 
-  hawtioPluginLoader.addModule(pluginName);
+  export var templatePath = "plugins/sidebar/html/sidebar.html";
+
 }

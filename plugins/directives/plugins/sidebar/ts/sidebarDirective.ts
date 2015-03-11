@@ -21,9 +21,16 @@ module Sidebar {
   export class SidebarDirective {
 
     public restrict = 'E';
-    public replace = true;
     public transclude = false;
 
-    public templateUrl = 'plugins/sidebar/html/sidebar.html';
+    public templateUrl = templatePath;
   }
+
+  export var SidebarController = _module.controller("Sidebar.SidebarController",
+    ['$scope', '$rootScope', '$location' ,($scope, $rootScope, $location) => {
+
+    $scope.getClass = function (path) {
+      return $location.path().indexOf(path) === 0 ? 'active' : '';
+    };
+  }]);
 }
