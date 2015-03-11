@@ -211,7 +211,7 @@ module HawkularMetrics {
     }
 
     getChartType():string {
-      return this.isResponseTab ? 'line' : 'histogram';
+      return this.isResponseTab ? 'hawkularline' : 'histogram';
     }
 
     getYAxisUnits():string {

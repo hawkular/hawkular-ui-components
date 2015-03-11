@@ -67,15 +67,13 @@ module HawkularMetrics {
           }];
 
 
-          /// @todo: this will become the 'Metrics Selection' screen once we get that
           /// For right now we will just Register a couple of metrics automatically
           this.HawkularInventory.Metric.save({
             tenantId: globalTenantId,
             resourceId: newResource.id
           }, metrics).$promise.then((newMetrics) => {
               toastr.info("Your data is being collected. Please be patient (should be about another minute).");
-              /// Hop on over to the metricsView page for charting
-              this.$location.url("/metrics/metricsResponse");
+              this.$location.url("/metrics/responseTime");
             });
 
         });
