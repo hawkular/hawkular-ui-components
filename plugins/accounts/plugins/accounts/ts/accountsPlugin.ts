@@ -34,7 +34,7 @@ module HawkularAccounts {
     }]);
 
     _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
-        HawtioNav.add(accountsTab);
+        //HawtioNav.add(accountsTab);
     }]);
 
     hawtioPluginLoader.addModule(HawkularAccounts.pluginName);
