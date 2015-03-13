@@ -24,22 +24,26 @@ module HawkularMetrics {
   }
 
   export class QuickAlertController implements IQuickAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert'];
+    public static  $inject = ['$scope', 'HawkularAlert', '$log', '$q'];
 
     constructor(private $scope:any,
-                private HawkularAlert:any) {
+                private HawkularAlert:any,
+                private $log: ng.ILogService,
+                private $q: ng.IQService) {
       this.$scope.showQuickAlert = false;
       this.$scope.quickTrigger = {
         operator: 'LT',
         threshold: 0
       };
       this.allNotifiers();
-      console.log('Notifiers: ' + this.$scope.notifiers);
+      this.$log.debug('Notifiers: ' + this.$scope.notifiers);
     }
 
     toggleQuickAlert():void {
       this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
     }
+
+    private PROMISE_BREAK: string = 'magicValue1234';
 
     private allNotifiers():void {
       this.$scope.notifiers = [];
@@ -47,13 +51,29 @@ module HawkularMetrics {
         (result) => {
           this.$scope.notifiers = result;
         }, (error) => {
-          if (error.data.errorMsg) {
-            toastr.error(error.data.errorMsg);
-          } else {
-            toastr.error('Error loading Alerts Notifiers: ' + error);
-          }
+          this.errorToastr(error, 'Error loading Alerts Notifiers:');
         }
       );
+    }
+
+    private errorToastr(error: any, errorMsg: string):void {
+      var errorMsgComplete: string;
+
+      if (error.data && error.data.errorMsg) {
+        errorMsgComplete = error.data.errorMsg;
+      } else {
+        errorMsgComplete = errorMsg + ' ' + error;
+      }
+
+      this.$log.error(errorMsgComplete);
+      toastr.error(errorMsgComplete);
+    }
+
+    private errorHandler(error: any, msg: string) {
+      if (error !== this.PROMISE_BREAK) {
+        this.errorToastr(error, msg);
+      }
+      return this.$q.reject(this.PROMISE_BREAK);
     }
 
     saveQuickAlert():void {
@@ -74,61 +94,69 @@ module HawkularMetrics {
           evalTimeSetting: 0
         };
 
-        this.HawkularAlert.Trigger.save(newTrigger,
+        this.HawkularAlert.Trigger.save(newTrigger).$promise.then(
+          // Success Trigger save
           (trigger) => {
+            this.$log.debug('Success Trigger save');
             newDampening.triggerId = trigger.id;
-            this.HawkularAlert.Dampening.save(newDampening,
-              (dampening) => {
-                var newThresholdCondition = {
-                  triggerId: newDampening.triggerId,
-                  dataId: sharedMetricId,
-                  conditionSetSize: 1,
-                  conditionSetIndex: 1,
-                  operator: this.$scope.quickTrigger.operator,
-                  threshold: this.$scope.quickTrigger.threshold
-                };
-                this.HawkularAlert['ThresholdCondition'].save(newThresholdCondition,
-                  () => {
-                    this.HawkularAlert.Alert.reload(
-                      (errorReload) => {
-                        if (errorReload.data.errorMsg) {
-                          toastr.error(errorReload.data.errorMsg);
-                        } else {
-                          toastr.error('Error reloading alerts' + errorReload);
-                        }
-                      });
-                    toastr.success('Alert Created!');
-                    this.toggleQuickAlert();
-                  },
-                  (errorCondition) => {
-                    if (errorCondition.data.errorMsg) {
-                      toastr.error(errorCondition.data.errorMsg);
-                    } else {
-                      toastr.error('Error loading Saving Trigger Condition' + errorCondition);
-                    }
-                  });
-              }, (errorDampening) => {
-                if (errorDampening.data.errorMsg) {
-                  toastr.error(errorDampening.data.errorMsg);
-                } else {
-                  toastr.error('Error loading Saving Trigger Dampening ' + errorDampening);
-                }
-              }
-            );
-          }, (error) => {
-            if (error.data.errorMsg) {
-              toastr.error(error.data.errorMsg);
-            } else {
-              toastr.error('Error loading Saving Trigger ' + error);
-            }
+
+            return this.HawkularAlert.Dampening.save(newDampening).$promise;
+          },
+          // Error Trigger save
+          (error) => {
+            return this.errorHandler(error, 'Error saving Trigger');
+          }
+        ).then(
+          // Success Dampening save
+          (dampening) => {
+            this.$log.debug('Success Dampening save', dampening);
+            var newThresholdCondition = {
+              triggerId: dampening.triggerId,
+              dataId: sharedMetricId,
+              conditionSetSize: 1,
+              conditionSetIndex: 1,
+              operator: this.$scope.quickTrigger.operator,
+              threshold: this.$scope.quickTrigger.threshold
+            };
+
+            return this.HawkularAlert.ThresholdCondition.save(newThresholdCondition).$promise;
+          },
+          // Error Dampening save
+          (errorDampening) => {
+            return this.errorHandler(errorDampening, 'Error saving Trigger');
+          }
+        ).then(
+          // Success ThresholdCondition save
+          () => {
+            this.$log.debug('Success ThresholdCondition save');
+            this.$log.debug('Alert Created!');
+            toastr.success('Alert Created!');
+
+            this.toggleQuickAlert();
+
+            return this.HawkularAlert.Alert.reload().$promise;
+          },
+          // Error ThresholdCondition save
+          (errorCondition) => {
+            return this.errorHandler(errorCondition, 'Error saving Trigger Condition');
+          }
+        ).then(
+          // Success Reload
+          angular.noop,
+          // Error Reload
+          (errorReload) => {
+            return this.errorHandler(errorReload, 'Error reloading Alerts');
+          }
+        ).catch(
+          (error) => {
+            this.errorHandler(error, 'Error:');
           }
         );
       } else {
+        this.$log.debug('No metric selected');
         toastr.warning('No metric selected');
       }
-
     }
-
   }
 
   _module.controller('QuickAlertController', QuickAlertController);
