@@ -36,22 +36,13 @@
           data="{{vm.chartData.dataPoints}}"
           chart-type="{{vm.getChartType()}}"
           show-avg-line="false"
+          alert-value="600"
           hide-high-low-values="true"
           y-axis-units="{{vm.getYAxisUnits()}}"
           chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
           chart-height="250">
         </hawkular-chart>
       </div>
-      <!--
-      <div style="margin-top: 30px;">
-          <button class="btn btn-sm" ng-click="vm.showPreviousTimeRange()" style="margin-left:90px;"
-                  ng-show="vm.chartData.dataPoints.length > 2">&lt;&lt; Prev.
-          </button>
-          <button class="btn btn-sm" style="float:right;margin-right: 50px;" ng-click="vm.showNextTimeRange()"
-                  ng-show="vm.chartData.dataPoints.length > 2" ng-disabled="!vm.hasNext();">Next &gt;&gt;</button>
-      </div>
-      <br/>
-      -->
     </div>
 
   </div>

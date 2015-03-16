@@ -81,13 +81,10 @@ module HawkularMetrics {
               this.selectedResource = resources[resources.length - 1];
               $scope.vm.refreshChartDataNow(this.getMetricId());
             });
-
         }
 
       });
-
       $scope.vm.onCreate();
-
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -95,25 +92,29 @@ module HawkularMetrics {
     private chartData:any;
     private isResponseTab = true;
     private autoRefreshPromise:ng.IPromise<number>;
-
-    /// expose this to the View
-    resourceList = [];
+    private _resourceList = [];
     selectedResource;
 
+
+    public get resourceList():string[] {
+      return this._resourceList;
+    }
+
+    public set resourceList(newResourceList:string[]) {
+      globalResourceList = newResourceList;
+      this._resourceList = newResourceList;
+    }
 
     private onCreate() {
       /// setup autorefresh for every minute
       this.autoRefresh(60);
-      this.setupResourceList();
-      this.resourceList = globalResourceList;
-      this.selectedResource = this.resourceList[this.resourceList.length - 1];
-      this.refreshChartDataNow(this.getMetricId());
+      this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
+        this.resourceList = aResourceList;
+        this.selectedResource = this.resourceList[this.resourceList.length - 1];
+        this.refreshChartDataNow(this.getMetricId());
+      });
     }
 
-    setupResourceList() {
-      globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId});
-      this.resourceList = globalResourceList;
-    }
 
     cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -135,53 +136,6 @@ module HawkularMetrics {
     private noDataFoundForId(id:string):void {
       this.$log.warn('No Data found for id: ' + id);
       ///toastr.warning('No Data found for id: ' + id);
-    }
-
-    private static calculatePreviousTimeRange(startDate:Date, endDate:Date):any {
-      var previousTimeRange:Date[] = [];
-      var intervalInMillis = endDate.getTime() - startDate.getTime();
-
-      previousTimeRange.push(new Date(startDate.getTime() - intervalInMillis));
-      previousTimeRange.push(startDate);
-      return previousTimeRange;
-    }
-
-    showPreviousTimeRange():void {
-      var previousTimeRange = MetricsViewController.calculatePreviousTimeRange(this.startTimeStamp, this.endTimeStamp);
-
-      this.startTimeStamp = previousTimeRange[0];
-      this.endTimeStamp = previousTimeRange[1];
-      this.refreshHistoricalChartData(this.getMetricId(), this.startTimeStamp, this.endTimeStamp);
-
-    }
-
-
-    private static calculateNextTimeRange(startDate:Date, endDate:Date):any {
-      var nextTimeRange = [];
-      var intervalInMillis = endDate.getTime() - startDate.getTime();
-
-      nextTimeRange.push(endDate);
-      nextTimeRange.push(new Date(endDate.getTime() + intervalInMillis));
-      return nextTimeRange;
-    }
-
-
-    showNextTimeRange():void {
-      var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
-
-      this.startTimeStamp = nextTimeRange[0];
-      this.endTimeStamp = nextTimeRange[1];
-      this.refreshHistoricalChartData(this.getMetricId(), this.startTimeStamp, this.endTimeStamp);
-
-    }
-
-
-    hasNext():boolean {
-      var nextTimeRange = MetricsViewController.calculateNextTimeRange(this.startTimeStamp, this.endTimeStamp);
-      // unsophisticated test to see if there is a next; without actually querying.
-
-      //@fixme: pay the price, do the query!
-      return nextTimeRange[1].getTime() < new Date().getTime();
     }
 
 
@@ -211,7 +165,7 @@ module HawkularMetrics {
     }
 
     getChartType():string {
-      return this.isResponseTab ? 'hawkularline' : 'histogram';
+      return this.isResponseTab ? 'hawkulararea' : 'histogram';
     }
 
     getYAxisUnits():string {
@@ -232,37 +186,40 @@ module HawkularMetrics {
         startTime = this.startTimeStamp.getTime();
       }
 
-      this.HawkularMetric.NumericMetricData.queryMetrics({
-        tenantId: globalTenantId,
-        numericId: metricId,
-        start: startTime,
-        end: endTime,
-        buckets: 60
-      }).$promise
-        .then((response) => {
-          // we want to isolate the response from the data we are feeding to the chart
-          this.bucketedDataPoints = this.formatBucketedChartOutput(response);
-          console.dir(this.bucketedDataPoints);
+      if (metricId) {
+        this.HawkularMetric.NumericMetricData.queryMetrics({
+          tenantId: globalTenantId,
+          numericId: metricId,
+          start: startTime,
+          end: endTime,
+          buckets: 60
+        }).$promise
+          .then((response) => {
+            // we want to isolate the response from the data we are feeding to the chart
+            this.bucketedDataPoints = this.formatBucketedChartOutput(response);
+            console.dir(this.bucketedDataPoints);
 
-          if (this.bucketedDataPoints.length !== 0) {
-            // this is basically the DTO for the chart
-            this.chartData = {
-              id: metricId,
-              startTimeStamp: this.startTimeStamp,
-              endTimeStamp: this.endTimeStamp,
-              dataPoints: this.bucketedDataPoints,
-              contextDataPoints: this.contextDataPoints,
-              annotationDataPoints: []
-            };
+            if (this.bucketedDataPoints.length) {
+              // this is basically the DTO for the chart
+              this.chartData = {
+                id: metricId,
+                startTimeStamp: this.startTimeStamp,
+                endTimeStamp: this.endTimeStamp,
+                dataPoints: this.bucketedDataPoints,
+                contextDataPoints: this.contextDataPoints,
+                annotationDataPoints: []
+              };
 
-          } else {
-            this.noDataFoundForId(this.getMetricId());
-          }
+            } else {
+              this.noDataFoundForId(this.getMetricId());
+            }
 
-        }, (error) => {
-          toastr.error('Error Loading Chart Data: ' + error);
-        });
+          }, (error) => {
+            this.$log.error('Error Loading Chart data');
+            toastr.error('Error Loading Chart Data: ' + error);
+          });
 
+      }
     }
 
     private formatBucketedChartOutput(response):IChartDataPoint[] {
