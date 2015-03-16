@@ -77,9 +77,9 @@ module HawkularMetrics {
     }
 
     saveQuickAlert():void {
-      if (sharedMetricId !== '.status.duration' && sharedMetricId !== '.status.code') {
+      if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
         var newTrigger:any = {};
-        newTrigger.id = sharedMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
+        newTrigger.id = globalMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
         newTrigger.name = newTrigger.id;
         newTrigger.description = 'Created on ' + new Date();
         newTrigger.match = 'ALL';
@@ -112,7 +112,7 @@ module HawkularMetrics {
             this.$log.debug('Success Dampening save', dampening);
             var newThresholdCondition = {
               triggerId: dampening.triggerId,
-              dataId: sharedMetricId,
+              dataId: globalMetricId,
               conditionSetSize: 1,
               conditionSetIndex: 1,
               operator: this.$scope.quickTrigger.operator,

@@ -61,6 +61,9 @@ h2 {
 #metrics-chart {
   height: 270px;
 }
+#avail-chart {
+  height: 270px;
+}
 #control-bar .select-url-container {
   margin: -10px 0 0 -20px;
 }

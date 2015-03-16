@@ -26,24 +26,34 @@
       <li ng-class="{'active': vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Response Time</a></li>
       <li ng-class="{'active': !vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Responsiveness</a></li>
     </ul>
-    <div id="metrics-chart-container" ng-switch="vm.chartData.dataPoints.length > 1">
-      <p class="label label-info" ng-switch-when="false" style="margin-bottom: 25px;">We are collecting your
-        initial data. Please be patient(could be up to a minute)...</p>
+    <div id="metrics-chart-container" ng-switch="vm.isResponseTab" ng-show="vm.chartData.dataPoints.length > 0">
 
       <div id="metrics-chart" ng-switch-when="true">
         <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
         <hawkular-chart
           data="{{vm.chartData.dataPoints}}"
-          chart-type="{{vm.getChartType()}}"
-          show-avg-line="false"
+          chart-type="hawkulararea"
           alert-value="600"
           hide-high-low-values="true"
-          y-axis-units="{{vm.getYAxisUnits()}}"
+          y-axis-units="Response Time (ms)"
           chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
           chart-height="250">
         </hawkular-chart>
       </div>
+      <div id="avail-chart" ng-switch-when="false">
+        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+        <hawkular-chart
+          data="{{vm.chartData.dataPoints}}"
+          chart-type="histogram"
+          y-axis-units="Status Code "
+          chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
+          chart-height="250">
+        </hawkular-chart>
+      </div>
+
     </div>
+    <p class="label label-info" ng-hide="vm.chartData.dataPoints.length > 0" style="margin-bottom: 25px;">We are
+      collecting your initial data. Please be patient(could be up to a minute)...</p>
 
   </div>
 

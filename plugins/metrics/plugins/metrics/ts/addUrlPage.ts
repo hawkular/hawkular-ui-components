@@ -52,16 +52,16 @@ module HawkularMetrics {
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
         .then((newResource) => {
           // we now have a resourceId from this call
-          globalResourceId = newResource.id;
+          globalMetricId = newResource.id;
           globalResourceUrl = resource.parameters.url;
           console.dir(newResource);
-          this.$log.info("New Resource ID: " + globalResourceId + " created for url: " + globalResourceUrl);
+          this.$log.info("New Resource ID: " + globalMetricId + " created for url: " + globalResourceUrl);
           var metrics = [{
-            name: globalResourceId + '.status.duration',
+            name: globalMetricId + '.status.duration',
             unit: 'MILLI_SECOND',
             description: 'Response Time in ms.'
           }, {
-            name: globalResourceId + '.status.code',
+            name: globalMetricId + '.status.code',
             unit: 'NONE',
             description: 'Status Code'
           }];

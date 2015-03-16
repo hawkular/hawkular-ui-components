@@ -32,7 +32,6 @@ module HawkularMetrics {
   }
 
 
-  export var sharedMetricId:string;
 
   /**
    * @ngdoc controller
@@ -42,7 +41,8 @@ module HawkularMetrics {
    * @param $rootScope for publishing $broadcast events only
    * @param $interval
    * @param $log
-   * @param metricDataService
+   * @param HawkularMetric
+   * @param HawkularInventory
    */
   export class MetricsViewController {
     /// for minification only
@@ -65,26 +65,26 @@ module HawkularMetrics {
       + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
       $scope.$on('RefreshChart', (event) => {
-        $scope.vm.refreshChartDataNow(this.getMetricId());
+        this.refreshChartDataNow(this.getMetricId());
       });
 
       $scope.$watch('vm.selectedResource', (resource) => {
         if (resource) {
           /// made a selection from url switcher
-          globalResourceId = resource.id;
-          $scope.vm.refreshChartDataNow(this.getMetricId());
+          globalMetricId = resource.id;
+          this.refreshChartDataNow(this.getMetricId());
         } else {
           /// case when coming from addUrl screen
           globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
             then((resources)=> {
               this.resourceList = resources;
-              this.selectedResource = resources[resources.length - 1];
-              $scope.vm.refreshChartDataNow(this.getMetricId());
+              this.selectedResource = _.last(resources);
+              this.refreshChartDataNow(this.getMetricId());
             });
         }
 
       });
-      $scope.vm.onCreate();
+      this.onCreate();
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -110,7 +110,7 @@ module HawkularMetrics {
       this.autoRefresh(60);
       this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
         this.resourceList = aResourceList;
-        this.selectedResource = this.resourceList[this.resourceList.length - 1];
+        this.selectedResource = _.last(this._resourceList);
         this.refreshChartDataNow(this.getMetricId());
       });
     }
@@ -151,26 +151,17 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      var metricId = this.isResponseTab ? MetricsViewController.getResourceDurationMetricId() : MetricsViewController.getResourceCodeMetricId();
-      sharedMetricId = metricId;
-      return metricId;
+      return this.isResponseTab ? MetricsViewController.getResourceDurationMetricId() : MetricsViewController.getResourceCodeMetricId();
     }
 
     private static getResourceDurationMetricId() {
-      return globalResourceId + '.status.duration';
+      return globalMetricId + '.status.duration';
     }
 
     private static getResourceCodeMetricId() {
-      return globalResourceId + '.status.code';
+      return globalMetricId + '.status.code';
     }
 
-    getChartType():string {
-      return this.isResponseTab ? 'hawkulararea' : 'histogram';
-    }
-
-    getYAxisUnits():string {
-      return this.isResponseTab ? 'Response time (ms)' : 'Status Code';
-    }
 
     responseTabClick():void {
       this.isResponseTab = !this.isResponseTab;
