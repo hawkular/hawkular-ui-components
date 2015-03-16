@@ -21,16 +21,15 @@ module HawkularAlerts {
         newDefinition():void;
         saveDefinition():void;
         viewDefinition(id: string):void;
-        deleteDefinition(id: string):void;
+        deleteDefinition(id: string, name: string):void;
         closeAlertMsg(index: number):void;
         newCondition():void;
         changeConditionType():void;
         viewCondition(conditionId: string):void;
         saveCondition():void;
-        deleteCondition(conditionId: string, className: string):void;
+        deleteCondition(conditionId: string, description: string):void;
         cancelCondition():void;
         saveDampening():void;
-        reloadDefinitions():void;
     };
 
     export class DefinitionsController implements IDefinitionsController {
@@ -44,7 +43,7 @@ module HawkularAlerts {
             $scope.status = 'all';
             $scope.msgs = [];
             this.allDefinitions();
-            this.allNotifiers();
+            this.allActions();
         }
 
         allDefinitions():void {
@@ -54,13 +53,26 @@ module HawkularAlerts {
 
         newDefinition():void {
             this.$scope.status = 'new';
-            this.$scope.trigger = { match: "ALL", enabled: true};
-            this.$scope.dampening = { type: 'RELAXED_COUNT',
-                                        evalTrueSetting: 1,
-                                        evalTotalSetting: 1,
-                                        evalTimeSetting: 0};
+            this.$scope.trigger = {
+              enabled: true,
+              safetyEnabled: false,
+              firingMatch: 'ALL',
+              safetyMatch: 'ALL'
+            };
+            this.$scope.dampeningFire = { triggerMode: 'FIRE',
+              type: 'RELAXED_COUNT',
+              evalTrueSetting: 1,
+              evalTotalSetting: 1,
+              evalTimeSetting: 0
+            };
+            this.$scope.dampeningSafety = {triggerMode: 'SAFETY',
+              type: 'RELAXED_COUNT',
+              evalTrueSetting: 1,
+              evalTotalSetting: 1,
+              evalTimeSetting: 0
+            };
             this.$scope.statusDampening = {status: 'new'};
-            this.allNotifiers();
+            this.allActions();
         }
 
         saveDefinition():void {
@@ -68,10 +80,18 @@ module HawkularAlerts {
             if (this.$scope.status === 'new') {
                 this.HawkularAlert.Trigger.save(this.$scope.trigger,
                     (trigger) => {
-                        this.$scope.dampening.triggerId = trigger.id;
-                        this.HawkularAlert.Dampening.save(this.$scope.dampening,
+                        this.$scope.dampeningFire.triggerId = trigger.id;
+                        this.$scope.dampeningSafety.triggerId = trigger.id;
+                        this.HawkularAlert.Dampening.save({triggerId: this.$scope.dampeningFire.triggerId},
+                          this.$scope.dampeningFire,
                             (dampening) => {
-                                this.viewDefinition(dampening.triggerId);
+                                this.HawkularAlert.Dampening.save({triggerId: this.$scope.dampeningSafety.triggerId},
+                                  this.$scope.dampeningSafety,
+                                  (safety) => {
+                                    this.viewDefinition(dampening.triggerId);
+                                  }, (reasonSafety) => {
+                                    this.addAlertMsg(reasonSafety);
+                                  });
                             }, (reasonDampening) => {
                                 this.addAlertMsg(reasonDampening);
                             }
@@ -83,13 +103,7 @@ module HawkularAlerts {
             } if (this.$scope.status === 'edit') {
                 this.HawkularAlert.Trigger.put({triggerId: this.$scope.trigger.id}, this.$scope.trigger,
                     () => {
-                        this.HawkularAlert.Dampening.put(this.$scope.dampening,
-                            () => {
-                                this.allDefinitions();
-                            }, (reasonDampening) => {
-                            this.addAlertMsg(reasonDampening);
-                        }
-                        );
+                        this.allDefinitions();
                     }, (reason) => {
                         this.addAlertMsg(reason);
                     }
@@ -107,22 +121,15 @@ module HawkularAlerts {
                     this.addAlertMsg(reason);
                 });
             this.allConditions(id);
-            this.getDampening(id);
+            this.getDampenings(id);
         }
 
-        deleteDefinition(id: string):void {
-            if (this.$window.confirm('Do you want to delete ' + id + ' ?')) {
+        deleteDefinition(id: string, name: string):void {
+            if (this.$window.confirm('Do you want to delete ' + name + ' ?')) {
                 this.$scope.msgs = [];
                 this.HawkularAlert.Trigger.delete({triggerId: id},
                     () => {
-                        this.HawkularAlert.Dampening.delete({triggerId: id},
-                            () => {
-                                this.deleteAllConditions(id);
-                                this.allDefinitions();
-                            }, (reasonDampening) => {
-                                this.addAlertMsg(reasonDampening);
-                            }
-                        );
+                      this.allDefinitions();
                     }, (reason) => {
                         this.addAlertMsg(reason);
                     }
@@ -144,11 +151,11 @@ module HawkularAlerts {
             this.$scope.msgs.push(newAlert);
         }
 
-        private allNotifiers():void {
-            this.$scope.notifiers = [];
-            this.HawkularAlert.Notifier.query(
+        private allActions():void {
+            this.$scope.actions = [];
+            this.HawkularAlert.Action.query(
                 (result) => {
-                    this.$scope.notifiers = result;
+                    this.$scope.actions = result;
                 }, (reason) => {
                     this.addAlertMsg(reason);
                 }
@@ -158,57 +165,65 @@ module HawkularAlerts {
         private allConditions(triggerId: string):void {
             this.$scope.conditions = [];
             this.$scope.statusCondition = { status: '', conditionId: ''};
-            this.HawkularAlert.Trigger.conditions({triggerId: triggerId},
-                (conditionsList) => {
-                    var conditionClass:any = {};
-                    for (var i = 0; i < conditionsList.length; i++) {
-                        conditionClass[conditionsList[i].conditionId] = conditionsList[i].className;
-                    }
-                    for (i = 0; i < conditionsList.length; i++) {
-                        var condition = conditionsList[i];
-                        this.HawkularAlert[condition.className].get({conditionId: condition.conditionId},
-                            (conditionByType) => {
-                                var className = conditionClass[conditionByType.conditionId];
-                                var newCondition = {
-                                    conditionId: conditionByType.conditionId,
-                                    className: className,
-                                    condition: conditionByType,
-                                    description: this.getDescription(className, conditionByType)
-                                };
-                                this.$scope.conditions.push(newCondition);
-                            }, (reasonType) => {
-                                this.addAlertMsg(reasonType);
-                            });
-                    }
+            this.HawkularAlert.Condition.query({triggerId: triggerId},
+                (conditions) => {
+                  this.$scope.conditions = conditions;
+                  for (var i = 0; i < this.$scope.conditions.length; i++) {
+                    this.$scope.conditions[i].description = this.getDescription(this.$scope.conditions[i].type,
+                      this.$scope.conditions[i]);
+                  }
                 }, (reasonList) => {
                     this.addAlertMsg(reasonList);
                 });
         }
 
-        private getDampening(triggerId: string): void {
-            this.$scope.dampening = {};
-            this.$scope.statusDampening = { status: 'view'};
+        private getDampenings(triggerId: string): void {
+          this.$scope.dampeningFire = { triggerMode: 'FIRE',
+            type: 'RELAXED_COUNT',
+            evalTrueSetting: 1,
+            evalTotalSetting: 1,
+            evalTimeSetting: 0
+          };
+          this.$scope.dampeningSafety = {triggerMode: 'SAFETY',
+            type: 'RELAXED_COUNT',
+            evalTrueSetting: 1,
+            evalTotalSetting: 1,
+            evalTimeSetting: 0
+          };
+          this.$scope.statusDampening = { status: 'view'};
+          this.HawkularAlert.Dampening.query({triggerId: triggerId},
+              (dampenings) => {
+                for (var i = 0; i < dampenings.length; i++) {
+                  if (dampenings[i].triggerMode === 'FIRE') {
+                    this.$scope.dampeningFire = dampenings[i];
+                  } else if (dampenings[i].triggerMode === 'SAFETY') {
+                    this.$scope.dampeningSafety = dampenings[i];
+                  }
+                }
+                /*
+                  This case is just if we have a trigger definition without dampenings.
+                 */
+                if (dampenings.length < 2) {
+                  this.initDampenings(triggerId);
+                }
+              }, (reason) => {
+                this.addAlertMsg(reason);
+              });
+        }
 
-            this.HawkularAlert.Dampening.get({triggerId: triggerId},
-                (dampening) => {
-                    this.$scope.dampening = dampening;
-                }, (reason) => {
-                    this.$scope.dampening = { triggerId: triggerId,
-                        type: 'RELAXED_COUNT',
-                        evalTrueSetting: 1,
-                        evalTotalSetting: 1,
-                        evalTimeSetting: 0};
-                    this.HawkularAlert.Dampening.save(this.$scope.dampening,
-                        (reasonDampening) => {
-                            this.addAlertMsg(reasonDampening);
-                        }
-                    );
-
-                });
+        private initDampenings(triggerId: string): void {
+          this.$scope.dampeningFire.triggerId = triggerId;
+          this.$scope.dampeningSafety.triggerId = triggerId;
+          this.HawkularAlert.Dampening.save({triggerId: this.$scope.dampeningFire.triggerId},
+            this.$scope.dampeningFire);
+          this.HawkularAlert.Dampening.save({triggerId: this.$scope.dampeningSafety.triggerId},
+            this.$scope.dampeningSafety);
         }
 
         saveDampening(): void {
-            this.HawkularAlert.Dampening.put(this.$scope.dampening,
+            this.HawkularAlert.Dampening.put({triggerId: this.$scope.editDampening.triggerId,
+                dampeningId: this.$scope.editDampening.dampeningId},
+              this.$scope.editDampening,
                 () => {
                    this.$scope.statusDampening.status = 'view';
                 }, (reason) => {
@@ -216,34 +231,27 @@ module HawkularAlerts {
                 });
         }
 
-        private deleteDampening(triggerId: string): void {
-            this.HawkularAlert.Dampening.delete({triggerId: triggerId},
-               (reason) => {
-                    this.addAlertMsg(reason);
-                }
-            );
-        }
-
-        public viewDampening(triggerId: string): void {
+        public viewDampening(dampening: any): void {
             this.$scope.statusDampening = { status: 'edit'};
+            this.$scope.editDampening = dampening;
         }
 
-        private getDescription(className: string, condition: any):string {
+        private getDescription(type: string, condition: any):string {
             var description = "";
             var op = "";
-            if (className === 'AvailabilityCondition') {
+            if (type === 'AVAILABILITY') {
                 description = condition.dataId + " is " + condition.operator;
-            } else if (className === 'CompareCondition') {
+            } else if (type === 'COMPARE') {
                 op = this.getOperator(condition.operator);
-                description = condition.data1Id + " " + op + " " +
+                description = condition.dataId + " " + op + " " +
                     "(" + condition.data2Multiplier + " * " + condition.data2Id + ")";
-            } else if (className === 'StringCondition') {
+            } else if (type === 'STRING') {
                 description = condition.dataId + " " + condition.operator + " '" +
                     condition.pattern + "' (A/a " + condition.ignoreCase + ")";
-            } else if (className === 'ThresholdCondition') {
+            } else if (type === 'THRESHOLD') {
                 op = this.getOperator(condition.operator);
                 description = condition.dataId + " " + op + " " + condition.threshold;
-            } else if (className === 'ThresholdRangeCondition') {
+            } else if (type === 'RANGE') {
                 var low = "[";
                 var high = "]";
                 if (condition.operatorLow !== 'INCLUSIVE') {
@@ -277,32 +285,31 @@ module HawkularAlerts {
         }
 
         newCondition():void {
-            this.$scope.statusCondition = {status: 'new', conditionId: '', className: 'AvailabilityCondition'};
-            this.$scope.editCondition = { triggerId: this.$scope.trigger.id, conditionSetSize: 1, conditionSetIndex: 1};
-            this.$scope.classNames = ['AvailabilityCondition', 'CompareCondition', 'StringCondition',
-                'ThresholdCondition', 'ThresholdRangeCondition'];
+            this.$scope.statusCondition = {status: 'new'};
+            this.$scope.editCondition = { type: 'AVAILABILITY', triggerId: this.$scope.trigger.id };
+            this.$scope.conditionTypes = ['AVAILABILITY', 'COMPARE', 'STRING', 'THRESHOLD', 'RANGE'];
             this.changeConditionType();
         }
 
         changeConditionType():void {
-            if (this.$scope.statusCondition.className === 'AvailabilityCondition') {
+            if (this.$scope.editCondition.type === 'AVAILABILITY') {
                 this.$scope.editCondition.dataId = '';
                 this.$scope.editCondition.operator = 'DOWN';
-            } else if (this.$scope.statusCondition.className === 'CompareCondition') {
-                this.$scope.editCondition.data1Id = '';
+            } else if (this.$scope.editCondition.type === 'COMPARE') {
+                this.$scope.editCondition.dataId = '';
                 this.$scope.editCondition.operator = 'LT';
                 this.$scope.editCondition.data2Multiplier = 1.0;
                 this.$scope.editCondition.data2Id = '';
-            } else if (this.$scope.statusCondition.className === 'StringCondition') {
+            } else if (this.$scope.editCondition.type === 'STRING') {
                 this.$scope.editCondition.dataId = '';
                 this.$scope.editCondition.operator = 'EQUAL';
                 this.$scope.editCondition.pattern = '';
                 this.$scope.editCondition.ignoreCase = false;
-            } else if (this.$scope.statusCondition.className === 'ThresholdCondition') {
+            } else if (this.$scope.editCondition.type === 'THRESHOLD') {
                 this.$scope.editCondition.dataId = '';
                 this.$scope.editCondition.operator = 'LT';
                 this.$scope.editCondition.threshold = 0.0;
-            } else if (this.$scope.statusCondition.className === 'ThresholdRangeCondition') {
+            } else if (this.$scope.editCondition.type === 'RANGE') {
                 this.$scope.editCondition.dataId = '';
                 this.$scope.editCondition.operatorLow = 'INCLUSIVE';
                 this.$scope.editCondition.operatorHigh = 'INCLUSIVE';
@@ -313,14 +320,14 @@ module HawkularAlerts {
         }
 
         viewCondition(condition: any):void {
-            this.$scope.statusCondition = {status: 'edit', conditionId: condition.conditionId, className: condition.className};
-            this.$scope.editCondition = condition.condition;
+            this.$scope.statusCondition = {status: 'edit', conditionId: condition.conditionId, type: condition.type};
+            this.$scope.editCondition = condition;
         }
 
         saveCondition():void {
             if (this.$scope.statusCondition.status === 'new') {
-                var updatedCondition = this.prepareCondition(this.$scope.statusCondition.className, this.$scope.editCondition);
-                this.HawkularAlert[this.$scope.statusCondition.className].save(updatedCondition,
+                this.HawkularAlert.Condition.save({triggerId: this.$scope.editCondition.triggerId},
+                  this.$scope.editCondition,
                     () => {
                         this.$scope.statusCondition = {status: ''};
                         this.viewDefinition(this.$scope.trigger.id);
@@ -328,29 +335,27 @@ module HawkularAlerts {
                         this.addAlertMsg(reason);
                     });
             } else {
-                this.HawkularAlert[this.$scope.statusCondition.className].delete({conditionId: this.$scope.editCondition.conditionId},
+                /*
+                  "description" is a helper field on the javascript object
+                 */
+                delete this.$scope.editCondition.description;
+                this.HawkularAlert.Condition.put({triggerId: this.$scope.editCondition.triggerId,
+                  conditionId: this.$scope.editCondition.conditionId}, this.$scope.editCondition,
                     () => {
-                        var updatedCondition = this.prepareCondition(this.$scope.statusCondition.className, this.$scope.editCondition);
-                        this.HawkularAlert[this.$scope.statusCondition.className].save(updatedCondition,
-                            () => {
-                                this.$scope.statusCondition = {status: ''};
-                                this.viewDefinition(this.$scope.trigger.id);
-                            }, (reason) => {
-                                this.addAlertMsg(reason);
-                            });
-                    }, (reasonDelete) => {
-                        this.addAlertMsg(reasonDelete);
+                      this.$scope.statusCondition = {status: ''};
+                      this.viewDefinition(this.$scope.trigger.id);
+                    }, (reason) => {
+                        this.addAlertMsg(reason);
                     }
                 );
 
             }
         }
 
-        deleteCondition(conditionId: string, className: string):void {
-            if (this.$window.confirm('Do you want to delete ' + conditionId + ' ?')) {
-                this.$log.debug('deleteCondition(' + conditionId + ')');
+        deleteCondition(conditionId: string, description: string):void {
+            if (this.$window.confirm('Do you want to delete ' + description + ' ?')) {
                 this.$scope.msgs = [];
-                this.HawkularAlert[className].delete({conditionId: conditionId},
+                this.HawkularAlert.Condition.delete({triggerId: this.$scope.trigger.id, conditionId: conditionId},
                     () => {
                         this.$scope.statusCondition = {status: ''};
                         this.viewDefinition(this.$scope.trigger.id);
@@ -362,71 +367,10 @@ module HawkularAlerts {
             }
         }
 
-        private deleteAllConditions(triggerId: string):void {
-            this.HawkularAlert.Trigger.conditions({triggerId: triggerId},
-                (conditionsList) => {
-                    var conditionClass:any = {};
-                    for (var i = 0; i < conditionsList.length; i++) {
-                        conditionClass[conditionsList[i].conditionId] = conditionsList[i].className;
-                    }
-                    for (i = 0; i < conditionsList.length; i++) {
-                        var condition = conditionsList[i];
-                        this.HawkularAlert[condition.className].delete({conditionId: condition.conditionId},
-                            (reasonType) => {
-                                this.addAlertMsg(reasonType);
-                            });
-                    }
-                }, (reasonList) => {
-                    this.addAlertMsg(reasonList);
-                });
-        }
-
         cancelCondition():void {
             this.$scope.statusCondition = {status: ''};
         }
 
-        reloadDefinitions():void {
-            this.$log.info('reloadDefinitions()');
-            this.HawkularAlert.Alert.reload();
-        }
-
-        /*
-            Prepare a condition for save.
-            Checks fields and conditionId.
-         */
-        private prepareCondition(className:string, condition:any):any {
-            var updatedCondition:any = { };
-            updatedCondition.triggerId = condition.triggerId;
-            updatedCondition.conditionSetSize = condition.conditionSetSize;
-            updatedCondition.conditionSetIndex = condition.conditionSetIndex;
-            if (className === 'AvailabilityCondition') {
-                updatedCondition.dataId = condition.dataId;
-                updatedCondition.operator = condition.operator;
-            } else if (className === 'CompareCondition') {
-                updatedCondition.data1Id = condition.data1Id;
-                updatedCondition.operator = condition.operator;
-                updatedCondition.data2Multiplier = condition.data2Multiplier;
-                updatedCondition.data2Id = condition.data2Id;
-            } else if (className === 'StringCondition') {
-                updatedCondition.dataId = condition.dataId;
-                updatedCondition.operator = condition.operator;
-                updatedCondition.pattern = condition.pattern;
-                updatedCondition.ignoreCase = condition.ignoreCase;
-            } else if (className === 'ThresholdCondition') {
-                updatedCondition.dataId = condition.dataId;
-                updatedCondition.operator = condition.operator;
-                updatedCondition.threshold = condition.threshold;
-            } else if (className === 'ThresholdRangeCondition') {
-                updatedCondition.dataId = condition.dataId;
-                updatedCondition.operatorLow = condition.operatorLow;
-                updatedCondition.operatorHigh = condition.operatorHigh;
-                updatedCondition.thresholdLow = condition.thresholdLow;
-                updatedCondition.thresholdHigh = condition.thresholdHigh;
-                updatedCondition.inRange = condition.inRange;
-            }
-
-            return updatedCondition;
-        }
     };
 
     _module.controller('HawkularAlerts.DefinitionsController', DefinitionsController);

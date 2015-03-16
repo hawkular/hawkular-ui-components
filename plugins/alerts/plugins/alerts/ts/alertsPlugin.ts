@@ -28,7 +28,7 @@ module HawkularAlerts {
       .href(() => "/alerts")
       .subPath("Dashboard", "dashboard", builder.join(HawkularAlerts.templatePath, 'dashboard.html'))
       .subPath("Definitions", "definitions", builder.join(HawkularAlerts.templatePath, 'definitions.html'))
-      .subPath("Notifiers", "notifiers", builder.join(HawkularAlerts.templatePath, 'notifiers.html'))
+      .subPath("Actions", "actions", builder.join(HawkularAlerts.templatePath, 'actions.html'))
       .build();
     builder.configureRouting($routeProvider, tab);
 

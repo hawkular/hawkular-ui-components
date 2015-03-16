@@ -2,6 +2,7 @@
   <table ng-if="statusDampening.status == 'view'" class="datatable table table-striped table-bordered dataTable no-footer" role="grid">
     <thead>
     <tr role="row">
+      <th class="vert-align">Mode</th>
       <th class="vert-align">Type</th>
       <th class="vert-align">True Evals</th>
       <th class="vert-align">Total Evals</th>
@@ -11,13 +12,26 @@
     </thead>
     <tbody>
     <tr class="gradeA odd">
-      <td class="vert-align">{{ dampening.type }}</td>
-      <td class="vert-align">{{ dampening.evalTrueSetting }}</td>
-      <td class="vert-align">{{ dampening.evalTotalSetting }}</td>
-      <td class="vert-align">{{ dampening.evalTimeSetting }}</td>
+      <td class="vert-align">{{ dampeningFire.triggerMode }}</td>
+      <td class="vert-align">{{ dampeningFire.type }}</td>
+      <td class="vert-align">{{ dampeningFire.evalTrueSetting }}</td>
+      <td class="vert-align">{{ dampeningFire.evalTotalSetting }}</td>
+      <td class="vert-align">{{ dampeningFire.evalTimeSetting }}</td>
       <td style="vertical-align: middle;">
         <div class="text-right">
-          <a ng-click="dc.viewDampening()" class="btn btn-primary">View</a>
+          <a ng-click="dc.viewDampening(dampeningFire)" class="btn btn-primary">View</a>
+        </div>
+      </td>
+    </tr>
+    <tr class="gradeA odd">
+      <td class="vert-align">{{ dampeningSafety.triggerMode }}</td>
+      <td class="vert-align">{{ dampeningSafety.type }}</td>
+      <td class="vert-align">{{ dampeningSafety.evalTrueSetting }}</td>
+      <td class="vert-align">{{ dampeningSafety.evalTotalSetting }}</td>
+      <td class="vert-align">{{ dampeningSafety.evalTimeSetting }}</td>
+      <td style="vertical-align: middle;">
+        <div class="text-right">
+          <a ng-click="dc.viewDampening(dampeningSafety)" class="btn btn-primary">View</a>
         </div>
       </td>
     </tr>
@@ -31,16 +45,16 @@
     </label>
     <div class="col-md-6">
       <label class="radio">
-        <input type="radio" ng-model="dampening.type" class="radio" value="STRICT"> STRICT
+        <input type="radio" ng-model="editDampening.type" class="radio" value="STRICT"> STRICT
       </label>
       <label class="radio">
-        <input type="radio" ng-model="dampening.type" class="radio" value="RELAXED_COUNT"> RELAXED_COUNT
+        <input type="radio" ng-model="editDampening.type" class="radio" value="RELAXED_COUNT"> RELAXED_COUNT
       </label>
       <label class="radio">
-        <input type="radio" ng-model="dampening.type" class="radio" value="RELAXED_TIME"> RELAXED_TIME
+        <input type="radio" ng-model="editDampening.type" class="radio" value="RELAXED_TIME"> RELAXED_TIME
       </label>
       <label class="radio">
-        <input type="radio" ng-model="dampening.type" class="radio" value="STRICT_TIME"> STRICT_TIME
+        <input type="radio" ng-model="editDampening.type" class="radio" value="STRICT_TIME"> STRICT_TIME
       </label>
     </div>
   </div>
@@ -49,7 +63,7 @@
       True Evals
     </label>
     <div class="col-md-6">
-      <input type="number" id="trueEvals" ng-model="dampening.evalTrueSetting" class="form-control" ng-minlength="1" required>
+      <input type="number" id="trueEvals" ng-model="editDampening.evalTrueSetting" class="form-control" ng-minlength="1" required>
     </div>
   </div>
   <div class="form-group">
@@ -57,7 +71,7 @@
       Total Evals
     </label>
     <div class="col-md-6">
-      <input type="number" id="totalEvals" ng-model="dampening.evalTotalSetting" class="form-control" ng-minlength="1" required>
+      <input type="number" id="totalEvals" ng-model="editDampening.evalTotalSetting" class="form-control" ng-minlength="1" required>
     </div>
   </div>
   <div class="form-group">
@@ -65,13 +79,13 @@
       Eval Period
     </label>
     <div class="col-md-6">
-      <input type="number" id="evalPeriod" ng-model="dampening.evalTimeSetting" class="form-control" ng-minlength="1" required>
+      <input type="number" id="evalPeriod" ng-model="editDampening.evalTimeSetting" class="form-control" ng-minlength="1" required>
     </div>
   </div>
   <div class="form-group">
     <div class="col-md-offset-4 col-md-6">
-      <button ng-click="dc.saveDampening()" class="btn btn-primary">Save</button>
-      <button type="button" ng-click="dc.getDampening(trigger.id)" class="btn btn-default">Cancel</button>
+      <button ng-click="dc.saveDampening()" class="btn btn-primary">Update {{ editDampening.triggerMode }}</button>
+      <button type="button" ng-click="dc.getDampenings(trigger.id)" class="btn btn-default">Cancel</button>
     </div>
   </div>
 </div>
