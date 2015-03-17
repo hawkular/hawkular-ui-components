@@ -127,7 +127,9 @@ module.exports = function(gulp, config, pluginName){
       licenceFile,
       '.tmp/' + pluginName + '/compiled.js',
       '.tmp/' + pluginName + '/templates.js'])
+      .pipe(plugins.sourcemaps.init({loadMaps: true}))
       .pipe(plugins.concat(config.js(pluginName)))
+      .pipe(plugins.sourcemaps.write())
       .pipe(gulp.dest(config.dist));
   });
 
