@@ -45,7 +45,7 @@ module HawkularMetrics {
     log.debug('loaded Metrics Plugin');
   }]);
 
-  _module.directive('ngEnter', function () {
+  _module.directive('hkEnter', function () {
     return function (scope, element, attrs) {
       element.bind('keydown keypress', function (event) {
         if (event.which === 13) {

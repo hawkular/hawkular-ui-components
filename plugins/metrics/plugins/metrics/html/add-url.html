@@ -10,7 +10,7 @@
           <div class="input-group input-group-lg">
             <input type="url" class="form-control input-lg" name="resourceUrl" ng-model="vm.resourceUrl"
                    ng-model-options="{ updateOn: 'default blur'}"
-                   ng-enter="vm.addUrl(vm.resourceUrl)"
+                   hk-enter="vm.addUrl(vm.resourceUrl)"
                    placeholder="Enter a website URL (e.g., http://mysite.com/home)" required>
             <span class="help-block hide"
                   ng-show="vm.addUrlForm.resourceUrl.$dirty && vm.addUrlForm.resourceUrl.$error.required">The URL you entered is not valid. Please enter a valid URL.</span>
