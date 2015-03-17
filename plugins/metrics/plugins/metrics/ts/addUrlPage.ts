@@ -44,7 +44,7 @@ module HawkularMetrics {
         }
       };
 
-      this.$log.info("Adding new Resource Url to Hawkular-inventory: " + url);
+      this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
       globalChartTimeRange = new ChartTimeRange(1);
 
@@ -55,7 +55,7 @@ module HawkularMetrics {
           globalMetricId = newResource.id;
           globalResourceUrl = resource.parameters.url;
           console.dir(newResource);
-          this.$log.info("New Resource ID: " + globalMetricId + " created for url: " + globalResourceUrl);
+          this.$log.info('New Resource ID: ' + globalMetricId + ' created for url: ' + globalResourceUrl);
           var metrics = [{
             name: globalMetricId + '.status.duration',
             unit: 'MILLI_SECOND',
@@ -72,8 +72,8 @@ module HawkularMetrics {
             tenantId: globalTenantId,
             resourceId: newResource.id
           }, metrics).$promise.then((newMetrics) => {
-              toastr.info("Your data is being collected. Please be patient (should be about another minute).");
-              this.$location.url("/metrics/responseTime");
+              toastr.info('Your data is being collected. Please be patient (should be about another minute).');
+              this.$location.url('/metrics/responseTime');
             });
 
         });

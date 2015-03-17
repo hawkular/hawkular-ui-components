@@ -26,13 +26,13 @@ module HawkularMetrics {
 
     metricsTab = navBuilder.create()
       .id(HawkularMetrics.pluginName)
-      .title(() => "Metrics")
-      .href(() => "/metrics")
-      .subPath("Add Url", "addUrl", navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
-      .subPath("Home", "home", navBuilder.join(HawkularMetrics.templatePath, 'home.html'))
-      .subPath("Response Time", "responseTime", navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
-      .subPath("Up/Downtime", "upDowntime", navBuilder.join(HawkularMetrics.templatePath, 'up-downtime.html'))
-      .subPath("Alerts", "alerts", navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
+      .title(() => 'Metrics')
+      .href(() => '/metrics')
+      .subPath('Add Url', 'addUrl', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+      .subPath('Home', 'home', navBuilder.join(HawkularMetrics.templatePath, 'home.html'))
+      .subPath('Response Time', 'responseTime', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
+      .subPath('Up/Downtime', 'upDowntime', navBuilder.join(HawkularMetrics.templatePath, 'up-downtime.html'))
+      .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
       .build();
 
     navBuilder.configureRouting($routeProvider, metricsTab);
@@ -42,12 +42,12 @@ module HawkularMetrics {
 
   _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
     HawtioNav.add(metricsTab);
-    log.debug("loaded Metrics Plugin");
+    log.debug('loaded Metrics Plugin');
   }]);
 
   _module.directive('ngEnter', function () {
     return function (scope, element, attrs) {
-      element.bind("keydown keypress", function (event) {
+      element.bind('keydown keypress', function (event) {
         if (event.which === 13) {
           scope.$apply(function () {
             scope.$eval(attrs.ngEnter);
