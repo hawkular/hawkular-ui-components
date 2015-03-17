@@ -13,51 +13,57 @@
                 </span>
             </span>
     </div>
-    <div ng-switch="vm.isResponseTab">
-      <h1 ng-switch-when="true">Response Time</h1>
 
-      <h1 ng-switch-when="false">Responsiveness </h1>
-    </div>
+    <div class="col-sm-9 col-md-10 content response-time">
+      <h1>Response Time</h1>
 
-    <p class="update-info pull-right"><i class="fa fa-refresh"></i>
-      <a ng-click="vm.refreshChartDataNow(vm.getMetricId())">Last update 1 minutes ago</a>
-    </p>
-    <ul class="nav nav-tabs nav-tabs-pf">
-      <li ng-class="{'active': vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Response Time</a></li>
-      <li ng-class="{'active': !vm.isResponseTab}"><a href="#" ng-click="vm.responseTabClick()">Responsiveness</a></li>
-    </ul>
-    <div id="metrics-chart-container" ng-switch="vm.isResponseTab" ng-show="vm.chartData.dataPoints.length > 0">
-
-      <div id="metrics-chart" ng-switch-when="true">
-        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-        <hawkular-chart
-          data="{{vm.chartData.dataPoints}}"
-          chart-type="hawkulararea"
-          alert-value="600"
-          hide-high-low-values="true"
-          y-axis-units="Response Time (ms)"
-          chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
-          chart-height="250">
-        </hawkular-chart>
+      <div class="panel panel-default graph-summary">
+        <div class="row">
+          <div class="col-md-4 summary-item">
+            <span class="data">879 <span>ms</span></span>
+            <span class="item">Average</span>
+          </div>
+          <div class="col-md-4 summary-item">
+            <span class="data">2345 <span>ms</span></span>
+            <span class="item">Median</span>
+          </div>
+          <div class="col-md-4 summary-item">
+            <span class="data">2786 <span>ms</span></span>
+            <span class="item">95th percentile</span>
+          </div>
+        </div>
       </div>
-      <div id="avail-chart" ng-switch-when="false">
-        <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-        <hawkular-chart
-          data="{{vm.chartData.dataPoints}}"
-          chart-type="histogram"
-          y-axis-units="Status Code "
-          chart-title="Monitored Resource: {{vm.selectedResource.parameters.url}}"
-          chart-height="250">
-        </hawkular-chart>
+
+
+      <div class="panel panel-default graph">
+        <!--<div class="legend pull-left">-->
+        <!--<span><i class="fa fa-circle primary"></i>Response Time</span>-->
+        <!--<span><i class="fa fa-circle danger"></i>Response Time (above the threshold)</span>-->
+        <!--</div>-->
+        <div class="update pull-right">
+          <i class="fa fa-clock-o"></i><a ng-click="vm.refreshChartDataNow(vm.getMetricId())"><strong>Last
+          update</strong> 1 minutes ago</a>
+        </div>
+
+        <div id="metrics-chart">
+          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+          <hawkular-chart
+            data="{{vm.chartData.dataPoints}}"
+            chart-type="hawkulararea"
+            alert-value="500"
+            hide-high-low-values="true"
+            y-axis-units="Response Time (ms)"
+            chart-height="250">
+          </hawkular-chart>
+        </div>
       </div>
+
 
     </div>
     <p class="label label-info" ng-hide="vm.chartData.dataPoints.length > 0" style="margin-bottom: 25px;">We are
       collecting your initial data. Please be patient(could be up to a minute)...</p>
 
   </div>
-
-  <ng-include src="'plugins/metrics/html/create-alert-form.html'"></ng-include>
 
 </div>
 

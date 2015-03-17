@@ -1,6 +1,9 @@
 @grid-gutter-width: 10px;
 @font-size-base: 300;
-
+@gray-light: #F5F5F5;
+@table-border-color: #bab7a5;
+@brand-primary: #FFF;
+@brand-danger: red;
 //general styles
 
 .container {
@@ -93,9 +96,248 @@ h2 {
   height: 270px;
 }
 
-#avail-chart {
-  height: 270px;
+
+
+.container.overview {
+  display: table;
+  padding: 0;
+  position: relative;
+  @media (min-width: 1200px) {
+    width: 860px;
+  }
+
+  .page-container {
+    display: table-cell;
+    vertical-align: middle;
+  }
 }
+
+.overview h1 {
+  clear: both;
+}
+
+.update-info {
+  color: @gray-light;
+  font-style: italic;
+  margin-right: @grid-gutter-width/4;
+}
+
+.metrics-boxes {
+  clear: both;
+  display: table;
+  margin: 0 auto;
+  max-width: 860px;
+  width: 100%;
+
+  li {
+    border-left: @grid-gutter-width/4 solid white;
+    border-right: @grid-gutter-width/4 solid white;
+    display: table-cell;
+    margin: 0 @grid-gutter-width/4;
+    position: relative;
+    transition: background 0.5s ease;
+    width: calc(~"100% / 3");
+
+    a {
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      border-radius: 5px;
+      border-style: solid;
+      border-width: 1px;
+      display: block;
+      height: 245px;
+      transition: border 0.5s ease;
+      h2 {
+        color: #333;
+        display: block;
+        line-height: 45px;
+        margin-top: @grid-gutter-width/4*3;
+      }
+
+      &:focus,
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    &.green {
+
+      a {
+        border-color: rgba(68,154,66,0.5);
+
+        .data {
+          color: #409c49;
+        }
+      }
+
+      &:hover {
+
+        a {
+          border-color: #409c49;
+        }
+      }
+    }
+
+    &.orange {
+
+
+      a {
+        border-color: rgba(229,108,42,0.5);
+
+        .data {
+          color: #e56c2a;
+        }
+      }
+
+      &:hover {
+
+        a {
+          border-color: #e56c2a;
+        }
+      }
+    }
+
+//    &.availability a {
+//      background-image: url(img/overview-availability.png);
+//    }
+//
+//    &.response-time a {
+//      background-image: url(img/overview-response-time.png);
+//    }
+//
+//    &.up-downtime a {
+//      background-image: url(img/overview-up-downtime.png);
+//    }
+
+    .data {
+      font-size: 36px;
+      font-weight: 100;
+      color: #404040;
+
+      &.one-line {
+        line-height: @grid-gutter-width;
+      }
+
+      &.two-lines {
+        padding-top: 15px;
+        line-height: 45px;
+
+        .fa {
+          margin-left: 5px;
+        }
+      }
+    }
+
+    .additional-info {
+      font-style: italic;
+      line-height: 1.2;
+      position: absolute;
+      text-align: left;
+      top: 252px;
+    }
+  }
+}
+
+.next-page {
+  bottom: @grid-gutter-width;
+  color: @gray-light;
+  display: inline-block;
+  font-size: 22px;
+  left: 0;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+// response-time screen
+
+.response-time h1 {
+  margin-bottom: @grid-gutter-width/2;
+}
+
+.graph-summary {
+
+  .summary-item {
+    border-right: 1px solid @table-border-color;
+    display: inline-block;
+    padding: @grid-gutter-width/2;
+    text-align: center;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    .data {
+      display: block;
+      font-size: 24px;
+      font-weight: 100;
+      line-height: 1.3;
+
+      span {
+        font-size: 0.75em;
+      }
+    }
+
+    .item {
+      display: block;
+      font-size: 12px;
+    }
+  }
+}
+
+.graph {
+  padding: @grid-gutter-width/2*1.5;
+  text-align: center;
+
+  .legend {
+    font-size: 11px;
+
+    span {
+      margin-right: @grid-gutter-width/2;
+    }
+
+    .fa {
+      font-size: 7px;
+      margin-right: 5px;
+      vertical-align: middle;
+
+      &.primary {
+        color: @brand-primary;
+      }
+
+      &.danger {
+        color: @brand-danger;
+      }
+    }
+  }
+
+  .update {
+    font-size: 10px;
+
+    .fa {
+      color: #74797d;
+      font-size: 16px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+  }
+
+  img {
+    margin-top: @grid-gutter-width/4;
+  }
+}
+
+// form
+
+legend {
+  text-align: left;
+}
+
+
+
+
+
 
 #control-bar {
 

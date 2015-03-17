@@ -90,7 +90,6 @@ module HawkularMetrics {
     private bucketedDataPoints:IChartDataPoint[] = [];
     private contextDataPoints:IChartDataPoint[] = [];
     private chartData:any;
-    private isResponseTab = true;
     private autoRefreshPromise:ng.IPromise<number>;
     private _resourceList = [];
     selectedResource;
@@ -151,7 +150,7 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      return this.isResponseTab ? MetricsViewController.getResourceDurationMetricId() : MetricsViewController.getResourceCodeMetricId();
+      return  MetricsViewController.getResourceDurationMetricId();
     }
 
     private static getResourceDurationMetricId() {
@@ -162,11 +161,6 @@ module HawkularMetrics {
       return globalMetricId + '.status.code';
     }
 
-
-    responseTabClick():void {
-      this.isResponseTab = !this.isResponseTab;
-      this.refreshChartDataNow(this.getMetricId());
-    }
 
     refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
       // calling refreshChartData without params use the model values
