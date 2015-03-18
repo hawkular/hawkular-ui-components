@@ -22,7 +22,6 @@ module Sidebar {
 
     public restrict = 'E';
     public transclude = false;
-    public replace = false;
 
     public templateUrl = templatePath;
   }
