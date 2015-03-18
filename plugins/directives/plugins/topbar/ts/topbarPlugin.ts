@@ -13,25 +13,15 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 
-/// <reference path="sidebarPlugin.ts"/>
-module Sidebar {
+/// <reference path="../../includes.ts"/>
+/// <reference path="topbarGlobals.ts"/>
+module Topbar {
 
-  var log:Logging.Logger = Logger.get("Sidebar");
+  export var _module = angular.module(pluginName, ['ngResource', 'hawkular.services']);
 
-  export class SidebarDirective {
+  _module.directive('hawkularTopbar', function () {
+    return new Topbar.TopbarDirective();
+  });
 
-    public restrict = 'E';
-    public transclude = false;
-    public replace = false;
-
-    public templateUrl = templatePath;
-  }
-
-  export var SidebarController = _module.controller("Sidebar.SidebarController",
-    ['$scope', '$rootScope', '$location' ,($scope, $rootScope, $location) => {
-
-    $scope.getClass = function (path) {
-      return $location.path().indexOf(path) === 0 ? 'active' : '';
-    };
-  }]);
+  hawtioPluginLoader.addModule(pluginName);
 }
