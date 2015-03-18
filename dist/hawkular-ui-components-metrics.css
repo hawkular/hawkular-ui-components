@@ -4338,11 +4338,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: #bb6106;
 }
 .label-danger {
-  background-color: red;
+  background-color: #cc0000;
 }
 .label-danger[href]:hover,
 .label-danger[href]:focus {
-  background-color: #cc0000;
+  background-color: #990000;
 }
 .badge {
   display: inline-block;
@@ -4507,11 +4507,11 @@ a.thumbnail.active {
 }
 .alert-danger {
   background-color: #ffffff;
-  border-color: red;
+  border-color: #cc0000;
   color: #333333;
 }
 .alert-danger hr {
-  border-top-color: #e60000;
+  border-top-color: #b30000;
 }
 .alert-danger .alert-link {
   color: #1a1a1a;
@@ -4594,7 +4594,7 @@ a.thumbnail.active {
   background-image: linear-gradient(-45deg, rgba(0, 0, 0, 0.15) 25%, rgba(0, 0, 0, 0.15) 26%, transparent 27%, transparent 49%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.15) 51%, transparent 52%, transparent 74%, rgba(0, 0, 0, 0.15) 75%, rgba(0, 0, 0, 0.15) 76%, transparent 77%);
 }
 .progress-bar-danger {
-  background-color: red;
+  background-color: #cc0000;
 }
 .progress-striped .progress-bar-danger {
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -5053,18 +5053,18 @@ a.list-group-item-danger.active:focus {
   border-bottom-color: #ec7a08;
 }
 .panel-danger {
-  border-color: red;
+  border-color: #cc0000;
 }
 .panel-danger > .panel-heading {
   color: #ffffff;
-  background-color: red;
-  border-color: red;
+  background-color: #cc0000;
+  border-color: #cc0000;
 }
 .panel-danger > .panel-heading + .panel-collapse .panel-body {
-  border-top-color: red;
+  border-top-color: #cc0000;
 }
 .panel-danger > .panel-footer + .panel-collapse .panel-body {
-  border-bottom-color: red;
+  border-bottom-color: #cc0000;
 }
 .well {
   min-height: 20px;
@@ -7978,10 +7978,10 @@ fieldset[disabled] .btn.btn-link {
 }
 .btn-danger {
   background-color: #a30000;
-  background-image: -webkit-linear-gradient(top, red 0%, #a30000 100%);
-  background-image: linear-gradient(to bottom, red 0%, #a30000 100%);
+  background-image: -webkit-linear-gradient(top, #cc0000 0%, #a30000 100%);
+  background-image: linear-gradient(to bottom, #cc0000 0%, #a30000 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff0000', endColorstr='#ffa30000', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcc0000', endColorstr='#ffa30000', GradientType=0);
   border-color: #781919;
   color: #ffffff;
 }
@@ -8559,7 +8559,7 @@ label {
   content: "\e608";
 }
 .pficon-error-octagon:before {
-  color: red;
+  color: #cc0000;
   content: "\e609";
 }
 .pficon-edit:before {
@@ -10599,7 +10599,7 @@ h2 {
   color: #00a8e1;
 }
 .graph .legend .fa.danger {
-  color: red;
+  color: #cc0000;
 }
 .graph .update {
   font-size: 10px;
@@ -10615,6 +10615,9 @@ h2 {
 }
 legend {
   text-align: left;
+}
+.waiting-label {
+  margin: 25px 0 25px 0;
 }
 #control-bar .select-url-container {
   margin: -10px 0 0 -20px;
