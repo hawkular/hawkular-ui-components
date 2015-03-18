@@ -35,8 +35,7 @@ module HawkularMetrics {
         operator: 'LT',
         threshold: 0
       };
-      this.allNotifiers();
-      this.$log.debug('Notifiers: ' + this.$scope.notifiers);
+      this.allActions();
     }
 
     toggleQuickAlert():void {
@@ -45,11 +44,11 @@ module HawkularMetrics {
 
     private PROMISE_BREAK: string = 'magicValue1234';
 
-    private allNotifiers():void {
-      this.$scope.notifiers = [];
-      this.HawkularAlert.Notifier.query(
+    private allActions():void {
+      this.$scope.actions = [];
+      this.HawkularAlert.Action.query(
         (result) => {
-          this.$scope.notifiers = result;
+          this.$scope.actions = result;
         }, (error) => {
           this.errorToastr(error, 'Error loading Alerts Notifiers:');
         }
@@ -79,15 +78,16 @@ module HawkularMetrics {
     saveQuickAlert():void {
       if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
         var newTrigger:any = {};
-        newTrigger.id = globalMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
-        newTrigger.name = newTrigger.id;
+        newTrigger.name = globalMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
         newTrigger.description = 'Created on ' + new Date();
-        newTrigger.match = 'ALL';
+        newTrigger.firingMatch = 'ALL';
+        newTrigger.safetyMatch = 'ALL';
         newTrigger.enabled = true;
-        newTrigger.notifiers = this.$scope.quickTrigger.notifiers;
+        newTrigger.safetyEnabled = false;
+        newTrigger.actions = this.$scope.quickTrigger.actions;
 
         var newDampening:any = {
-          triggerId: newTrigger.id,
+          triggerId: '',
           type: 'RELAXED_COUNT',
           evalTrueSetting: 1,
           evalTotalSetting: 1,
@@ -100,7 +100,8 @@ module HawkularMetrics {
             this.$log.debug('Success Trigger save');
             newDampening.triggerId = trigger.id;
 
-            return this.HawkularAlert.Dampening.save(newDampening).$promise;
+            return this.HawkularAlert.Dampening.save({triggerId: newDampening.triggerId},
+              newDampening).$promise;
           },
           // Error Trigger save
           (error) => {
@@ -112,14 +113,14 @@ module HawkularMetrics {
             this.$log.debug('Success Dampening save', dampening);
             var newThresholdCondition = {
               triggerId: dampening.triggerId,
+              type: 'THRESHOLD',
               dataId: globalMetricId,
-              conditionSetSize: 1,
-              conditionSetIndex: 1,
               operator: this.$scope.quickTrigger.operator,
               threshold: this.$scope.quickTrigger.threshold
             };
 
-            return this.HawkularAlert.ThresholdCondition.save(newThresholdCondition).$promise;
+            return this.HawkularAlert.Condition.save({triggerId: newThresholdCondition.triggerId},
+              newThresholdCondition).$promise;
           },
           // Error Dampening save
           (errorDampening) => {

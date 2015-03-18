@@ -1,4 +1,3 @@
-<h4 class="h5">{{statusCondition.className}}</h4>
 <form class="form-horizontal" name="editConditionForm">
   <div ng-if="statusCondition.status == 'new'" class="form-group">
     <label class="col-md-4 control-label" for="newConditionType">
@@ -6,33 +5,16 @@
     </label>
     <div class="col-md-6">
       <ui-select ng-if="statusCondition.status == 'new'" id="newConditionType"
-                 ng-model="statusCondition.className" theme="bootstrap"
+                 ng-model="editCondition.type" theme="bootstrap"
                  ng-change="dc.changeConditionType()">
         <ui-select-match placeholder="Select condition type...">{{$select.selected}}</ui-select-match>
-        <ui-select-choices repeat="classLabel in classNames | filter:$select.search">
-          {{ classLabel }}
+        <ui-select-choices repeat="conditionType in conditionTypes | filter:$select.search">
+          {{ conditionType }}
         </ui-select-choices>
       </ui-select>
     </div>
   </div>
-  <div class="form-group">
-    <label class="col-md-4 control-label" for="conditionSetSize">
-      Condition Set Size
-    </label>
-    <div class="col-md-6">
-      <input type="number" id="conditionSetSize" ng-model="editCondition.conditionSetSize" class="form-control" ng-minlength="1" required>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-md-4 control-label" for="conditionSetIndex">
-      Condition Set Index
-    </label>
-    <div class="col-md-6">
-      <input type="number" id="conditionSetIndex" ng-model="editCondition.conditionSetIndex" class="form-control" ng-minlength="1" required>
-    </div>
-  </div>
-
-  <div ng-if="statusCondition.className == 'AvailabilityCondition'">
+  <div ng-if="editCondition.type == 'AVAILABILITY'">
     <div class="form-group">
       <label class="col-md-4 control-label" for="availabilityDataId">
         Data Id
@@ -59,13 +41,13 @@
     </div>
   </div>
 
-  <div ng-if="statusCondition.className == 'CompareCondition'">
+  <div ng-if="editCondition.type == 'COMPARE'">
     <div class="form-group">
       <label class="col-md-4 control-label" for="compareData1Id">
-        Data 1 Id
+        Data Id
       </label>
       <div class="col-md-6">
-        <input type="text" id="compareData1Id" ng-model="editCondition.data1Id" class="form-control" ng-minlength="1" required>
+        <input type="text" id="compareData1Id" ng-model="editCondition.dataId" class="form-control" ng-minlength="1" required>
       </div>
     </div>
     <div class="form-group">
@@ -105,7 +87,7 @@
     </div>
   </div>
 
-  <div ng-if="statusCondition.className == 'StringCondition'">
+  <div ng-if="editCondition.type == 'STRING'">
     <div class="form-group">
       <label class="col-md-4 control-label" for="stringDataId">
         Data Id
@@ -157,7 +139,7 @@
     </div>
   </div>
 
-  <div ng-if="statusCondition.className == 'ThresholdCondition'">
+  <div ng-if="editCondition.type == 'THRESHOLD'">
     <div class="form-group">
       <label class="col-md-4 control-label" for="thresholdDataId">
         Data Id
@@ -195,7 +177,7 @@
     </div>
   </div>
 
-  <div ng-if="statusCondition.className == 'ThresholdRangeCondition'">
+  <div ng-if="editCondition.type == 'RANGE'">
     <div class="form-group">
       <label class="col-md-4 control-label" for="thresholdRangeDataId">
         Data Id
@@ -258,8 +240,9 @@
 
   <div class="form-group">
     <div class="col-md-offset-4 col-md-6">
-      <button ng-click="dc.saveCondition()" class="btn btn-primary">Save</button>
-      <a ng-if="statusCondition.status != 'new'" class="btn btn-danger" ng-click="dc.deleteCondition(statusCondition.conditionId, statusCondition.className)">Delete</a>
+      <button ng-click="dc.saveCondition()" class="btn btn-primary">Update Condition</button>
+      <a ng-if="statusCondition.status != 'new'" class="btn btn-danger"
+         ng-click="dc.deleteCondition(editCondition.conditionId, editCondition.description)">Delete</a>
       <button type="button" ng-click="dc.cancelCondition()" class="btn btn-default">Cancel</button>
     </div>
   </div>

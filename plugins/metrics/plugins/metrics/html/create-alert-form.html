@@ -37,16 +37,16 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-4 control-label" for="notifiers">
+        <label class="col-md-4 control-label" for="actions">
           Notify to:
         </label>
 
         <div class="col-md-3">
-          <ui-select id="notifiers" multiple ng-model="quickTrigger.notifiers" theme="bootstrap"
+          <ui-select id="actions" multiple ng-model="quickTrigger.actions" theme="bootstrap"
                      ng-disabled="disabled" close-on-select="false">
-            <ui-select-match placeholder="Select notifier...">{{$item}}</ui-select-match>
-            <ui-select-choices repeat="notifier in notifiers | filter:$select.search">
-              {{ notifier }}
+            <ui-select-match placeholder="Select action...">{{$item}}</ui-select-match>
+            <ui-select-choices repeat="action in actions | filter:$select.search">
+              {{ action }}
             </ui-select-choices>
           </ui-select>
         </div>

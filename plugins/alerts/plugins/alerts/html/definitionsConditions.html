@@ -18,14 +18,14 @@
     </thead>
     <tbody>
     <tr ng-repeat-start="condition in conditions | orderBy:['conditionId', 'description']:false" ng-class-odd="'gradeA odd'" ng-class-even="'gradeA even'" >
-      <td class="vert-align">{{ condition.conditionId }}</td>
+      <td class="vert-align">{{ condition.triggerMode }}</td>
       <td class="vert-align">{{ condition.description }}</td>
       <td style="vertical-align: middle;">
         <div class="text-right">
           <a ng-if="!(statusCondition.status == 'edit' && statusCondition.conditionId == condition.conditionId)"
              ng-click="dc.viewCondition(condition)" class="btn btn-primary">View</a>
           <a ng-if="!(statusCondition.status == 'edit' && statusCondition.conditionId == condition.conditionId)"
-             class="btn btn-danger" ng-click="dc.deleteCondition(condition.conditionId, condition.className)">Delete</a>
+             class="btn btn-danger" ng-click="dc.deleteCondition(condition.conditionId, condition.description)">Delete</a>
         </div>
       </td>
     </tr>
