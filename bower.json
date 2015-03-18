@@ -9,10 +9,10 @@
   ],
   "main": [
     "dist/hawkular-ui-components-accounts.js",
-    "dist/hawkular-ui-components-directives.js",
-    "dist/hawkular-ui-components-directives.css",
     "dist/hawkular-ui-components-metrics.js",
     "dist/hawkular-ui-components-metrics.css",
+    "dist/hawkular-ui-components-directives.js",
+    "dist/hawkular-ui-components-directives.css",
     "dist/hawkular-ui-components-alerts.js",
     "dist/hawkular-ui-components-alerts.css",
     "dist/hawkular-ui-components-inventory.js"
