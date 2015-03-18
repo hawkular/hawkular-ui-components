@@ -13,25 +13,15 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 
-/// <reference path="sidebarPlugin.ts"/>
-module Sidebar {
+/// <reference path="../../includes.ts"/>
+module Topbar {
 
-  var log:Logging.Logger = Logger.get("Sidebar");
+  export var pluginName = "topbar";
 
-  export class SidebarDirective {
+  export var log:Logging.Logger = Logger.get(pluginName);
 
-    public restrict = 'E';
-    public transclude = false;
-    public replace = false;
+  export var templatePath = "plugins/topbar/html/topbar.html";
 
-    public templateUrl = templatePath;
-  }
+  export var globalTenantId = "test";
 
-  export var SidebarController = _module.controller("Sidebar.SidebarController",
-    ['$scope', '$rootScope', '$location' ,($scope, $rootScope, $location) => {
-
-    $scope.getClass = function (path) {
-      return $location.path().indexOf(path) === 0 ? 'active' : '';
-    };
-  }]);
 }

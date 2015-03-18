@@ -1,14 +1,8 @@
-<aside>
-  <nav class="navbar navbar-vertical" role="navigation">
-    <div>
-      <ul>
-        <li class="response" ng-class="getClass('/metrics/responseTime')"><a href="/metrics/responseTime"><i class="fa fa-line-chart"></i>Response Time</a>
-        </li>
-        <li class="uptime" ng-class="getClass('/metrics/upDowntime')"><a href="/metrics/upDowntime"><i class="fa fa-arrow-up"></i>Up / Downtime</a>
-        </li>
-        <li class="alerts" ng-class="getClass('/metrics/alerts')"><a href="/metrics/alerts"><i class="fa fa-flag"></i>Alerts</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-</aside>
+<div class="col-sm-3 col-md-2 sidebar-pf sidebar-pf-left sidebar-pf-dark sidebar-pf-big-icons">
+
+  <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons">
+    <li ng-class="getClass('/metrics/responseTime')"><a href="/metrics/responseTime"><i class="fa fa-line-chart"></i>Response Time</a></li>
+    <li ng-class="getClass('/metrics/upDowntime')"><a href="/metrics/upDowntime"><i class="fa fa-arrow-up"></i>Up / Downtime</a></li>
+    <li ng-class="getClass('/metrics/alerts')"><a href="/metrics/alerts"><i class="fa fa-flag"></i>Alerts</a></li>
+  </ul>
+</div>
