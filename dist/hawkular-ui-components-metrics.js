@@ -27,6 +27,7 @@ var HawkularMetrics;
     var ChartTimeRange = (function () {
         function ChartTimeRange(initialHoursDifference) {
             this.initialHoursDifference = initialHoursDifference;
+            alert(this.initialHoursDifference);
             this.init();
         }
         ChartTimeRange.prototype.init = function () {
