@@ -45,11 +45,12 @@ module HawkularMetrics {
     log.debug('loaded Metrics Plugin');
   }]);
 
-  _module.directive('hkEnter', function () {
+  ///@todo: move this someplace common
+  _module.directive('hkEnter', () => {
     return function (scope, element, attrs) {
-      element.bind('keydown keypress', function (event) {
+      element.bind('keydown keypress', (event) => {
         if (event.which === 13) {
-          scope.$apply(function () {
+          scope.$apply(() => {
             scope.$eval(attrs.hkEnter);
           });
 
