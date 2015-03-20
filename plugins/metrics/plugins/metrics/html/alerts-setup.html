@@ -1,0 +1,92 @@
+<div class="alert-settings">
+  <form class="form-horizontal">
+    <fieldset>
+      <legend>Preferences</legend>
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="email">Email</label>
+        <div class="col-md-6">
+          <input type="text" id="email" class="form-control">
+          <span class="help-block">Send alerts to this email address.</span>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Response Time</legend>
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="email">Status</label>
+        <div class="col-md-6">
+          <div class="onoffswitch">
+            <input type="checkbox" id="rt" class="onoffswitch-checkbox">
+            <label class="onoffswitch-label" for="rt">
+                        <span class="onoffswitch-inner">
+                          <span class="onoffswitch-active ng-binding">ON</span>
+                          <span class="onoffswitch-inactive ng-binding">OFF</span>
+                        </span>
+              <span class="onoffswitch-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="email">Threshold and duration</label>
+        <div class="col-md-6 inline-row">
+          <div class="input-group time">
+            <input type="text" class="form-control" placeholder="Threshold">
+            <span class="input-group-addon">ms</span>
+          </div>
+          <span class="between-inputs">for</span>
+          <div class="input-group duration">
+            <input type="text" class="form-control" placeholder="Duration">
+            <select class="selectpicker" style="display: none;">
+              <option>miliseconds</option>
+              <option>seconds</option>
+              <option>minutes</option>
+              <option>hours</option>
+            </select><div class="btn-group bootstrap-select input-group-btn"><button type="button" class="btn dropdown-toggle selectpicker btn-default" data-toggle="dropdown" title="miliseconds"><span class="filter-option pull-left">miliseconds</span>&nbsp;<span class="caret"></span></button><div class="dropdown-menu open"><ul class="dropdown-menu inner selectpicker" role="menu"><li rel="0" class="selected"><a tabindex="0" class="" style=""><span class="text">miliseconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="1"><a tabindex="0" class="" style=""><span class="text">seconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="2"><a tabindex="0" class="" style=""><span class="text">minutes</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="3"><a tabindex="0" class="" style=""><span class="text">hours</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li></ul></div></div>
+          </div>
+          <span class="help-block">Send alerts when the response time is over 2000 ms for more than 3 minutes.</span>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Downtime</legend>
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="email">Status</label>
+        <div class="col-md-6">
+          <div class="onoffswitch">
+            <input type="checkbox" id="rt" name="access" class="onoffswitch-checkbox">
+            <label class="onoffswitch-label" for="rt">
+                        <span class="onoffswitch-inner">
+                          <span class="onoffswitch-active ng-binding">ON</span>
+                          <span class="onoffswitch-inactive ng-binding">OFF</span>
+                        </span>
+              <span class="onoffswitch-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label" for="email">Duration</label>
+        <div class="col-md-6 inline-row">
+          <div class="input-group duration">
+            <input type="text" class="form-control" placeholder="Duration">
+            <select class="selectpicker" style="display: none;">
+              <option>miliseconds</option>
+              <option>seconds</option>
+              <option>minutes</option>
+              <option>hours</option>
+            </select><div class="btn-group bootstrap-select input-group-btn"><button type="button" class="btn dropdown-toggle selectpicker btn-default" data-toggle="dropdown" title="miliseconds"><span class="filter-option pull-left">miliseconds</span>&nbsp;<span class="caret"></span></button><div class="dropdown-menu open"><ul class="dropdown-menu inner selectpicker" role="menu"><li rel="0" class="selected"><a tabindex="0" class="" style=""><span class="text">miliseconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="1"><a tabindex="0" class="" style=""><span class="text">seconds</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="2"><a tabindex="0" class="" style=""><span class="text">minutes</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li><li rel="3"><a tabindex="0" class="" style=""><span class="text">hours</span><i class="glyphicon glyphicon-ok icon-ok check-mark"></i></a></li></ul></div></div>
+          </div>
+          <span class="help-block">Send alerts when the downtime lasts more than 2 minutes.</span>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default">Cancel</button>
+      </div>
+    </div>
+  </form>
+
+</div>

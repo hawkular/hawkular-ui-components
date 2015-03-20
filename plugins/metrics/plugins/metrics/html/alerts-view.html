@@ -1,0 +1,17 @@
+<p class="info-top"><strong>{{mac.alertList.length}} alerts</strong> last week.</p>
+
+<div class="alerts-activity">
+  <div ng-repeat="alert in mac.alertList">
+    <div class="panel panel-default alert alert-danger">
+      <div class="alert-icon">
+        <i class="fa fa-line-chart"></i>
+      </div>
+      <div class="date">
+        {{alert.ctime | date:'medium' }}
+      </div>
+      <div class="event">
+        <strong>Metrics</strong> met the condition.
+      </div>
+    </div>
+  </div>
+</div>
