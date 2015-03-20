@@ -1,9 +1,17 @@
-@import "../../../../../libs/patternfly/less/patternfly.less";
-@fa-font-path: "../../../../../libs/patternfly/components/font-awesome/fonts/";
-@font-path: "../../../../../libs/patternfly/dist/fonts";
-@icon-font-path: "../../../../../libs/patternfly/components/bootstrap/fonts/";
+@import "../../../../../libs/patternfly/less/variables.less";
+
+@danger-bg: rgba(204,0,0,0.07);
+@hawkular-bg: #f5f5f5;
 
 //general styles
+
+html {
+  background: @hawkular-bg;
+
+  body {
+    background: @hawkular-bg;
+  }
+}
 
 .container {
   text-align: center;
@@ -363,4 +371,197 @@ legend {
 
 #alert-radio-container {
   text-align: left;
+}
+
+// alerts activity section
+
+p.info-top {
+  font-size: 13px;
+  margin: @grid-gutter-width/2 0;
+}
+
+.panel {
+
+  &.alert-danger {
+    background-color: @danger-bg;
+
+    .fa {
+      color: @brand-danger;
+    }
+  }
+
+  &.alert {
+    font-size: 13px;
+    padding: 15px 25px;
+
+    > div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .alert-icon {
+      text-align: center;
+      margin-right: 15px;
+      width: 28px;
+
+      .fa {
+        font-size: 24px;
+      }
+    }
+
+    .date {
+      margin-right: 20px;
+      min-width: 120px;
+    }
+  }
+}
+
+// alert settings section
+
+.alert-settings .form-horizontal {
+  margin-top: @grid-gutter-width/2;
+}
+
+.form-horizontal {
+
+  fieldset {
+    margin-bottom: 5px;
+    position: relative;
+  }
+
+  legend {
+    color: @gray-light;
+    font-size: 15px;
+  }
+
+  label {
+    padding-right: 0;
+  }
+
+  .help-block {
+    margin-top: 5px;
+  }
+
+  .inline-row {
+
+    > div,
+    > span {
+      float: left;
+      margin-right: 10px;
+    }
+
+    .between-inputs {
+      line-height: 26px;
+    }
+
+    .time {
+      width: 120px;
+    }
+
+    .duration {
+      width: 180px;
+    }
+  }
+}
+
+.nav-tabs > li.active > a {
+  background-color: #f5f5f5;
+}
+
+// on off switch
+
+.onoffswitch {
+  -moz-user-select: none;
+  height: 26px;
+  position: relative;
+  width: 62px;
+
+  &:focus {
+    box-shadow: 0 0 8px rgba(102, 175, 73, 0.6);
+  }
+
+  .onoffswitch-checkbox {
+    display: none;
+  }
+
+  .onoffswitch-label {
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    cursor: pointer;
+    display: block;
+    overflow: hidden;
+    width: 62px;
+  }
+
+  .onoffswitch-inner {
+    display: block;
+    margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+    width: 200%;
+
+    > span {
+      -moz-box-sizing: border-box;
+      color: white;
+      float: left;
+      font-size: 12px;
+      font-weight: bold;
+      height: 24px;
+      line-height: 24px;
+      padding: 0;
+      width: 50%;
+    }
+
+    .onoffswitch-active {
+      background: @brand-primary;
+      color: #FFFFFF;
+      padding-left: 10px;
+    }
+
+    .onoffswitch-inactive {
+      background: linear-gradient(#fefefe, #e8e8e8) repeat scroll 0 0 transparent;
+      color: #4d5258;
+      padding-right: 10px;
+      text-align: right;
+    }
+  }
+
+  .onoffswitch-switch {
+    background-image: linear-gradient(top, #fafafa 0%, #ededed 100%);
+    background-image: -o-linear-gradient(top, #fafafa 0%, #ededed 100%);
+    background-image: -moz-linear-gradient(top, #fafafa 0%, #ededed 100%);
+    background-image: -webkit-linear-gradient(top, #fafafa 0%, #ededed 100%);
+    background-image: -ms-linear-gradient(top, #fafafa 0%, #ededed 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fafafa), color-stop(1, 0, #ededed));
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    bottom: 0;
+    margin: 0;
+    position: absolute;
+    right: 39px;
+    top: 0;
+    transition: all 0.3s ease-in 0s;
+    -webkit-transition: all 0.3s ease-in 0s;
+    width: 23px;
+  }
+
+  .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+  }
+
+  .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0;
+  }
+}
+
+.onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-inner .onoffswitch-active,
+.onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-inner .onoffswitch-inactive {
+  background-image: none;
+  background-color: #e5e5e5;
+  color: #9d9fa1;
+}
+
+// Tab color fix:
+
+#main .nav-tabs > li.active > a, #main  .nav-tabs > li.active > a:hover, #main  .nav-tabs > li.active > a:focus {
+  background-color: @hawkular-bg;
 }
