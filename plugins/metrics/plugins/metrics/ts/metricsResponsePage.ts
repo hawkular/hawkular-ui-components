@@ -29,8 +29,9 @@ module HawkularMetrics {
     date: Date;
     min: number;
     max: number;
+    percentile95th: number;
+    median: number;
   }
-
 
 
   /**
@@ -94,6 +95,10 @@ module HawkularMetrics {
     private _resourceList = [];
     selectedResource;
 
+    median = 0;
+    percentile95th = 0;
+    average = 0;
+
 
     public get resourceList():string[] {
       return this._resourceList;
@@ -150,15 +155,11 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      return  MetricsViewController.getResourceDurationMetricId();
+      return MetricsViewController.getResourceDurationMetricId();
     }
 
     private static getResourceDurationMetricId() {
       return globalMetricId + '.status.duration';
-    }
-
-    private static getResourceCodeMetricId() {
-      return globalMetricId + '.status.code';
     }
 
 
@@ -180,9 +181,14 @@ module HawkularMetrics {
           buckets: 60
         }).$promise
           .then((response) => {
+
             // we want to isolate the response from the data we are feeding to the chart
             this.bucketedDataPoints = this.formatBucketedChartOutput(response);
             console.dir(this.bucketedDataPoints);
+
+            this.median = _.last(this.bucketedDataPoints).median;
+            this.percentile95th = _.last(this.bucketedDataPoints).percentile95th;
+            this.average = _.last(this.bucketedDataPoints).avg;
 
             if (this.bucketedDataPoints.length) {
               // this is basically the DTO for the chart
@@ -209,7 +215,7 @@ module HawkularMetrics {
 
     private formatBucketedChartOutput(response):IChartDataPoint[] {
       //  The schema is different for bucketed output
-      return _.map(response.data, (point:IChartDataPoint) => {
+      return _.map(response, (point:IChartDataPoint) => {
         return {
           timestamp: point.timestamp,
           date: new Date(point.timestamp),
@@ -217,6 +223,8 @@ module HawkularMetrics {
           avg: (point.empty) ? 0 : point.avg,
           min: !angular.isNumber(point.min) ? 0 : point.min,
           max: !angular.isNumber(point.max) ? 0 : point.max,
+          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
+          median: !angular.isNumber(point.median) ? 0 : point.median,
           empty: point.empty
         };
       });
