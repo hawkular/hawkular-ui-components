@@ -20,6 +20,8 @@ module HawkularMetrics {
 
   export interface IContextChartDataPoint {
     timestamp: number;
+    start?: number;
+    end?: number;
     value: number;
     avg: number;
     empty: boolean;
@@ -217,8 +219,8 @@ module HawkularMetrics {
       //  The schema is different for bucketed output
       return _.map(response, (point:IChartDataPoint) => {
         return {
-          timestamp: point.timestamp,
-          date: new Date(point.timestamp),
+          timestamp: point.start,
+          date: new Date(point.start),
           value: !angular.isNumber(point.value) ? 0 : point.value,
           avg: (point.empty) ? 0 : point.avg,
           min: !angular.isNumber(point.min) ? 0 : point.min,
