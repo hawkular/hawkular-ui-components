@@ -49,7 +49,7 @@ module HawkularMetrics {
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory', '$routeParams'];
 
     constructor(private $scope:any,
                 private $rootScope:ng.IRootScopeService,
@@ -57,6 +57,7 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
                 private HawkularInventory:any,
+                private $routeParams:any,
                 public startTimeStamp:Date,
                 public endTimeStamp:Date,
                 public dateRange:string) {
@@ -71,6 +72,7 @@ module HawkularMetrics {
         this.refreshChartDataNow(this.getMetricId());
       });
 
+/*
       $scope.$watch('vm.selectedResource', (resource) => {
         if (resource) {
           /// made a selection from url switcher
@@ -87,7 +89,8 @@ module HawkularMetrics {
         }
 
       });
-      this.onCreate();
+*/
+      this.onCreate($routeParams.resourceId);
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -111,12 +114,17 @@ module HawkularMetrics {
       this._resourceList = newResourceList;
     }
 
-    private onCreate() {
+    private onCreate(curResourceId:string) {
       /// setup autorefresh for every minute
       this.autoRefresh(60);
       this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
         this.resourceList = aResourceList;
         this.selectedResource = _.last(this._resourceList);
+        for (var i = 0; i < this._resourceList.length; i++) {
+          if (aResourceList[i].id === curResourceId) {
+            this.selectedResource = this._resourceList[i];
+          }
+        }
         this.refreshChartDataNow(this.getMetricId());
       });
     }

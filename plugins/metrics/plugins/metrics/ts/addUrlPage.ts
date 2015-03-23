@@ -20,7 +20,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', 'HawkularInventory'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$log', 'HawkularInventory', 'DataResource'];
 
     private httpUriPart = 'http://';
 
@@ -29,6 +29,7 @@ module HawkularMetrics {
                 private $rootScope:ng.IRootScopeService,
                 private $log:ng.ILogService,
                 private HawkularInventory:any,
+                private DataResource:any,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
@@ -51,6 +52,7 @@ module HawkularMetrics {
       /// Add the Resource
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
         .then((newResource) => {
+          this.DataResource.updateResources();
           // we now have a resourceId from this call
           globalMetricId = newResource.id;
           globalResourceUrl = resource.parameters.url;
@@ -73,7 +75,7 @@ module HawkularMetrics {
             resourceId: newResource.id
           }, metrics).$promise.then((newMetrics) => {
               toastr.info('Your data is being collected. Please be patient (should be about another minute).');
-              this.$location.url('/metrics/responseTime');
+              this.$location.url('/metrics/responseTime/' + newResource.id);
             });
 
         });

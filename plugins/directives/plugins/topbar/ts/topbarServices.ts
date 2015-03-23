@@ -58,27 +58,24 @@ module Topbar {
 
   export class DataResource {
 
-    public static $inject = ['HawkularInventory'];
+    public static $inject = ['$rootScope', 'HawkularInventory', '$timeout'];
 
     globalResourceList: any;
     selectedResource: String;
+    timeout: any;
 
     hkInventory: any;
+    rootScope: any;
 
-    constructor(private HawkularInventory:any) {
+    constructor(private $rootScope: any, private HawkularInventory:any, private $timeout:any) {
       this.hkInventory = HawkularInventory;
+      this.rootScope = $rootScope;
+      this.timeout = $timeout;
       this.updateResources();
     }
 
     public updateResources():any {
-      return this.hkInventory.Resource.query({tenantId: globalTenantId}).$promise.
-        then((resources)=> {
-          this.globalResourceList = resources;
-          if (!this.selectedResource) {
-            this.selectedResource = resources[resources.length - 1];
-          }
-          return resources;
-        });
+      this.rootScope.hkResourcesList = this.hkInventory.Resource.query({tenantId: globalTenantId});
     }
 
     public getSelectedResource():String {
@@ -86,7 +83,8 @@ module Topbar {
     }
 
     public getResources():any {
-      return this.globalResourceList;
+      // return this.globalResourceList;
+      return this.rootScope.hkResourcesList;
     }
 
     public setSelectedResource(resource: String):void {
