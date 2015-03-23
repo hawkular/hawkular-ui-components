@@ -19,7 +19,7 @@
 module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts',
-    'hawkular.services', 'ui.bootstrap', 'topbar']);
+    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select']);
 
   var metricsTab:any;
 
@@ -81,7 +81,8 @@ module HawkularMetrics {
         when('/metrics/responseTime/:resourceId/', {templateUrl: 'plugins/metrics/html/response-time.html'}).
         when('/metrics/responseTime/:resourceId/:rangeStart', {templateUrl: 'plugins/metrics/html/response-time.html'}).
         when('/metrics/responseTime/:resourceId/:rangeStart/:rangeEnd', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-        when('/metrics/availability/:resourceId', {templateUrl: 'plugins/metrics/html/response-time.html'});
+        when('/metrics/availability/:resourceId', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/metrics/alerts/:resourceId', {templateUrl: 'plugins/metrics/html/alerts.html'});
   }]);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);

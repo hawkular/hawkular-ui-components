@@ -20,10 +20,10 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'DataResource'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'DataResource', 'HawkularAlertsManager'];
 
     private httpUriPart = 'http://';
-
+    public addProgress: boolean = false;
     private resourceList;
 
     constructor(private $location:ng.ILocationService,
@@ -35,6 +35,7 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private DataResource:any,
+                private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
@@ -42,6 +43,8 @@ module HawkularMetrics {
     }
 
     addUrl(url:string):void {
+      this.addProgress = true;
+
       var resource = {
         type: 'URL',
         id: '',
@@ -53,6 +56,7 @@ module HawkularMetrics {
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
       globalChartTimeRange = new ChartTimeRange(1);
+      var globalMetricId: string;
 
       /// Add the Resource
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
@@ -75,14 +79,28 @@ module HawkularMetrics {
 
 
           /// For right now we will just Register a couple of metrics automatically
-          this.HawkularInventory.Metric.save({
+          return this.HawkularInventory.Metric.save({
             tenantId: globalTenantId,
             resourceId: newResource.id
           }, metrics).$promise.then((newMetrics) => {
               // TODO: Add availability...
-              toastr.info('Your data is being collected. Please be patient (should be about another minute).');
-              this.$location.url('/metrics/responseTime/' + newResource.id);
             });
+
+        }).then(()=> {
+          // Find if a default email exists
+          return this.HawkularAlertsManager.addEmailAction('myemail@company.com');
+        }).then(()=> {
+          // Create threshold trigger for newly created metrics
+          console.log('metric', globalMetricId);
+          return this.HawkularAlertsManager.createTrigger(globalMetricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
+        }).then((alert)=> {
+          console.log('alert', alert);
+          // Create availability trigger for newly created metrics
+          return this.HawkularAlertsManager.createTrigger(globalMetricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
+        }).finally(()=> {
+          this.addProgress = false;
+          toastr.info('Your data is being collected. Please be patient (should be about another minute).');
+          this.$location.url('/metrics/responseTime/' + globalMetricId);
         });
     }
 
