@@ -23,7 +23,6 @@
     "!dist/*"
   ],
   "dependencies": {
-    "bootstrap": "3.3.2",
     "angular-bootstrap": "0.11.0",
     "angular-ui-select": "0.11.2",
     "bootstrap-select": "1.6",
