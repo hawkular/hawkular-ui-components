@@ -61,6 +61,28 @@ module HawkularMetrics {
     };
   });
 
+  _module.config(["$routeProvider", ($routeProvider) => {
+    $routeProvider.
+        when('/metrics/responseTime', {templateUrl: 'plugins/metrics/html/response-time.html',
+        resolve: {
+          hkResourceList : function($filter, $location, $q, HawkularInventory) {
+            var resPromise = HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise;
+            resPromise.then(function(hkResourceList){
+              $location.path('/metrics/responseTime/' + hkResourceList[0].id);
+            }, function(){
+              $location.url('/error');
+            });
+
+            // Returning a promise which would never be resolved, so that the page would not render.
+            // The page will be redirected before rendering based on the resource list loaded above.
+            return $q.defer().promise;
+          }
+        }}).
+        when('/metrics/responseTime/:resourceId/', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/metrics/responseTime/:resourceId/:rangeStart', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/metrics/responseTime/:resourceId/:rangeStart/:rangeEnd', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/metrics/availability/:resourceId', {templateUrl: 'plugins/metrics/html/response-time.html'});
+  }]);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
 }

@@ -28,7 +28,7 @@ module Topbar {
   }
 
   export var TopbarController = _module.controller("Topbar.TopbarController",
-    ['$scope', '$rootScope', '$location', 'DataResource', 'DataRange', 'HawkularInventory', ($scope, $rootScope, $location, DataResource, DataRange, HawkularInventory) => {
+    ['$scope', '$rootScope', '$location', '$routeParams', 'DataResource', 'DataRange', 'HawkularInventory', ($scope, $rootScope, $location, $routeParams, DataResource, DataRange, HawkularInventory) => {
 
     $scope.range = 'week';
 
@@ -52,27 +52,23 @@ module Topbar {
     };
 
     $scope.updateResources = function() {
-      DataResource.updateResources().then(function(data) {
-        $scope.resources = data;
-      });
+      DataResource.updateResources();
     };
 
-    $scope.getSelection = function() {
-      return {
-        resource: DataResource.getSelectedResource(),
-        start: DataRange.getStartDate(),
-        end: DataRange.getEndDate()
-      };
-    };
+    $scope.$watch(function() { return $location.path(); }, function(value) {
+      $rootScope.hideSidebar = ($location.path().indexOf('/metrics/addUrl') === 0);
+    });
+
+    $scope.$watch(function() { return $routeParams.resourceId; }, function(value) {
+      $scope.selectedResource = HawkularInventory.Resource.get({tenantId: globalTenantId, resourceId: value});
+    });
 
     $scope.setSelection = function(resourceId) {
-      DataResource.setSelectedResource(resourceId);
+      $location.path($location.path().replace($routeParams.resourceId, resourceId.id));
     };
 
     /// Initialize
     $scope.updateResources();
-    $scope.getSelection();
-    $scope.getDate();
 
   }]);
 }
