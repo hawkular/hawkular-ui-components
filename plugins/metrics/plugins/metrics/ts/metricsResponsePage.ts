@@ -155,7 +155,6 @@ module HawkularMetrics {
 
     refreshChartDataNow(metricId:string, startTime?:Date):void {
       var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
-      //this.$rootScope.$broadcast('MultiChartOverlayDataChanged');
       this.endTimeStamp = new Date();
       this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
     }
@@ -196,9 +195,9 @@ module HawkularMetrics {
             this.bucketedDataPoints = this.formatBucketedChartOutput(response);
             console.dir(this.bucketedDataPoints);
 
-            this.median = _.last(this.bucketedDataPoints).median;
-            this.percentile95th = _.last(this.bucketedDataPoints).percentile95th;
-            this.average = _.last(this.bucketedDataPoints).avg;
+            this.median = Math.round(_.last(this.bucketedDataPoints).median);
+            this.percentile95th = Math.round(_.last(this.bucketedDataPoints).percentile95th);
+            this.average = Math.round(_.last(this.bucketedDataPoints).avg);
 
             if (this.bucketedDataPoints.length) {
               // this is basically the DTO for the chart
