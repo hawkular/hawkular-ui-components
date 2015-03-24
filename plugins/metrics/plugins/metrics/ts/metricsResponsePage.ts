@@ -59,20 +59,18 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private $routeParams:any,
                 public startTimeStamp:Date,
-                public endTimeStamp:Date,
-                public dateRange:string) {
+                public endTimeStamp:Date) {
       $scope.vm = this;
 
       this.startTimeStamp = moment().subtract(1, 'hours').toDate();
       this.endTimeStamp = new Date();
-      this.dateRange = moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
-      + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
       $scope.$on('RefreshChart', (event) => {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-/*
+
+
       $scope.$watch('vm.selectedResource', (resource) => {
         if (resource) {
           /// made a selection from url switcher
@@ -89,7 +87,10 @@ module HawkularMetrics {
         }
 
       });
-*/
+
+
+
+
       this.onCreate($routeParams.resourceId);
     }
 
