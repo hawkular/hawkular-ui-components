@@ -1,5 +1,33 @@
-<div class="row" ng-controller="HawkularMetrics.OverviewController as vm">
-  <div class="col-md-12">
-    <h1>Availability</h1>
+<section class="availability" ng-controller="MetricsAvailabilityController as vm">
+
+  <h1>Availability</h1>
+
+  <div class="panel panel-default summary">
+    <div class="row">
+      <div class="col-md-3 summary-item">
+        <span class="data">{{vm.availabilityPercent * 100}} %</span>
+        <span class="item">Availability</span>
+      </div>
+      <div class="col-md-3 summary-item">
+        <span class="data">{{vm.downTimeDuration}}</span>
+        <span class="item">Total Downtime Duration</span>
+      </div>
+      <div class="col-md-3 summary-item">
+        <span class="data">{{vm.lastDownTime | date:'mediumDate'}}</span>
+        <span class="item">Last Downtime</span>
+      </div>
+      <div class="col-md-3 summary-item">
+        <span class="data">{{vm.downTimeEvents}}</span>
+        <span class="item">Downtime Events</span>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="panel panel-default graph">
+    <div class="update pull-right">
+      <i class="fa fa-clock-o"></i><strong>Last update</strong> 1 minutes ago
+    </div>
+    <div>TODO: Avail Chart goes here...</div>
+  </div>
+
+</section><!-- .availability -->

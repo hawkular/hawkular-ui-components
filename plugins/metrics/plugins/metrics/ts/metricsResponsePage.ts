@@ -59,20 +59,17 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private $routeParams:any,
                 public startTimeStamp:Date,
-                public endTimeStamp:Date,
-                public dateRange:string) {
+                public endTimeStamp:Date) {
       $scope.vm = this;
 
       this.startTimeStamp = moment().subtract(1, 'hours').toDate();
       this.endTimeStamp = new Date();
-      this.dateRange = moment(this.startTimeStamp).format('H:mm') + ' - ' + moment(this.endTimeStamp).format('H:mm')
-      + ' (' + moment(this.endTimeStamp).from(moment(this.startTimeStamp), true) + ')';
 
       $scope.$on('RefreshChart', (event) => {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-/*
+
       $scope.$watch('vm.selectedResource', (resource) => {
         if (resource) {
           /// made a selection from url switcher
@@ -89,7 +86,8 @@ module HawkularMetrics {
         }
 
       });
-*/
+
+
       this.onCreate($routeParams.resourceId);
     }
 
@@ -140,6 +138,7 @@ module HawkularMetrics {
       this.autoRefreshPromise = this.$interval(()  => {
         this.endTimeStamp = new Date();
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
+        this.refreshSummaryData(this.getMetricId());
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -157,6 +156,7 @@ module HawkularMetrics {
       var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
       this.endTimeStamp = new Date();
       this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
+      this.refreshSummaryData(metricId, startTime ? startTime.getTime(): adjStartTimeStamp.getTime(), this.endTimeStamp.getTime());
     }
 
     refreshHistoricalChartData(metricId:string, startDate:Date, endDate:Date):void {
@@ -169,6 +169,41 @@ module HawkularMetrics {
 
     private static getResourceDurationMetricId() {
       return globalMetricId + '.status.duration';
+    }
+
+    refreshSummaryData(metricId:string, startTime?:number, endTime?:number):void {
+      var dataPoints:IChartDataPoint[];
+      // calling refreshChartData without params use the model values
+      if (!endTime) {
+        endTime = this.endTimeStamp.getTime();
+      }
+      if (!startTime) {
+        startTime = this.startTimeStamp.getTime();
+      }
+
+      if (metricId) {
+        this.HawkularMetric.NumericMetricData.queryMetrics({
+          tenantId: globalTenantId,
+          numericId: metricId,
+          start: startTime,
+          end: endTime,
+          buckets: 1
+        }).$promise
+          .then((response) => {
+
+            dataPoints = this.formatBucketedChartOutput(response);
+            console.dir(dataPoints);
+
+            this.median = Math.round(_.last(dataPoints).median);
+            this.percentile95th = Math.round(_.last(dataPoints).percentile95th);
+            this.average = Math.round(_.last(dataPoints).avg);
+
+          }, (error) => {
+            this.$log.error('Error Loading Chart data');
+            toastr.error('Error Loading Chart Data: ' + error);
+          });
+
+      }
     }
 
 
@@ -195,16 +230,12 @@ module HawkularMetrics {
             this.bucketedDataPoints = this.formatBucketedChartOutput(response);
             console.dir(this.bucketedDataPoints);
 
-            this.median = Math.round(_.last(this.bucketedDataPoints).median);
-            this.percentile95th = Math.round(_.last(this.bucketedDataPoints).percentile95th);
-            this.average = Math.round(_.last(this.bucketedDataPoints).avg);
-
             if (this.bucketedDataPoints.length) {
               // this is basically the DTO for the chart
               this.chartData = {
                 id: metricId,
-                startTimeStamp: this.startTimeStamp,
-                endTimeStamp: this.endTimeStamp,
+                startTimeStamp: startTime,
+                endTimeStamp: endTime,
                 dataPoints: this.bucketedDataPoints,
                 contextDataPoints: this.contextDataPoints,
                 annotationDataPoints: []

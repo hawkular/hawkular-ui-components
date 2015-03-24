@@ -2,17 +2,12 @@
 
   <div class="col-sm-9 col-md-10 content">
 
-    <!--<div class="well" id="control-bar">-->
-            <!--<span class="col-md-3 col-sm-4 select-url-container">-->
-                <!--<select class="form-control input-sm select-url" ng-model="vm.selectedResource"-->
-                        <!--ng-options="rs.parameters.url for rs in vm.resourceList"></select>-->
-            <!--</span>-->
-            <!--<span id="date-range-container" class="col-md-3 col-sm-2 pull-right">-->
-                <!--<span id="date-range" class="input-group input-group-sm">-->
-                    <!--<input type="text" class="form-control input-sm" value="{{vm.dateRange}}" readonly>-->
-                <!--</span>-->
-            <!--</span>-->
-    <!--</div>-->
+    <div class="well" id="control-bar">
+            <span class="col-md-3 col-sm-4 select-url-container">
+                <select class="form-control input-sm select-url" ng-model="vm.selectedResource"
+                        ng-options="rs.parameters.url for rs in vm.resourceList"></select>
+            </span>
+    </div>
 
     <div class="col-sm-9 col-md-10 content response-time">
       <h1>Response Time</h1>
@@ -55,7 +50,6 @@
             data="{{vm.chartData.dataPoints}}"
             chart-type="hawkularmetric"
             alert-value="500"
-            hide-high-low-values="true"
             y-axis-units="Response Time (ms)"
             chart-height="250">
           </hawkular-chart>
