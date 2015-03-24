@@ -20,20 +20,25 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', 'HawkularInventory', 'DataResource'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'DataResource'];
 
     private httpUriPart = 'http://';
+
+    private resourceList;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
                 private $rootScope:ng.IRootScopeService,
                 private $log:ng.ILogService,
+                private $filter:ng.IFilterService,
                 private HawkularInventory:any,
+                private HawkularMetric:any,
+                private HawkularAlert:any,
                 private DataResource:any,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
-
+      this.resourceList = this.getResourceList();
     }
 
     addUrl(url:string):void {
@@ -74,14 +79,73 @@ module HawkularMetrics {
             tenantId: globalTenantId,
             resourceId: newResource.id
           }, metrics).$promise.then((newMetrics) => {
+              // TODO: Add availability...
               toastr.info('Your data is being collected. Please be patient (should be about another minute).');
               this.$location.url('/metrics/responseTime/' + newResource.id);
             });
-
         });
-
-
     }
+
+    getResourceList():any {
+      return this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
+        this.resourceList = aResourceList;
+        angular.forEach(this.resourceList, function(res, idx) {
+          this.HawkularMetric.NumericMetricData.queryMetrics({
+            tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
+            start: moment().subtract(1, 'hour').valueOf(), end: moment().valueOf()}, (resource) => {
+            // FIXME: Work data so it works for chart ?
+            res['responseTime'] = resource;
+          });
+          this.HawkularMetric.NumericMetricData.queryMetrics({
+            tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
+            start: moment().subtract(1, 'hour').valueOf(), end: moment().valueOf()}, (resource) => {
+            // FIXME: Use availability instead..
+            res['isUp'] = (resource[0].value >= 200 && resource[0].value < 300);
+            var upTime = 0;
+            for(var i = 0; i < resource.length; i++) {
+              if(resource[i].value >= 200 && resource[i].value < 300) {
+                upTime++;
+              }
+            }
+            res['availability'] = upTime/resource.length * 100;
+            res['downTime'] = resource.length - upTime;
+          });
+          this.HawkularAlert.Alert.query({ query: res.id, start: moment().subtract(1, 'hour').valueOf(),
+            end: moment().valueOf()}, (alertsList) => {
+            res['alerts'] = [];
+            for(var i = 0; i < alertsList.length; i++) {
+              if (alertsList[i].evalSets[0][0].condition.dataId.indexOf(res.id) === 0) {
+                res['alerts'].push(alertsList[i].evalSets[0][0]);
+              }
+            }
+          });
+          res['updateTime'] = new Date();
+        }, this);
+
+      });
+    }
+
+    getAverage(data:any, field:string):number {
+      if (data) {
+        var sum = 0;
+        for (var i = 0; i < data.length; i++) {
+          sum += parseInt(data[i][field], 10);
+        }
+        return Math.round(sum / data.length);
+      }
+    }
+
+    deleteResource(resource:any):any {
+      // TODO: use modal to confirm delete...
+      this.HawkularInventory.Resource.delete({
+        tenantId: globalTenantId,
+        resourceId: resource.id
+      }).$promise.then((res) => {
+          toastr.info('The site ' + resource.parameters.url + ' is no longer being monitored.');
+          this.resourceList = this.getResourceList();
+        });
+    }
+
   }
 
   _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
