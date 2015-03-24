@@ -461,6 +461,7 @@ h2 {
   border-right: 1px solid #d1d1d1;
   display: inline-block;
   padding: 0 30px;
+  text-align: center;
 }
 .summary-item:last-child {
   border-right: none;
@@ -514,6 +515,12 @@ h2 {
 }
 .graph img {
   margin-top: 10px;
+}
+#metric-chart-container {
+  width: 800px;
+}
+#metrics-chart {
+  height: 270px;
 }
 .form-horizontal.add-url {
   margin-bottom: 40px;
