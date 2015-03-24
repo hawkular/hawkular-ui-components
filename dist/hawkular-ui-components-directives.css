@@ -42,16 +42,6 @@ h1 {
 .panel {
   border: none;
 }
-.pg-insert-url .container {
-  margin-top: 120px;
-}
-.pg-insert-url h1 {
-  background: url(img/ic-welcome.png) no-repeat center bottom;
-  padding-bottom: 80px;
-}
-.pg-insert-url .input-group .form-control.input-lg {
-  margin-bottom: 5px;
-}
 h2 {
   font-size: 18px;
   margin-bottom: 20px;
@@ -463,16 +453,6 @@ h1 {
 }
 .panel {
   border: none;
-}
-.pg-insert-url .container {
-  margin-top: 120px;
-}
-.pg-insert-url h1 {
-  background: url(img/ic-welcome.png) no-repeat center bottom;
-  padding-bottom: 80px;
-}
-.pg-insert-url .input-group .form-control.input-lg {
-  margin-bottom: 5px;
 }
 h2 {
   font-size: 18px;

@@ -60,7 +60,9 @@ module Topbar {
     });
 
     $scope.$watch(function() { return $routeParams.resourceId; }, function(value) {
-      $scope.selectedResource = HawkularInventory.Resource.get({tenantId: globalTenantId, resourceId: value});
+      if (value) {
+        $scope.selectedResource = HawkularInventory.Resource.get({tenantId: globalTenantId, resourceId: value});
+      }
     });
 
     $scope.setSelection = function(resourceId) {

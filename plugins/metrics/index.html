@@ -6,8 +6,6 @@
   <base href='/'>
   <meta charset="UTF8">
 
-
-  <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css"/>
   <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css"/>
   <link rel="stylesheet" href="libs/hawkular-charts/css/hawkular-chart.css"/>
   <link rel="stylesheet" href="../../dist/hawkular-ui-components-metrics.css"/>
@@ -25,7 +23,6 @@
   <!-- bower:js -->
   <!-- endbower -->
 
-  <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
   <script src="libs/patternfly/dist/js/patternfly.js"></script>
   <script type="node_modules/angular-hint/hint.js"></script>
 
@@ -42,6 +39,7 @@
 </div>
 
 <!-- add any scripts under dist/ here -->
+<script src="dist/hawkular-ui-components-directives.js"></script>
 <script src="dist/hawkular-ui-components-metrics.js"></script>
 <script>
   angular.module('hawkular-metrics').config(["HawkularMetricProvider", "HawkularInventoryProvider", "HawkularAlertProvider",
