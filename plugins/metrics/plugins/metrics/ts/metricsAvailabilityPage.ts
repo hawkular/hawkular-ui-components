@@ -54,7 +54,7 @@ module HawkularMetrics {
 
     private onCreate(curResourceId:string) {
       /// setup autorefresh for every minute
-      this.autoRefreshAvailability(60);
+      this.autoRefreshAvailability(20);
     }
 
 

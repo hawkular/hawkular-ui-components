@@ -114,7 +114,7 @@ module HawkularMetrics {
 
     private onCreate(curResourceId:string) {
       /// setup autorefresh for every minute
-      this.autoRefresh(60);
+      this.autoRefresh(20);
       this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
         this.resourceList = aResourceList;
         this.selectedResource = _.last(this._resourceList);
