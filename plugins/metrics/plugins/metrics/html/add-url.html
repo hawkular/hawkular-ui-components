@@ -13,7 +13,8 @@
             <span class="help-block"
                   ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
               <span class="input-group-btn">
-                   <button class="btn btn-primary" ng-class="{'btn-lg': resourcesList.length === 0}" type="submit" ng-disabled="addUrlForm.$invalid">
+                   <button class="btn btn-primary" ng-class="{'btn-lg': resourcesList.length === 0}" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
+                     <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
                    Add URL
                    </button>
               </span>

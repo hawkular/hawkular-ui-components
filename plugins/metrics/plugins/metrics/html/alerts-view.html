@@ -2,16 +2,33 @@
 
 <div class="alerts-activity">
   <div ng-repeat="alert in mac.alertList">
-    <div class="panel panel-default alert alert-danger">
+
+    <div class="panel panel-default alert alert-danger" ng-if="alert.type=='AVAILABILITY'">
+      <div class="alert-icon">
+        <i class="fa fa-arrow-down"></i>
+      </div>
+      <div class="date">
+        {{alert.start | date:'medium' }}
+      </div>
+      <div class="event">
+        Server <strong>down</strong> for {{(alert.end - alert.start)/1000 }} seconds (until {{alert.end | date:'medium' }}).
+      </div>
+    </div>
+
+    <div class="panel panel-default alert alert-danger" ng-if="alert.type=='THRESHOLD'">
       <div class="alert-icon">
         <i class="fa fa-line-chart"></i>
       </div>
       <div class="date">
-        {{alert.ctime | date:'medium' }}
+        {{alert.start | date:'medium' }}
       </div>
       <div class="event">
-        <strong>Metrics</strong> met the condition.
+        <strong>Response time</strong> was above the threshold ({{alert.threshold}}) for {{(alert.end - alert.start)/1000 }} seconds (until {{alert.end | date:'medium' }}).
+        The average value was {{alert.avg}}.
       </div>
     </div>
+
   </div>
+
+
 </div>
