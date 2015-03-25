@@ -70,22 +70,22 @@ module HawkularMetrics {
       });
 
 
-      $scope.$watch('vm.selectedResource', (resource) => {
-        if (resource) {
-          /// made a selection from url switcher
-          globalMetricId = resource.id;
-          this.refreshChartDataNow(this.getMetricId());
-        } else {
-          /// case when coming from addUrl screen
-          globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
-            then((resources)=> {
-              this.resourceList = resources;
-              this.selectedResource = _.last(resources);
-              this.refreshChartDataNow(this.getMetricId());
-            });
-        }
-
-      });
+      //$scope.$watch('vm.selectedResource', (resource) => {
+      //  if (resource) {
+      //    /// made a selection from url switcher
+      //    globalMetricId = resource.id;
+      //    this.refreshChartDataNow(this.getMetricId());
+      //  } else {
+      //    /// case when coming from addUrl screen
+      //    globalResourceList = this.HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise.
+      //      then((resources)=> {
+      //        this.resourceList = resources;
+      //        this.selectedResource = _.last(resources);
+      //        this.refreshChartDataNow(this.getMetricId());
+      //      });
+      //  }
+      //
+      //});
 
 
       this.onCreate($routeParams.resourceId);
