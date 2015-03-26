@@ -46,10 +46,12 @@ module HawkularMetrics {
    * @param $log
    * @param HawkularMetric
    * @param HawkularInventory
+   * @param HawkularAlert
+   * @param $routeParams
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory', '$routeParams'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory', 'HawkularAlert', '$routeParams'];
 
     constructor(private $scope:any,
                 private $rootScope:ng.IRootScopeService,
@@ -57,6 +59,7 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
                 private HawkularInventory:any,
+                private HawkularAlert:any,
                 private $routeParams:any,
                 public startTimeStamp:Date,
                 public endTimeStamp:Date) {
@@ -86,8 +89,7 @@ module HawkularMetrics {
     private autoRefreshPromise:ng.IPromise<number>;
 
     private metricId:string;
-    //private _resourceList = [];
-    selectedResource;
+    threshold = 5000; // default to 5 seconds some high number
 
     median = 0;
     percentile95th = 0;
@@ -109,6 +111,7 @@ module HawkularMetrics {
         this.endTimeStamp = new Date();
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
         this.refreshSummaryData(this.getMetricId());
+        this.retrieveThreshold();
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -126,7 +129,8 @@ module HawkularMetrics {
       var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
       this.endTimeStamp = new Date();
       this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
-      this.refreshSummaryData(metricId, startTime ? startTime.getTime(): adjStartTimeStamp.getTime(), this.endTimeStamp.getTime());
+      this.refreshSummaryData(metricId, startTime ? startTime.getTime() : adjStartTimeStamp.getTime(), this.endTimeStamp.getTime());
+      this.retrieveThreshold();
     }
 
     refreshHistoricalChartData(metricId:string, startDate:Date, endDate:Date):void {
@@ -135,6 +139,19 @@ module HawkularMetrics {
 
     getMetricId():string {
       return this.metricId + '.status.duration';
+    }
+
+
+    retrieveThreshold() {
+      this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
+        .then((response) => {
+
+          this.threshold = response[0].threshold;
+
+        }, (error) => {
+          this.$log.error('Error Loading Threshold data');
+          toastr.error('Error Loading Threshold Data: ' + error);
+        });
     }
 
     refreshSummaryData(metricId:string, startTime?:number, endTime?:number):void {
