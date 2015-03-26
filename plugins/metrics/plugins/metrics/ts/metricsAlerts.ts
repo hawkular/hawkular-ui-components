@@ -41,57 +41,9 @@ module HawkularMetrics {
 
       this.metricId = $routeParams.resourceId;
 
-      /* Format of Alerts:
-
-      alert: {
-        type: 'THRESHOLD' or 'AVAILABILITY'
-        avg: Average value based on the evalSets 'values'
-        start: The time of the first data ('dataTimestamp') in evalSets
-        threshold: The threshold taken from condition.threshold
-        end: The time when the alert was sent ('ctime')
-      }
-
-       */
-
-      this.HawkularAlert.Alert.query({tags:this.metricId+'.status.duration'}).$promise.then((serverAlerts: any) => {
-        this.$log.debug('querying data finished', serverAlerts);
-
-        for (var i = 0; i < serverAlerts.length; i++) {
-          var consoleAlert: any = {};
-          var serverAlert = serverAlerts[i];
-
-          this.$log.debug('server Alert to inspect: ', serverAlert);
-
-          consoleAlert.end = serverAlert.ctime;
-
-          var sum: number = 0.0;
-          var count: number = 0.0;
-
-          for (var j = 0; j < serverAlert.evalSets.length; j++) {
-            var eval = serverAlert.evalSets[j][0];
-
-            if (!consoleAlert.start && eval.dataTimestamp) {
-              consoleAlert.start = eval.dataTimestamp;
-            }
-
-            if (!consoleAlert.threshold && eval.condition.threshold) {
-              consoleAlert.threshold = eval.condition.threshold;
-            }
-
-            if (!consoleAlert.type && eval.condition.type) {
-              consoleAlert.type = eval.condition.type;
-            }
-
-            sum += eval.value;
-            count++;
-          }
-
-          consoleAlert.avg = sum/count;
-
-          this.alertList.push(consoleAlert);
-        }
-      }, (error) => {
-        this.$log.debug('querying data error', error);
+      HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
+        this.$log.debug('data', data);
+        this.alertList = data;
       });
     }
   }

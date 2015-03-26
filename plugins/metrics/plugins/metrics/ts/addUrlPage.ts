@@ -63,7 +63,7 @@ module HawkularMetrics {
           // we now have a resourceId from this call
           metricId = newResource.id;
           console.dir(newResource);
-          this.$log.info('New Resource ID: ' + metricId + ' created for url: ' + newResource.parameters.url);
+          this.$log.info('New Resource ID: ' + metricId + ' created.');
           var metrics = [{
             name: metricId + '.status.duration',
             unit: 'MILLI_SECOND',
@@ -88,10 +88,8 @@ module HawkularMetrics {
           return this.HawkularAlertsManager.addEmailAction('myemail@company.com');
         }).then(()=> {
           // Create threshold trigger for newly created metrics
-          console.log('metric', metricId);
           return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
         }).then((alert)=> {
-          console.log('alert', alert);
           // Create availability trigger for newly created metrics
           return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
         }).finally(()=> {
