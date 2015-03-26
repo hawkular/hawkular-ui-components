@@ -59,11 +59,9 @@ module HawkularMetrics {
       }).$promise.then((trigger)=> {
 
           triggerId = trigger.id;
-          console.log('trigger...Id',trigger);
 
           // Parse metrics id from the trigger name
           var dataId: string = trigger.name.slice(0,-14) + '.status.duration';
-          console.log('dataId',dataId);
 
           // Create a conditions for that trigger
           if (conditionType === 'THRESHOLD') {
@@ -147,8 +145,6 @@ module HawkularMetrics {
     }
 
     updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void> {
-      console.log('triggerId', triggerId);
-      console.log('dampeningId', dampeningId);
       dampening.dampeningId = dampeningId;
       return this.HawkularAlert.Dampening.put({ triggerId: triggerId, dampeningId: dampeningId }, dampening).$promise;
     }
