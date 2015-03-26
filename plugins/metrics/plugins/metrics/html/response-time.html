@@ -2,13 +2,6 @@
 
   <div class="col-sm-9 col-md-10 content">
 
-    <!--<div class="well" id="control-bar">-->
-            <!--<span class="col-md-3 col-sm-4 select-url-container">-->
-                <!--<select class="form-control input-sm select-url" ng-model="vm.selectedResource"-->
-                        <!--ng-options="rs.parameters.url for rs in vm.resourceList"></select>-->
-            <!--</span>-->
-    <!--</div>-->
-
     <div class="col-sm-9 col-md-10 content response-time">
       <h1>Response Time</h1>
 
@@ -49,7 +42,7 @@
           <hawkular-chart
             data="{{vm.chartData.dataPoints}}"
             chart-type="hawkularmetric"
-            alert-value="500"
+            alert-value="{{vm.threshold}}"
             y-axis-units="Response Time (ms)"
             chart-height="250">
           </hawkular-chart>
