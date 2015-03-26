@@ -28,7 +28,7 @@ module Topbar {
   }
 
   export var TopbarController = _module.controller("Topbar.TopbarController",
-    ['$scope', '$rootScope', '$location', '$routeParams', 'DataResource', 'DataRange', 'HawkularInventory', ($scope, $rootScope, $location, $routeParams, DataResource, DataRange, HawkularInventory) => {
+    ['$scope', '$rootScope', '$location', '$routeParams', 'HawkularNav', 'DataRange', 'HawkularInventory', ($scope, $rootScope, $location, $routeParams, HawkularNav, DataRange, HawkularInventory) => {
 
     $scope.range = 'week';
 
@@ -51,26 +51,13 @@ module Topbar {
       'year': 'Last Year'
     };
 
-    $scope.updateResources = function() {
-      DataResource.updateResources();
-    };
-
     $scope.$watch(function() { return $location.path(); }, function(value) {
       $rootScope.hideSidebar = ($location.path().indexOf('/metrics/addUrl') === 0);
-    });
-
-    $scope.$watch(function() { return $routeParams.resourceId; }, function(value) {
-      if (value) {
-        $scope.selectedResource = HawkularInventory.Resource.get({tenantId: globalTenantId, resourceId: value});
-      }
     });
 
     $scope.setSelection = function(resourceId) {
       $location.path($location.path().replace($routeParams.resourceId, resourceId.id));
     };
-
-    /// Initialize
-    $scope.updateResources();
 
   }]);
 }

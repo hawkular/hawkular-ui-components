@@ -20,7 +20,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'DataResource', 'HawkularAlertsManager'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -34,7 +34,6 @@ module HawkularMetrics {
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlert:any,
-                private DataResource:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 public resourceUrl:string) {
       $scope.vm = this;
@@ -56,23 +55,21 @@ module HawkularMetrics {
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
       globalChartTimeRange = new ChartTimeRange(1);
-      var globalMetricId: string;
+      var metricId: string;
 
       /// Add the Resource
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
         .then((newResource) => {
-          this.DataResource.updateResources();
           // we now have a resourceId from this call
-          globalMetricId = newResource.id;
-          globalResourceUrl = resource.parameters.url;
+          metricId = newResource.id;
           console.dir(newResource);
-          this.$log.info('New Resource ID: ' + globalMetricId + ' created for url: ' + globalResourceUrl);
+          this.$log.info('New Resource ID: ' + metricId + ' created for url: ' + newResource.parameters.url);
           var metrics = [{
-            name: globalMetricId + '.status.duration',
+            name: metricId + '.status.duration',
             unit: 'MILLI_SECOND',
             description: 'Response Time in ms.'
           }, {
-            name: globalMetricId + '.status.code',
+            name: metricId + '.status.code',
             unit: 'NONE',
             description: 'Status Code'
           }];
@@ -91,16 +88,16 @@ module HawkularMetrics {
           return this.HawkularAlertsManager.addEmailAction('myemail@company.com');
         }).then(()=> {
           // Create threshold trigger for newly created metrics
-          console.log('metric', globalMetricId);
-          return this.HawkularAlertsManager.createTrigger(globalMetricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
+          console.log('metric', metricId);
+          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
         }).then((alert)=> {
           console.log('alert', alert);
           // Create availability trigger for newly created metrics
-          return this.HawkularAlertsManager.createTrigger(globalMetricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
+          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
         }).finally(()=> {
           this.addProgress = false;
           toastr.info('Your data is being collected. Please be patient (should be about another minute).');
-          this.$location.url('/metrics/responseTime/' + globalMetricId);
+          this.$location.url('/metrics/responseTime/' + metricId);
         });
     }
 
@@ -118,15 +115,15 @@ module HawkularMetrics {
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
             start: moment().subtract(1, 'hour').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Use availability instead..
-            res['isUp'] = (resource[0].value >= 200 && resource[0].value < 300);
+            res['isUp'] = (resource[0] && resource[0].value >= 200 && resource[0].value < 300);
             var upTime = 0;
             for(var i = 0; i < resource.length; i++) {
               if(resource[i].value >= 200 && resource[i].value < 300) {
                 upTime++;
               }
             }
-            res['availability'] = upTime/resource.length * 100;
-            res['downTime'] = resource.length - upTime;
+            res['availability'] = resource.length > 0 ? upTime/resource.length * 100 : 0;
+            res['downTime'] = resource.length > 0 ? resource.length - upTime : 'every';
           });
           this.HawkularAlert.Alert.query({ query: res.id, start: moment().subtract(1, 'hour').valueOf(),
             end: moment().valueOf()}, (alertsList) => {

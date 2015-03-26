@@ -34,6 +34,14 @@ module HawkularMetrics {
       this.startTimeStamp = moment().subtract(1, 'hours').toDate();
       this.endTimeStamp = new Date();
 
+      $scope.$watch('hkParams.resourceId', (resourceId) => {
+        /// made a selection from url switcher
+        if (resourceId) {
+          this.metricId = resourceId;
+          this.refreshAvailChartDataNow(this.getMetricId());
+        }
+      });
+
       $scope.$on('RefreshAvailabilityChart', (event) => {
         this.refreshAvailChartDataNow(this.getMetricId());
       });
@@ -44,7 +52,9 @@ module HawkularMetrics {
     private availabilityDataPoints:any[] = [];
     private chartData:any;
     private autoRefreshPromise:ng.IPromise<number>;
-    selectedResource;
+
+    private metricId;
+    //selectedResource;
 
     availabilityPercent = 0;
     downTimeDuration = 0;
@@ -92,13 +102,14 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      return MetricsAvailabilityController.getResourceCodeMetricId();
+      return this.metricId + '.status.code';//MetricsAvailabilityController.getResourceCodeMetricId();
     }
 
+    /*
     private static getResourceCodeMetricId() {
       return globalMetricId + '.status.code';
     }
-
+    */
 
     refreshHistoricalAvailDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
       // calling refreshChartData without params use the model values

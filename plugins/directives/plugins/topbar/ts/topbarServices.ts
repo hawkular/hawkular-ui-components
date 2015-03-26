@@ -56,42 +56,36 @@ module Topbar {
 
   _module.service('DataRange', DataRange);
 
-  export class DataResource {
+  export class HawkularNav {
 
-    public static $inject = ['$rootScope', 'HawkularInventory', '$timeout'];
+    public static $inject = ['$rootScope', '$routeParams', 'HawkularInventory'];
 
-    globalResourceList: any;
-    selectedResource: String;
-    timeout: any;
+    constructor(private $rootScope: any, private $routeParams: any, private HawkularInventory: any) {
+      $rootScope.hkParams = $routeParams || [];
 
-    hkInventory: any;
-    rootScope: any;
+      HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
+        $rootScope.hkResources = resourceList;
+        for (var i = 0; i < resourceList.length; i++) {
+          if(resourceList[i].id === $rootScope.hkParams.resourceId) {
+            $rootScope.selectedResource = resourceList[i];
+          }
+        }
+      });
 
-    constructor(private $rootScope: any, private HawkularInventory:any, private $timeout:any) {
-      this.hkInventory = HawkularInventory;
-      this.rootScope = $rootScope;
-      this.timeout = $timeout;
-      this.updateResources();
-    }
-
-    public updateResources():any {
-      this.rootScope.hkResourcesList = this.hkInventory.Resource.query({tenantId: globalTenantId});
-    }
-
-    public getSelectedResource():String {
-      return this.selectedResource;
-    }
-
-    public getResources():any {
-      // return this.globalResourceList;
-      return this.rootScope.hkResourcesList;
-    }
-
-    public setSelectedResource(resource: String):void {
-      this.selectedResource = resource;
+      $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+        $rootScope.hkParams = current.params;
+        HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
+          $rootScope.hkResources = resourceList;
+          for (var i = 0; i < resourceList.length; i++) {
+            if(resourceList[i].id === $rootScope.hkParams.resourceId) {
+              $rootScope.selectedResource = resourceList[i];
+            }
+          }
+        });
+      }, this);
     }
   }
 
-  _module.service('DataResource', DataResource);
+  _module.service('HawkularNav', HawkularNav);
 
 }

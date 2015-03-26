@@ -1,13 +1,15 @@
 <ul class="nav navbar-nav navbar-primary navbar-selector navbar-dark row">
-  <li class="context col-sm-3 col-md-2" dropdown>
+  <li class="col-sm-3 col-md-2">
+    <a href="/metrics/addUrl">URLs List</a>
+  </li>
+  <li class="context dropdown">
     <a href="#" class="additional-info" dropdown-toggle ng-hide="resources.length === 0">
-      {{selectedResource.id}}
-      <span>{{selectedResource.parameters.url}}</span>
+      {{selectedResource.parameters.url}}
       <b class="caret"></b>
     </a>
     <ul class="dropdown-menu" role="menu">
-      <li ng-class="{'active': selectedResource.id === resource.id}" ng-repeat="resource in hkResourcesList">
-        <a href="" ng-click="setSelection(resource)">{{resource.parameters.url}} ({{resource.id}})</a>
+      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources">
+        <a href="" ng-click="setSelection(resource)">{{resource.parameters.url}}</a>
       </li>
       <li class="divider"></li>
       <li>
@@ -15,29 +17,6 @@
       </li>
     </ul>
   </li>
-  <!--
-  <li class="dropdown context col-sm-3 col-md-2">
-    <a href="#" class="dropdown-toggle additional-info" ng-hide="resources.length === 0">
-      {{selectedResource.id}}
-      <span>{{selectedResource.parameters.url}}</span>
-      <b class="caret"></b>
-    </a>
-    <a href="/metrics/addUrl" class="additional-info" ng-show="resources.length === 0">
-      No Resources Available
-      <span>Add a Resource</span>
-    </a>
-    <ul class="dropdown-menu">
-      <li ng-class="{'active': selectedResource.id === resource.id}" ng-repeat="resource in hkResourcesList">
-        <a href="" ng-click="setSelection(resource)">{{resource.parameters.url}} ({{resource.id}})</a>
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a href="/metrics/addUrl">Add Application...</a>
-      </li>
-    </ul>
-  </li>
-  -->
-
   <li class="pull-right date-range dropdown">
     <i class="fa fa-calendar"></i>
     <div class="input" data-toggle="dropdown">
