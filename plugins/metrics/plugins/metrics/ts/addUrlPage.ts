@@ -63,7 +63,7 @@ module HawkularMetrics {
           // we now have a resourceId from this call
           metricId = newResource.id;
           console.dir(newResource);
-          this.$log.info('New Resource ID: ' + metricId + ' created for url: ' + newResource.parameters.url);
+          this.$log.info('New Resource ID: ' + metricId + ' created.');
           var metrics = [{
             name: metricId + '.status.duration',
             unit: 'MILLI_SECOND',
