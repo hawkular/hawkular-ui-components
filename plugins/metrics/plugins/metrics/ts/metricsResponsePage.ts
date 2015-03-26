@@ -164,11 +164,11 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      return MetricsViewController.getResourceDurationMetricId();
+      return this.getResourceDurationMetricId();
     }
 
-    private static getResourceDurationMetricId() {
-      return globalMetricId + '.status.duration';
+    private getResourceDurationMetricId() {
+      return this.$routeParams.resourceId +  '.status.duration';
     }
 
     refreshSummaryData(metricId:string, startTime?:number, endTime?:number):void {
