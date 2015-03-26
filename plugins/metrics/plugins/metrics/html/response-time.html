@@ -1,15 +1,8 @@
 <div ng-controller="MetricsViewController as vm">
 
-  <div class="col-sm-9 col-md-10 content">
+  <div class="col-sm-12 col-md-12 content">
 
-    <!--<div class="well" id="control-bar">-->
-            <!--<span class="col-md-3 col-sm-4 select-url-container">-->
-                <!--<select class="form-control input-sm select-url" ng-model="vm.selectedResource"-->
-                        <!--ng-options="rs.parameters.url for rs in vm.resourceList"></select>-->
-            <!--</span>-->
-    <!--</div>-->
-
-    <div class="col-sm-9 col-md-10 content response-time">
+    <div class="col-sm-12 col-md-12 content response-time">
       <h1>Response Time</h1>
 
       <div class="panel panel-default graph-summary">
@@ -29,7 +22,6 @@
         </div>
       </div>
 
-
       <div class="panel panel-default graph">
         <div class="legend pull-left" ng-show="vm.chartData.dataPoints.length > 0">
           <span><i class="fa fa-circle primary"></i>Response Time</span>
@@ -43,7 +35,6 @@
         <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
           collecting your initial data. Please be patient(could be up to a minute)...</p>
 
-
         <div id="metrics-chart">
           <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
           <hawkular-chart
@@ -56,9 +47,7 @@
         </div>
       </div>
 
-
     </div>
-
 
   </div>
 

@@ -76,6 +76,8 @@ module HawkularMetrics {
           this.refreshChartDataNow(this.getMetricId());
         }
       });
+
+      this.onCreate();
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -91,34 +93,10 @@ module HawkularMetrics {
     percentile95th = 0;
     average = 0;
 
-    /*
-    public get resourceList():string[] {
-      return this._resourceList;
-    }
-
-    public set resourceList(newResourceList:string[]) {
-      globalResourceList = newResourceList;
-      this._resourceList = newResourceList;
-    }
-    */
-
-    private onCreate(curResourceId:string) {
+    private onCreate() {
       /// setup autorefresh for every minute
       this.autoRefresh(20);
-      /*
-      this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
-        this.resourceList = aResourceList;
-        this.selectedResource = _.last(this._resourceList);
-        for (var i = 0; i < this._resourceList.length; i++) {
-          if (aResourceList[i].id === curResourceId) {
-            this.selectedResource = this._resourceList[i];
-          }
-        }
-        this.refreshChartDataNow(this.getMetricId());
-      });
-      */
     }
-
 
     cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -156,14 +134,8 @@ module HawkularMetrics {
     }
 
     getMetricId():string {
-      return this.metricId + '.status.duration';//MetricsViewController.getResourceDurationMetricId();
+      return this.metricId + '.status.duration';
     }
-
-    /*
-    private static getResourceDurationMetricId() {
-      return metricId + '.status.duration';
-    }
-    */
 
     refreshSummaryData(metricId:string, startTime?:number, endTime?:number):void {
       var dataPoints:IChartDataPoint[];
