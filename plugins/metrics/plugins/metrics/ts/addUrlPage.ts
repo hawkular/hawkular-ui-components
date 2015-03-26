@@ -14,13 +14,15 @@
 /// limitations under the License.
 
 /// <reference path="metricsPlugin.ts"/>
+/// <reference path="alertsManager.ts"/>
+/// <reference path="errorManager.ts"/>
 
 module HawkularMetrics {
 
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -35,6 +37,8 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
+                private $q: ng.IQService,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
@@ -82,20 +86,28 @@ module HawkularMetrics {
           }, metrics).$promise.then((newMetrics) => {
               // TODO: Add availability...
             });
-
         }).then(()=> {
           // Find if a default email exists
           return this.HawkularAlertsManager.addEmailAction('myemail@company.com');
+        }, (error)=> {
+          return this.HawkularErrorManager.errorHandler(error, 'Error saving metric.');
         }).then(()=> {
           // Create threshold trigger for newly created metrics
           return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
+        }, (error)=> {
+          return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.');
         }).then((alert)=> {
           // Create availability trigger for newly created metrics
           return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
-        }).finally(()=> {
-          this.addProgress = false;
+        }, (error)=> {
+          return this.HawkularErrorManager.errorHandler(error, 'Error saving threshold trigger.');
+        }).then(()=> {
           toastr.info('Your data is being collected. Please be patient (should be about another minute).');
           this.$location.url('/metrics/responseTime/' + metricId);
+        }, (error)=> {
+          return this.HawkularErrorManager.errorHandler(error, 'Error saving availability trigger.');
+        }).finally(()=> {
+          this.addProgress = false;
         });
     }
 
