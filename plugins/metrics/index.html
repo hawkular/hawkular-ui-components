@@ -31,12 +31,13 @@
   <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
 </nav>
 
+<hawkular-topbar ng-controller="Topbar.TopbarController" ng-show="!hideSidebar"></hawkular-topbar>
+
 <div id="main" class="container-fluid ng-cloak" ng-controller="HawtioNav.ViewController">
   <div ng-include src="viewPartial"></div>
 </div>
 
 <!-- add any scripts under dist/ here -->
-<script src="dist/hawkular-ui-components-directives.js"></script>
 <script src="dist/hawkular-ui-components-metrics.js"></script>
 <script src="dist/hawkular-ui-components-directives.js"></script>
 <script>

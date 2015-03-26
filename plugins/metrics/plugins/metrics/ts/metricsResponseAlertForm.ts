@@ -35,8 +35,18 @@ module HawkularMetrics {
         operator: 'LT',
         threshold: 0
       };
+
+      this.$scope.$watch('hkParams.resourceId', (resourceId) => {
+        /// made a selection from url switcher
+        if (resourceId) {
+          this.metricId = resourceId;
+        }
+      });
+
       this.allActions();
     }
+
+    private metricId;
 
     toggleQuickAlert():void {
       this.$scope.showQuickAlert = !this.$scope.showQuickAlert;
@@ -76,9 +86,10 @@ module HawkularMetrics {
     }
 
     saveQuickAlert():void {
-      if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
+      //if (globalMetricId !== '.status.duration' && globalMetricId !== '.status.code') {
+      if (this.metricId !== '.status.duration' && this.metricId !== '.status.code') {
         var newTrigger:any = {};
-        newTrigger.name = globalMetricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
+        newTrigger.name = this.metricId + 'ResponseTime' + '-' + this.$scope.quickTrigger.operator + '-' + this.$scope.quickTrigger.threshold;
         newTrigger.description = 'Created on ' + new Date();
         newTrigger.firingMatch = 'ALL';
         newTrigger.safetyMatch = 'ALL';
@@ -114,7 +125,7 @@ module HawkularMetrics {
             var newThresholdCondition = {
               triggerId: dampening.triggerId,
               type: 'THRESHOLD',
-              dataId: globalMetricId,
+              dataId: this.metricId,
               operator: this.$scope.quickTrigger.operator,
               threshold: this.$scope.quickTrigger.threshold
             };
