@@ -15,15 +15,13 @@
 
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
+/// <reference path="alertsManager.ts"/>
+/// <reference path="errorManager.ts"/>
 
 module HawkularMetrics {
 
-  export interface IMetricsAlertController {
-
-  }
-
-  export class MetricsAlertController implements IMetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', '$log', '$q', '$rootScope', '$routeParams'];
+  export class MetricsAlertController {
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams'];
 
     private metricId: string;
     public alertList: any  = [];
@@ -31,6 +29,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
@@ -44,14 +43,14 @@ module HawkularMetrics {
       HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
         this.$log.debug('data', data);
         this.alertList = data;
-      });
+      }, (error) => { return this.HawkularErrorManager.errorHandler(error, 'Error fetching alerts.'); });
     }
   }
 
   _module.controller('MetricsAlertController', MetricsAlertController);
 
   export class MetricsAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', '$log', '$q', '$rootScope', '$routeParams'];
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams'];
 
     private metricId: string;
     private trigger_thres: any;
@@ -83,6 +82,7 @@ module HawkularMetrics {
     constructor(private $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
+                private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
@@ -91,32 +91,40 @@ module HawkularMetrics {
       this.$log.debug('querying data');
       this.$log.debug('$routeParams',$routeParams.resourceId);
 
+      // Get the data about Threshold Trigger
       HawkularAlertsManager.getTrigger($routeParams.resourceId + '_trigger_thres').then((data)=> {
         this.trigger_thres = data;
         this.$log.debug('this.trigger_thres', this.trigger_thres);
-        return data;
-      }).then(()=> {
         return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger.');
       }).then((data)=> {
         this.trigger_thres_damp = data;
         this.responseDuration = data[0].evalTimeSetting;
         this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
-      }).then(()=> {
         return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger dampening.');
       }).then((data)=> {
         this.trigger_thres_cond = data;
         this.$log.debug('this.trigger_thres_cond', this.trigger_thres_cond);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger condition.');
       });
 
+      // Get the data about Availability Trigger
       HawkularAlertsManager.getTrigger($routeParams.resourceId + '_trigger_avail').then((data)=> {
         this.trigger_avail = data;
         this.$log.debug('this.trigger_avail', this.trigger_avail);
-      }).then(()=> {
         return HawkularAlert.Dampening.query({triggerId: $routeParams.resourceId + '_trigger_avail'}).$promise;
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger.');
       }).then((data)=> {
         this.trigger_avail_damp = data;
         this.downtimeDuration = data[0].evalTimeSetting;
         this.$log.debug('this.trigger_avail_damp', this.trigger_avail_damp);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error fetching availability trigger dampening.');
       });
 
       this.metricId = $routeParams.resourceId;
@@ -138,15 +146,27 @@ module HawkularMetrics {
       // Check if email action exists
       this.HawkularAlertsManager.addEmailAction(this.trigger_thres.actions[0]).then(()=> {
         return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.');
       }).then(() => {
         this.trigger_avail.actions = this.trigger_thres.actions;
         return this.HawkularAlertsManager.updateTrigger(this.trigger_avail.id, this.trigger_avail);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger.');
       }).then(()=> {
         return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability trigger.');
       }).then(()=> {
         return this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId, this.trigger_avail_damp[0]);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.');
       }).then(()=> {
         return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]);
+      }, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability dampening.');
+      }).then(angular.noop, (error)=> {
+        return this.HawkularErrorManager.errorHandler(error, 'Error updating availability condition.');
       }).finally(()=> {
         this.saveProgress = false;
       });

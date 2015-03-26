@@ -14,6 +14,7 @@
 /// limitations under the License.
 
 /// <reference path="metricsPlugin.ts"/>
+/// <reference path="../../includes.ts"/>
 
 module HawkularMetrics {
 
