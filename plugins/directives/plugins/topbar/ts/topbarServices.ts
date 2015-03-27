@@ -17,51 +17,16 @@
 /// <reference path="topbarGlobals.ts"/>
 module Topbar {
 
-  export class DataRange {
-
-    startTimestamp: number;
-    endTimestamp: number;
-
-    constructor() {
-      /// defaults to last 7 days
-      this.endTimestamp = moment().valueOf();
-      this.startTimestamp = moment(this.endTimestamp).subtract({days: 7}).valueOf();
-    }
-
-    public setCustomRange(rangeValue: Object, customEndTimestamp: number) {
-      this.endTimestamp = customEndTimestamp || moment().valueOf();
-      this.startTimestamp = moment(this.endTimestamp).subtract(rangeValue).valueOf();
-    }
-
-    public getStartDate():Date {
-      return new Date(this.startTimestamp);
-    }
-
-    public getEndDate():Date {
-      return new Date(this.endTimestamp);
-    }
-
-    public getFormattedTimeRange():string {
-      var diff = this.endTimestamp - this.startTimestamp;
-      var momStart = moment(this.startTimestamp);
-      var momEnd = moment(this.endTimestamp);
-
-      if (diff < 24 * 60 * 60 * 1000) {
-        return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' + (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');
-      } else {
-        return momStart.format('D MMM YYYY') + ' - ' + momEnd.format('D MMM YYYY');
-      }
-    }
-  }
-
-  _module.service('DataRange', DataRange);
-
   export class HawkularNav {
 
-    public static $inject = ['$rootScope', '$routeParams', 'HawkularInventory'];
+    public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
-    constructor(private $rootScope: any, private $routeParams: any, private HawkularInventory: any) {
+
+    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private HawkularInventory: any) {
       $rootScope.hkParams = $routeParams || [];
+
+      // default time period set to 24 hours
+      var defaultOffset = 1 * 60 * 60  * 1000;
 
       HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
         $rootScope.hkResources = resourceList;
@@ -72,8 +37,17 @@ module Topbar {
         }
       });
 
+      $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+      $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+      $rootScope.hkStartTimestamp =  moment().subtract('milliseconds', $rootScope.hkParams.timeOffset).valueOf();
+
       $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
         $rootScope.hkParams = current.params;
+
+        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+        $rootScope.hkStartTimestamp =  moment().subtract('milliseconds', $rootScope.hkParams.timeOffset).valueOf();
+
         HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
@@ -83,6 +57,10 @@ module Topbar {
           }
         });
       }, this);
+    }
+
+    public setTimestamp(offset, end) {
+      this.$route.updateParams({timeOffset: offset, endTime: end});
     }
   }
 
