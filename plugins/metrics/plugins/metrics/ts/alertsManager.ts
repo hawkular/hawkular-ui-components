@@ -78,7 +78,7 @@ module HawkularMetrics {
             return this.createCondition(triggerId, {
               type: conditionType,
               triggerId: triggerId,
-              dataId: dataId,
+              dataId: trigger.name.slice(0,-14),
               operator: 'DOWN'
             });
           }
