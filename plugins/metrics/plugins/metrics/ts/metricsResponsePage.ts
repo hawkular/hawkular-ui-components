@@ -102,8 +102,8 @@ module HawkularMetrics {
     autoRefresh(intervalInSeconds:number):void {
       this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
-        this.endTimeStamp = +moment();
-        this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
+        this.endTimeStamp = this.$scope.hkEndTimestamp;
+        this.refreshHistoricalChartDataForTimestamp(this.getMetricId(), this.$scope.hkStartTimestamp);
         this.refreshSummaryData(this.getMetricId());
         this.retrieveThreshold();
       }, intervalInSeconds * 1000);
@@ -120,8 +120,8 @@ module HawkularMetrics {
 
 
     refreshChartDataNow(metricId:string, startTime?:number):void {
-      var adjStartTimeStamp:number = moment().subtract('hours', 1).valueOf(); //default time period set to 24 hours
-      this.endTimeStamp = +moment();
+      var adjStartTimeStamp:number = this.$scope.hkStartTimestamp;
+      this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();

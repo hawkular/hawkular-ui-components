@@ -19,8 +19,8 @@
   </li>
   <li class="pull-right date-range dropdown">
     <i class="fa fa-calendar"></i>
-    <div class="input" data-toggle="dropdown">
-      {{rangeNames[range]}} <span class="additional-info">({{rangeDates}})</span>
+    <div class="input" dropdown-toggle>
+      {{offsetName}} <span class="additional-info">({{getFormattedDate()}})</span>
     </div>
 
     <div class="dropdown-menu infotip bottom-right">
@@ -28,12 +28,12 @@
       <div class="dropdown-menu-content">
         <span class="label">Last</span>
         <div class="btn-group">
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'hour'}" ng-click="setRange({hour: 1})">1h</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'hours'}" ng-click="setRange({hours: 12})">12h</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'day'}" ng-click="setRange({day: 1})">Day</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'week'}" ng-click="setRange({week: 1})">Week</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'month'}" ng-click="setRange({month: 1})">Month</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': range === 'year'}" ng-click="setRange({year: 1})">Year</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Hour'}" ng-click="setRange({hour: 1})">1h</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last 12 Hours'}" ng-click="setRange({hours: 12})">12h</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Day'}" ng-click="setRange({day: 1})">Day</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Week'}" ng-click="setRange({week: 1})">Week</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Month'}" ng-click="setRange({month: 1})">Month</button>
+          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Year'}" ng-click="setRange({year: 1})">Year</button>
         </div>
       </div>
     </div>

@@ -28,36 +28,44 @@ module Topbar {
   }
 
   export var TopbarController = _module.controller("Topbar.TopbarController",
-    ['$scope', '$rootScope', '$location', '$routeParams', 'HawkularNav', 'DataRange', 'HawkularInventory', ($scope, $rootScope, $location, $routeParams, HawkularNav, DataRange, HawkularInventory) => {
+    ['$scope', '$rootScope', '$location', '$route', '$routeParams', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location, $route, $routeParams, HawkularNav, HawkularInventory) => {
 
-    $scope.range = 'week';
+      $scope.rangeNames = {
+        '3600000': 'Last Hour',
+        '43200000': 'Last 12 Hours',
+        '86400000': 'Last Day',
+        '604800000': 'Last Week',
+        '2592000000': 'Last Month',
+        '31536000000': 'Last Year'
+      };
 
-    $scope.getDate = function() {
-      $scope.rangeDates = DataRange.getFormattedTimeRange();
-    };
+      $scope.getFormattedDate = function() {
+        var diff = $scope.hkEndTimestamp - $scope.hkStartTimestamp;
 
-    $scope.setRange = function(range) {
-      DataRange.setCustomRange(range);
-      $scope.getDate();
-      $scope.range = Object.keys(range)[0];
-    };
+        // FIXME: Use moment ?
+        $scope.offsetName = $scope.rangeNames[diff] || 'Custom';
 
-    $scope.rangeNames = {
-      'hour': 'Last Hour',
-      'hours': 'Last 12 Hours',
-      'day': 'Last Day',
-      'week': 'Last Week',
-      'month': 'Last Month',
-      'year': 'Last Year'
-    };
+        var momStart = moment($scope.hkStartTimestamp);
+        var momEnd = moment($scope.hkEndTimestamp);
 
-    $scope.$watch(function() { return $location.path(); }, function(value) {
-      $rootScope.hideSidebar = ($location.path().indexOf('/metrics/addUrl') === 0);
-    });
+        if (diff < 24 * 60 * 60 * 1000) {
+          return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' + (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');
+        } else {
+          return momStart.format('D MMM YYYY') + ' - ' + momEnd.format('D MMM YYYY');
+        }
+      };
 
-    $scope.setSelection = function(resourceId) {
-      $location.path($location.path().replace($routeParams.resourceId, resourceId.id));
-    };
+      $scope.setRange = function(range) {
+        HawkularNav.setTimestamp(moment.duration(range).valueOf());
+      };
 
-  }]);
+      $scope.$watch(function() { return $location.path(); }, function(value) {
+        $rootScope.hideSidebar = ($location.path().indexOf('/metrics/addUrl') === 0);
+      });
+
+      $scope.setSelection = function(resourceId) {
+        $route.updateParams({resourceId: resourceId.id});
+      };
+
+    }]);
 }

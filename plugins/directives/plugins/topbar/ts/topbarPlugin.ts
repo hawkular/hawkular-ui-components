@@ -17,7 +17,7 @@
 /// <reference path="topbarGlobals.ts"/>
 module Topbar {
 
-  export var _module = angular.module(pluginName, ['ngResource', 'hawkular.services']);
+  export var _module = angular.module(pluginName, ['ngResource', 'hawkular.services', 'ui.bootstrap']);
 
   _module.directive('hawkularTopbar', function () {
     return new Topbar.TopbarDirective();
