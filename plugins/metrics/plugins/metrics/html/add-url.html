@@ -44,7 +44,7 @@
     <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList">
       <div class="row row-table">
         <div class="col-md-4 summary-item">
-          <span class="url-link"><a href="/metrics/responseTime/{{res.id}}">{{res.parameters.url}}</a></span>
+          <span class="url-link"><a href="/metrics/response-time/{{res.id}}">{{res.parameters.url}}</a></span>
           <button class="btn btn-link trigger" tooltip="Expand/collapse" ng-click="res.expanded = !res.expanded"><i class="fa" ng-class="res.expanded ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>
         <div class="col-md-4 summary-item">

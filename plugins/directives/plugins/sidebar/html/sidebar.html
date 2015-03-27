@@ -1,8 +1,8 @@
 <div class="col-sm-3 col-md-2 sidebar-pf sidebar-pf-left sidebar-pf-dark sidebar-pf-big-icons sidebar-pf-fixed">
 
   <ul class="nav nav-pills nav-stacked nav-dark nav-big-icons">
-    <li ng-class="getClass('/metrics/upDowntime')"><a href="/metrics/upDowntime"><i class="fa fa-arrow-up"></i>Availability</a></li>
-    <li ng-class="getClass('/metrics/responseTime')"><a href="/metrics/responseTime"><i class="fa fa-line-chart"></i>Response Time</a></li>
-    <li ng-class="getClass('/metrics/alerts')"><a href="/metrics/alerts"><i class="fa fa-flag"></i>Alerts</a></li>
+    <li ng-class="getClass('/metrics/availability')"><a ng-href="/metrics/availability/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-arrow-up"></i>Availability</a></li>
+    <li ng-class="getClass('/metrics/response-time')"><a ng-href="/metrics/response-time/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-line-chart"></i>Response Time</a></li>
+    <li ng-class="getClass('/metrics/alerts')"><a ng-href="/metrics/alerts/{{hkParams.resourceId}}/{{hkParams.timeOffset}}/{{hkEndTimestamp}}"><i class="fa fa-flag"></i>Alerts</a></li>
   </ul>
 </div>

@@ -29,10 +29,10 @@ module HawkularMetrics {
       .id(HawkularMetrics.pluginName)
       .title(() => 'Metrics')
       .href(() => '/metrics')
-      .subPath('Add Url', 'addUrl', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
+      .subPath('Add Url', 'add-url', navBuilder.join(HawkularMetrics.templatePath, 'add-url.html'))
       .subPath('Home', 'home', navBuilder.join(HawkularMetrics.templatePath, 'home.html'))
-      .subPath('Response Time', 'responseTime', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
-      .subPath('Up/Downtime', 'upDowntime', navBuilder.join(HawkularMetrics.templatePath, 'up-downtime.html'))
+      .subPath('Response Time', 'response-time', navBuilder.join(HawkularMetrics.templatePath, 'response-time.html'))
+      .subPath('Availability', 'availability', navBuilder.join(HawkularMetrics.templatePath, 'availability.html'))
       .subPath('Alerts', 'alerts', navBuilder.join(HawkularMetrics.templatePath, 'alerts.html'))
       .build();
 
@@ -63,12 +63,12 @@ module HawkularMetrics {
 
   _module.config(["$routeProvider", ($routeProvider) => {
     $routeProvider.
-        when('/metrics/responseTime', {templateUrl: 'plugins/metrics/html/response-time.html',
+        when('/metrics/response-time', {templateUrl: 'plugins/metrics/html/response-time.html',
         resolve: {
           hkResourceList : function($filter, $location, $q, HawkularInventory) {
             var resPromise = HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise;
             resPromise.then(function(hkResourceList){
-              $location.path('/metrics/responseTime/' + hkResourceList[0].id);
+              $location.path('/metrics/response-time/' + hkResourceList[0].id);
             }, function(){
               $location.url('/error');
             });
@@ -78,9 +78,9 @@ module HawkularMetrics {
             return $q.defer().promise;
           }
         }}).
-        when('/metrics/responseTime/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-        when('/metrics/availability/:resourceId', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-        when('/metrics/alerts/:resourceId', {templateUrl: 'plugins/metrics/html/alerts.html'});
+        when('/metrics/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/metrics/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
+        when('/metrics/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'});
   }]);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);

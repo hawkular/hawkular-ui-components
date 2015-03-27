@@ -60,7 +60,7 @@ module Topbar {
       };
 
       $scope.$watch(function() { return $location.path(); }, function(value) {
-        $rootScope.hideSidebar = ($location.path().indexOf('/metrics/addUrl') === 0);
+        $rootScope.hideSidebar = ($location.path().indexOf('/metrics/add-url') === 0);
       });
 
       $scope.setSelection = function(resourceId) {
