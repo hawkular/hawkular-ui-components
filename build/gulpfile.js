@@ -142,13 +142,24 @@ module.exports = function(gulp, config, pluginName){
     plugins.watch(['.tmp/gulp-connect-server/index.html', '.tmp/gulp-connect-server/dist/**'], function() {
       gulp.start(['reload']);
     });
-    plugins.watch(['libs/**/*.d.ts', config.ts(pluginName), config.templates(pluginName)], function() {
-      gulp.start(['tslint-watch-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'concat-' + pluginName,
-        'clean-' + pluginName, 'connect-prepare-dist-' + pluginName]);
-    });
-    plugins.watch(config.less(pluginName), function() {
-      gulp.start(['less-' + pluginName, 'connect-prepare-dist-' + pluginName]);
-    });
+
+    var watchList = [pluginName];
+    if (watchList.indexOf('directives') === -1 ){
+      watchList.push('directives');
+    }
+
+    // For directives
+    for(var i =0; i < watchList.length; i++) {
+      (function(plugin) {
+        plugins.watch(['libs/**/*.d.ts', config.ts(plugin), config.templates(plugin)], function () {
+          gulp.start(['tslint-watch-' + plugin, 'tsc-' + plugin, 'template-' + plugin, 'concat-' + plugin,
+            'clean-' + plugin, 'connect-prepare-dist-' + plugin]);
+        });
+        plugins.watch(config.less(plugin), function () {
+          gulp.start(['less-' + plugin, 'connect-prepare-dist-' + plugin]);
+        });
+      })(watchList[i])
+    }
 
     var indexPath = path.resolve(__dirname, '../plugins/' + pluginName + '/index.html');
     plugins.watch(indexPath, function(){
