@@ -45,28 +45,26 @@ module HawkularMetrics {
    * @param $interval
    * @param $log
    * @param HawkularMetric
-   * @param HawkularInventory
    * @param HawkularAlert
    * @param $routeParams
    */
   export class MetricsViewController {
     /// for minification only
-    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularInventory', 'HawkularAlert', '$routeParams'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
 
     constructor(private $scope:any,
                 private $rootScope:ng.IRootScopeService,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
-                private HawkularInventory:any,
                 private HawkularAlert:any,
                 private $routeParams:any,
-                public startTimeStamp:Date,
-                public endTimeStamp:Date) {
+                public startTimeStamp:number,
+                public endTimeStamp:number) {
       $scope.vm = this;
 
-      this.startTimeStamp = moment().subtract(1, 'hours').toDate();
-      this.endTimeStamp = new Date();
+      this.startTimeStamp = moment().subtract(1, 'hours').valueOf();
+      this.endTimeStamp = +moment();
 
       $scope.$on('RefreshChart', (event) => {
         this.refreshChartDataNow(this.getMetricId());
@@ -80,7 +78,7 @@ module HawkularMetrics {
         }
       });
 
-      this.onCreate();
+      this.autoRefresh(20);
     }
 
     private bucketedDataPoints:IChartDataPoint[] = [];
@@ -95,10 +93,6 @@ module HawkularMetrics {
     percentile95th = 0;
     average = 0;
 
-    private onCreate() {
-      /// setup autorefresh for every minute
-      this.autoRefresh(20);
-    }
 
     cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -108,7 +102,7 @@ module HawkularMetrics {
     autoRefresh(intervalInSeconds:number):void {
       this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
-        this.endTimeStamp = new Date();
+        this.endTimeStamp = +moment();
         this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
         this.refreshSummaryData(this.getMetricId());
         this.retrieveThreshold();
@@ -125,16 +119,12 @@ module HawkularMetrics {
     }
 
 
-    refreshChartDataNow(metricId:string, startTime?:Date):void {
-      var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
-      this.endTimeStamp = new Date();
-      this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
-      this.refreshSummaryData(metricId, startTime ? startTime.getTime() : adjStartTimeStamp.getTime(), this.endTimeStamp.getTime());
+    refreshChartDataNow(metricId:string, startTime?:number):void {
+      var adjStartTimeStamp:number = moment().subtract('hours', 1).valueOf(); //default time period set to 24 hours
+      this.endTimeStamp = +moment();
+      this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
+      this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       this.retrieveThreshold();
-    }
-
-    refreshHistoricalChartData(metricId:string, startDate:Date, endDate:Date):void {
-      this.refreshHistoricalChartDataForTimestamp(metricId, startDate.getTime(), endDate.getTime());
     }
 
     getMetricId():string {
@@ -158,10 +148,10 @@ module HawkularMetrics {
       var dataPoints:IChartDataPoint[];
       // calling refreshChartData without params use the model values
       if (!endTime) {
-        endTime = this.endTimeStamp.getTime();
+        endTime = this.endTimeStamp;
       }
       if (!startTime) {
-        startTime = this.startTimeStamp.getTime();
+        startTime = this.startTimeStamp;
       }
 
       if (metricId) {
@@ -193,10 +183,10 @@ module HawkularMetrics {
     refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
       // calling refreshChartData without params use the model values
       if (!endTime) {
-        endTime = this.endTimeStamp.getTime();
+        endTime = this.endTimeStamp;
       }
       if (!startTime) {
-        startTime = this.startTimeStamp.getTime();
+        startTime = this.startTimeStamp;
       }
 
       if (metricId) {
@@ -225,7 +215,7 @@ module HawkularMetrics {
               };
 
             } else {
-              this.noDataFoundForId(this.getMetricId());
+              this.noDataFoundForId(metricId);
             }
 
           }, (error) => {
