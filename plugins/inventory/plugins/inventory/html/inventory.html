@@ -42,7 +42,7 @@
                     <h3 class="panel-title"><i class="fa fa-line-chart"></i> Metric</h3>
                 </div>
                 <div class="panel-body">
-                    <select class="form-control" ng-options="metric.name as metric.name for metric in metrics" ng-model="metricId" ng-disabled="!tenantId || !resourceId" ng-hide="metrics.length === 0"></select>
+                    <select class="form-control" ng-options="metric.id as metric.id for metric in metrics" ng-model="metricId" ng-disabled="!tenantId || !resourceId" ng-hide="metrics.length === 0"></select>
                     <span ng-show="metrics.length === 0"><i class="fa fa-warning"></i> No Metrics Available</span>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                     <td >
                         <table>
                             <tr ng-repeat="metric in resource.metrics">
-                                <td>{{metric.name}} <button class="btn btn-primary btn-xs" ng-click="showMetric(tenantId, resource.id, metric.name)"> <i class="fa fa-area-chart"></i> </button></td>
+                                <td>{{metric.id}} <button class="btn btn-primary btn-xs" ng-click="showMetric(tenantId, resource.id, metric.id)"> <i class="fa fa-area-chart"></i> </button></td>
                             </tr>
                         </table>
                     </td>
