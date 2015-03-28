@@ -66,6 +66,8 @@ module HawkularMetrics {
       this.startTimeStamp = moment().subtract(1, 'hours').valueOf();
       this.endTimeStamp = +moment();
 
+      this.metricId = $scope.hkParams.resourceId;
+
       $scope.$on('RefreshChart', (event) => {
         this.refreshChartDataNow(this.getMetricId());
       });
@@ -100,11 +102,13 @@ module HawkularMetrics {
     }
 
     autoRefresh(intervalInSeconds:number):void {
-      this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
+        this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
-        this.refreshHistoricalChartDataForTimestamp(this.getMetricId(), this.$scope.hkStartTimestamp);
+        this.$scope.hkStartTimestamp = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
+        this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshSummaryData(this.getMetricId());
+        this.refreshHistoricalChartDataForTimestamp(this.getMetricId());
         this.retrieveThreshold();
       }, intervalInSeconds * 1000);
 
@@ -120,10 +124,11 @@ module HawkularMetrics {
 
 
     refreshChartDataNow(metricId:string, startTime?:number):void {
-      var adjStartTimeStamp:number = this.$scope.hkStartTimestamp;
+      this.$scope.hkEndTimestamp = +moment();
+      var adjStartTimeStamp:number = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
       this.endTimeStamp = this.$scope.hkEndTimestamp;
-      this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
       this.refreshSummaryData(metricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+      this.refreshHistoricalChartDataForTimestamp(metricId, !startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
       this.retrieveThreshold();
     }
 
