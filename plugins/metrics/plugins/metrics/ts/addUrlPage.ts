@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -31,6 +31,7 @@ module HawkularMetrics {
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
                 private $rootScope:ng.IRootScopeService,
+                private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $filter:ng.IFilterService,
                 private HawkularInventory:any,
@@ -42,7 +43,25 @@ module HawkularMetrics {
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
-      this.resourceList = this.getResourceList();
+      this.getResourceList();
+      this.autoRefresh(20);
+    }
+
+    private autoRefreshPromise:ng.IPromise<number>;
+
+    cancelAutoRefresh():void {
+      this.$interval.cancel(this.autoRefreshPromise);
+      toastr.info('Canceling Auto Refresh');
+    }
+
+    autoRefresh(intervalInSeconds:number):void {
+      this.autoRefreshPromise = this.$interval(()  => {
+        this.getResourceList();
+      }, intervalInSeconds * 1000);
+
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.autoRefreshPromise);
+      });
     }
 
     addUrl(url:string):void {
@@ -113,7 +132,10 @@ module HawkularMetrics {
 
     getResourceList():any {
       return this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
+        // FIXME: hack.. make expanded out of list
+        var expanded = this.resourceList ? this.resourceList.expanded : [];
         this.resourceList = aResourceList;
+        this.resourceList.expanded = expanded;
         angular.forEach(this.resourceList, function(res, idx) {
           this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),

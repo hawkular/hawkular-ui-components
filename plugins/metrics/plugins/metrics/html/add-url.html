@@ -45,7 +45,7 @@
       <div class="row row-table">
         <div class="col-md-4 summary-item">
           <span class="url-link"><a href="/metrics/response-time/{{res.id}}">{{res.parameters.url}}</a></span>
-          <button class="btn btn-link trigger" tooltip="Expand/collapse" ng-click="res.expanded = !res.expanded"><i class="fa" ng-class="res.expanded ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
+          <button class="btn btn-link trigger" tooltip="Expand/collapse" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>
         <div class="col-md-4 summary-item">
           <span class="data">{{res.responseTime[0].value}} <span>ms</span></span>
@@ -55,11 +55,11 @@
           <span class="update" tooltip="Last update"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
         </div>
       </div>
-      <hr ng-show="res.expanded">
-      <div class="row row-table panel-expanded-content" ng-show="res.expanded">
+      <hr ng-show="vm.resourceList.expanded[res.id]">
+      <div class="row row-table panel-expanded-content" ng-show="vm.resourceList.expanded[res.id]">
         <div class="col-md-4 summary-item text-left">
           <ul class="list-unstyled alert-status" ng-hide="res.alerts.length === 0">
-            <li ng-repeat="alert in res.alerts|limitTo:3">
+            <li ng-repeat="alert in res.alerts.slice().reverse()|limitTo:3">
               <i class="fa fa-flag"></i>{{alert.dataTimestamp|date:'yyyy-MM-dd HH:mm'}}: <strong>{{alert.condition.type}}: {{alert.value}}</strong>
             </li>
           </ul>
@@ -69,7 +69,6 @@
         <div class="col-md-4 summary-item">
           <div id="metrics-chart" class="top-area" style="height: 44px; width: 237px;">
             <hawkular-chart data="{{res.responseTime}}" chart-type="line" chart-height="44" chart-width="237"></hawkular-chart>
-            <!--<img src="img/overview-graph.png" alt="overview-graph" width="237" height="44">-->
           </div>
           <div class="bottom-area">
             <span class="data">{{vm.getAverage(res.responseTime, 'value')}} <span>ms</span></span>
