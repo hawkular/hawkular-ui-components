@@ -18,6 +18,18 @@
 
 module HawkularMetrics {
 
+
+  export interface IAvailabilitySummary {
+    start: number;
+    end: number;
+    downtimeDuration: number;
+    lastDowntime:number;
+    uptimeRatio: number;
+    downtimeCount:number;
+    empty:boolean;
+  }
+
+
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$interval', '$log', 'HawkularMetric', '$routeParams'];
@@ -27,46 +39,49 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
                 private $routeParams:any,
-                public startTimeStamp:Date,
-                public endTimeStamp:Date) {
+                public startTimeStamp:number,
+                public endTimeStamp:number) {
       $scope.vm = this;
 
-      this.startTimeStamp = moment().subtract(1, 'hours').toDate();
-      this.endTimeStamp = new Date();
+      this.startTimeStamp = +moment().subtract(1, 'hours');
+      this.endTimeStamp = +moment();
+
+      this.metricId = $scope.hkParams.resourceId;
 
       $scope.$watch('hkParams.resourceId', (resourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
           this.metricId = resourceId;
-          this.refreshAvailChartDataNow(this.getMetricId());
+          this.refreshAvailPageNow(this.getRawMetricId());
         }
       });
 
       $scope.$on('RefreshAvailabilityChart', (event) => {
-        this.refreshAvailChartDataNow(this.getMetricId());
+        this.refreshAvailPageNow(this.getRawMetricId());
       });
 
-      this.onCreate($routeParams.resourceId);
-    }
-
-    private availabilityDataPoints:any[] = [];
-    private chartData:any;
-    private autoRefreshPromise:ng.IPromise<number>;
-
-    private metricId;
-    //selectedResource;
-
-    availabilityPercent = 0;
-    downTimeDuration = 0;
-    lastDownTime:Date;
-    downTimeEvents = 0;
-
-
-    private onCreate(curResourceId:string) {
-      /// setup autorefresh for every minute
       this.autoRefreshAvailability(20);
     }
 
+    private availabilityDataPoints:IChartDataPoint[] = [];
+    private autoRefreshPromise:ng.IPromise<number>;
+    private metricId;
+
+    uptimeRatio = 0;
+    downtimeDuration = 0;
+    lastDowntime:Date;
+    downtimeCount = 0;
+    empty = true;
+
+    refreshAvailPageNow(rawMetricId:string, startTime?:number):void {
+      this.$scope.hkEndTimestamp = +moment();
+      var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      this.endTimeStamp = this.$scope.hkEndTimestamp;
+      if (rawMetricId) {
+        this.refreshSummaryAvailabilityData(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshAvailDataForTimestamp(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+      }
+    }
 
     cancelAutoRefresh():void {
       this.$interval.cancel(this.autoRefreshPromise);
@@ -74,10 +89,17 @@ module HawkularMetrics {
     }
 
     autoRefreshAvailability(intervalInSeconds:number):void {
-      this.refreshHistoricalAvailDataForTimestamp(this.getMetricId());
+      this.endTimeStamp = this.$scope.hkEndTimestamp;
+      this.startTimeStamp = this.$scope.hkStartTimestamp;
+      this.$log.debug("first time through Availability page raw metricId is: " + this.getRawMetricId());
+      this.refreshAvailPageNow(this.getRawMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
-        this.endTimeStamp = new Date();
-        this.refreshHistoricalAvailDataForTimestamp(this.getMetricId());
+        console.info('Autorefresh Availabilty for: ' + this.getRawMetricId());
+        this.$scope.hkEndTimestamp = +moment();
+        this.endTimeStamp = this.$scope.hkEndTimestamp;
+        this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+        this.startTimeStamp = this.$scope.hkStartTimestamp;
+        this.refreshAvailPageNow(this.getRawMetricId());
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -90,67 +112,63 @@ module HawkularMetrics {
       ///toastr.warning('No Data found for id: ' + id);
     }
 
-
-    refreshAvailChartDataNow(metricId:string, startTime?:Date):void {
-      var adjStartTimeStamp:Date = moment().subtract('hours', 1).toDate(); //default time period set to 24 hours
-      this.endTimeStamp = new Date();
-      this.refreshHistoricalChartData(metricId, angular.isUndefined(startTime) ? adjStartTimeStamp : startTime, this.endTimeStamp);
-    }
-
-    refreshHistoricalChartData(metricId:string, startDate:Date, endDate:Date):void {
-      this.refreshHistoricalAvailDataForTimestamp(metricId, startDate.getTime(), endDate.getTime());
-    }
-
-    getMetricId():string {
-      return this.metricId + '.status.code';//MetricsAvailabilityController.getResourceCodeMetricId();
-    }
-
-    /*
-    private static getResourceCodeMetricId() {
-      return globalMetricId + '.status.code';
-    }
-    */
-
-    refreshHistoricalAvailDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
-      // calling refreshChartData without params use the model values
-      if (!endTime) {
-        endTime = this.endTimeStamp.getTime();
-      }
-      if (!startTime) {
-        startTime = this.startTimeStamp.getTime();
-      }
+    refreshSummaryAvailabilityData(metricId:string, startTime:number, endTime:number):void {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
           tenantId: globalTenantId,
-          availabilityId: metricId
+          availabilityId: metricId,
+          start: startTime,
+          end: endTime,
+          buckets: 1
+        }).$promise
+          .then((availResponse:IAvailabilitySummary[]) => {
+            console.info("Avail Summary:");
+            console.dir(availResponse);
+
+            if (availResponse && !_.last(availResponse).empty) {
+
+              this.uptimeRatio = Math.round(_.last(availResponse).uptimeRatio);
+              this.downtimeDuration = Math.round(_.last(availResponse).downtimeDuration);
+              this.lastDowntime = new Date(_.last(availResponse).lastDowntime);
+              this.downtimeCount = _.last(availResponse).downtimeCount;
+              this.empty = _.last(availResponse).empty;
+            }
+
+          }, (error) => {
+            this.$log.error('Error Loading Avail Summary data');
+            toastr.error('Error Loading Avail Summary Data: ' + error);
+          });
+
+      }
+    }
+
+
+    getRawMetricId():string {
+      return this.metricId;
+    }
+
+
+    refreshAvailDataForTimestamp(metricId:string, startTime:number, endTime:number):void {
+
+      if (metricId) {
+        this.HawkularMetric.AvailabilityMetricData.query({
+          tenantId: globalTenantId,
+          availabilityId: metricId,
+          start: startTime,
+          end: endTime,
+          buckets: 60
         }).$promise
           .then((response) => {
 
-            // we want to isolate the response from the data we are feeding to the chart
-            this.availabilityDataPoints = this.formatAvailability(response);
-            console.info("Availability: ");
-            console.dir(this.availabilityDataPoints);
-
-            //this.totalDowntime = Math.round(_.last(this.bucketedDataPoints).median);
-            //@todo: get rid of these fake values
-            this.availabilityPercent = .95;
-            this.downTimeDuration = 44;
-            this.lastDownTime = moment().subtract('hours', 2).toDate();
-            this.downTimeEvents = 2;
+            console.info("Availability Data: ");
+            console.dir(response);
 
             if (this.availabilityDataPoints.length) {
-              // this is basically the DTO for the chart
-              this.chartData = {
-                id: metricId,
-                startTimeStamp: this.startTimeStamp,
-                endTimeStamp: this.endTimeStamp,
-                dataPoints: this.availabilityDataPoints,
-                annotationDataPoints: []
-              };
+              this.availabilityDataPoints = response;
 
             } else {
-              this.noDataFoundForId(this.getMetricId());
+              this.noDataFoundForId(this.getRawMetricId());
             }
 
           }, (error) => {
@@ -161,22 +179,6 @@ module HawkularMetrics {
       }
     }
 
-    private formatAvailability(response):any[] {
-      //  The schema is different for bucketed output
-      return _.map(response, (point:IChartDataPoint) => {
-        return {
-          timestamp: point.start,
-          date: new Date(point.start),
-          value: !angular.isNumber(point.value) ? 0 : point.value,
-          avg: (point.empty) ? 0 : point.avg,
-          min: !angular.isNumber(point.min) ? 0 : point.min,
-          max: !angular.isNumber(point.max) ? 0 : point.max,
-          percentile95th: !angular.isNumber(point.percentile95th) ? 0 : point.percentile95th,
-          median: !angular.isNumber(point.median) ? 0 : point.median,
-          empty: point.empty
-        };
-      });
-    }
   }
 
   _module.controller('MetricsAvailabilityController', MetricsAvailabilityController);

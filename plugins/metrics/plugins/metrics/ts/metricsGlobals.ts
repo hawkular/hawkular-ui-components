@@ -30,11 +30,6 @@ module HawkularMetrics {
   /// @todo: this will go away once we have KeyCloak integration
   export var globalTenantId = "test";
 
-  //export var globalMetricId = "";
-  //export var globalResourceUrl = "";
-
-  //export var globalResourceList = [];
-
   export var globalChartTimeRange:ChartTimeRange;
 
   export class ChartTimeRange {
@@ -51,23 +46,6 @@ module HawkularMetrics {
       this.startTimestamp = moment().subtract('hour', this.initialHoursDifference).valueOf();
     }
 
-    getStartDate():Date {
-      return new Date(this.startTimestamp);
-    }
-
-    getEndDate():Date {
-      return new Date(this.endTimestamp);
-    }
-
-    getFormattedTimeRange():string {
-      ///@todo: if less < 24 hr show times otherwise dates
-      ///return moment(this.startTimestamp).format('MMM do') + ' - ' + moment(this.endTimestamp).format('MMM do')
-      /// if within 7 days
-      //return moment(this.startTimestamp).format('ddd, hA') + ' - ' + moment(this.endTimestamp).format('ddd, hA');
-      // if within 24 hours
-      return moment(this.startTimestamp).format('H:mm') + ' - ' + moment(this.endTimestamp).format('H:mm')
-        + ' (' + moment(this.endTimestamp).from(moment(this.startTimestamp), true) + ')';
-    }
   }
 
 }
