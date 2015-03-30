@@ -1,56 +1,47 @@
-<div ng-controller="MetricsViewController as vm">
+<section class="response-time" id="response-time" ng-controller="MetricsViewController as vm">
+      
+  <h1>Response Time</h1>
 
-  <div class="col-sm-12 col-md-12 content">
-
-    <div class="col-sm-12 col-md-12 content response-time">
-      <h1>Response Time</h1>
-
-      <div class="panel panel-default graph-summary">
-        <div class="row">
-          <div class="col-md-4 summary-item">
-            <span class="data">{{vm.average}} <span>ms</span></span>
-            <span class="item">Average</span>
-          </div>
-          <div class="col-md-4 summary-item">
-            <span class="data">{{vm.median}} <span>ms</span></span>
-            <span class="item">Median</span>
-          </div>
-          <div class="col-md-4 summary-item">
-            <span class="data">{{vm.percentile95th}} <span>ms</span></span>
-            <span class="item">95th percentile</span>
-          </div>
-        </div>
+  <div class="panel panel-default summary">
+    <div class="row">
+      <div class="col-md-4 summary-item">
+        <span class="data">{{vm.average}} <span>ms</span></span>
+        <span class="item">Average</span>
       </div>
-
-      <div class="panel panel-default graph">
-        <div class="legend pull-left" ng-show="vm.chartData.dataPoints.length > 0">
-          <span><i class="fa fa-circle primary"></i>Response Time</span>
-          <span><i class="fa fa-circle danger"></i>Response Time (above the threshold)</span>
-        </div>
-        <div class="update pull-right" ng-show="vm.chartData.dataPoints.length > 0" >
-          <i class="fa fa-clock-o"></i><a ng-click="vm.refreshChartDataNow(vm.getMetricId())"><strong>Last
-          update</strong> 20 seconds ago</a>
-        </div>
-
-        <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
-          collecting your initial data. Please be patient(could be up to a minute)...</p>
-
-        <div id="metrics-chart">
-          <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
-          <hawkular-chart
-            data="{{vm.chartData.dataPoints}}"
-            chart-type="hawkularmetric"
-            alert-value="{{vm.threshold}}"
-            y-axis-units="Response Time (ms)"
-            chart-height="250">
-          </hawkular-chart>
-        </div>
+      <div class="col-md-4 summary-item">
+        <span class="data">{{vm.median}} <span>ms</span></span>
+        <span class="item">Median</span>
       </div>
-
+      <div class="col-md-4 summary-item">
+        <span class="data">{{vm.percentile95th}} <span>ms</span></span>
+        <span class="item">95th percentile</span>
+      </div>
     </div>
-
   </div>
 
-</div>
+  <div class="panel panel-default graph">
+    <div class="legend pull-left" ng-show="vm.chartData.dataPoints.length > 0">
+      <span><i class="fa fa-circle primary"></i>Response Time</span>
+      <span><i class="fa fa-circle danger"></i>Response Time (above the threshold)</span>
+    </div>
+    <div class="update pull-right" ng-show="vm.chartData.dataPoints.length > 0" >
+      <i class="fa fa-clock-o"></i><a ng-click="vm.refreshChartDataNow(vm.getMetricId())"><strong>Last
+      update</strong> 20 seconds ago</a>
+    </div>
 
+    <p class="label label-info waiting-label" ng-hide="vm.chartData.dataPoints.length > 0" >We are
+      collecting your initial data. Please be patient(could be up to a minute)...</p>
 
+    <div id="metrics-chart">
+      <!-- HINT: colors for the chart can be changed in the hawkular-charts.css -->
+      <hawkular-chart
+        data="{{vm.chartData.dataPoints}}"
+        chart-type="hawkularmetric"
+        alert-value="{{vm.threshold}}"
+        y-axis-units="Response Time (ms)"
+        chart-height="250">
+      </hawkular-chart>
+    </div>
+  </div>
+
+</section>

@@ -26,6 +26,9 @@ h1 {
   margin-bottom: 40px;
   margin-top: 0;
 }
+section > h1 {
+  margin-bottom: 20px;
+}
 .input-group-lg .input-group-btn {
   vertical-align: top;
 }
@@ -451,6 +454,10 @@ hr.panel-expanded {
 .graph .update {
   font-size: 10px;
 }
+.graph .update a {
+  color: #333333;
+  cursor: pointer;
+}
 .graph .update .fa {
   color: #74797d;
   font-size: 16px;
@@ -459,6 +466,15 @@ hr.panel-expanded {
 }
 .graph img {
   margin-top: 10px;
+}
+.nav-tabs > li > a:hover {
+  cursor: pointer;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:active,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover {
+  background-color: #f5f5f5;
 }
 p.info-top {
   font-size: 13px;
