@@ -1,7 +1,7 @@
-<p class="info-top"><strong>{{mac.alertList.length}} alerts</strong> last week.</p>
+<p class="info-top"><strong>{{(mac.alertList | filter:timeFilter).length}} alerts</strong> last week.</p>
 
 <div class="alerts-activity">
-  <div ng-repeat="alert in mac.alertList">
+  <div ng-repeat="alert in mac.alertList | filter:timeFilter | orderBy: '-start'">
 
     <div class="panel panel-default alert alert-danger" ng-if="alert.type=='AVAILABILITY'">
       <div class="alert-icon">

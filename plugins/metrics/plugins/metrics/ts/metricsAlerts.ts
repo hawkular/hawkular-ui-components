@@ -36,9 +36,28 @@ module HawkularMetrics {
                 private $routeParams: any) {
 
       this.$log.debug('querying data');
-      this.$log.debug('$routeParams',$routeParams.resourceId);
+      this.$log.debug('$routeParams', $routeParams);
 
       this.metricId = $routeParams.resourceId;
+
+      $scope.alertsTimeOffset = $routeParams.timeOffset;
+      // If the end time is not specified in URL use current time as end time
+      $scope.alertsTimeEnd = $routeParams.endTime ? $routeParams.endTime : (new Date()).getTime();
+      $scope.alertsTimeStart = $scope.alertsTimeEnd - $scope.alertsTimeOffset;
+
+      $scope.timeFilter = function(value): boolean {
+
+        // If no time offset is specified we will return all alerts
+        if (!$scope.alertsTimeOffset) {
+          return true;
+        }
+
+        if ((value.start >  $scope.alertsTimeStart) && (value.start < $scope.alertsTimeEnd)) {
+          return true;
+        }
+
+        return false;
+      };
 
       HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
         this.$log.debug('data', data);
