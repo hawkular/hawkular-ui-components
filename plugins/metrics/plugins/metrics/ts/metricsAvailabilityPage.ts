@@ -46,6 +46,8 @@ module HawkularMetrics {
       this.startTimeStamp = +moment().subtract(1, 'hours');
       this.endTimeStamp = +moment();
 
+      this.metricId = $scope.hkParams.resourceId;
+
       $scope.$watch('hkParams.resourceId', (resourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
@@ -61,8 +63,7 @@ module HawkularMetrics {
       this.autoRefreshAvailability(20);
     }
 
-    private availabilityDataPoints:any[] = [];
-    private chartData:any;
+    private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
     private metricId;
 
@@ -73,8 +74,9 @@ module HawkularMetrics {
     empty = true;
 
     refreshAvailPageNow(rawMetricId:string, startTime?:number):void {
-      var adjStartTimeStamp:number = moment().subtract('hours', 1).valueOf(); //default time period set to 24 hours
-      this.endTimeStamp = +moment();
+      this.$scope.hkEndTimestamp = +moment();
+      var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
+      this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (rawMetricId) {
         this.refreshSummaryAvailabilityData(rawMetricId, startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
         this.refreshAvailDataForTimestamp(rawMetricId, startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
@@ -89,11 +91,13 @@ module HawkularMetrics {
     autoRefreshAvailability(intervalInSeconds:number):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
-      console.log("**** first time through raw metric id: " + this.getRawMetricId());
+      this.$log.debug("first time through Availability page raw metricId is: " + this.getRawMetricId());
       this.refreshAvailPageNow(this.getRawMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
         console.info('Autorefresh Availabilty for: ' + this.getRawMetricId());
+        this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
+        this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
         this.startTimeStamp = this.$scope.hkStartTimestamp;
         this.refreshAvailPageNow(this.getRawMetricId());
       }, intervalInSeconds * 1000);
@@ -114,6 +118,8 @@ module HawkularMetrics {
         this.HawkularMetric.AvailabilityMetricData.query({
           tenantId: globalTenantId,
           availabilityId: metricId,
+          start: startTime,
+          end: endTime,
           buckets: 1
         }).$promise
           .then((availResponse:IAvailabilitySummary[]) => {
@@ -130,8 +136,8 @@ module HawkularMetrics {
             }
 
           }, (error) => {
-            this.$log.error('Error Loading Chart data');
-            toastr.error('Error Loading Chart Data: ' + error);
+            this.$log.error('Error Loading Avail Summary data');
+            toastr.error('Error Loading Avail Summary Data: ' + error);
           });
 
       }
@@ -139,8 +145,7 @@ module HawkularMetrics {
 
 
     getRawMetricId():string {
-      //return this.metricId;
-      return 'x1427490396711';
+      return this.metricId;
     }
 
 
@@ -156,21 +161,11 @@ module HawkularMetrics {
         }).$promise
           .then((response) => {
 
-            // we want to isolate the response from the data we are feeding to the chart
-            this.availabilityDataPoints = response;
             console.info("Availability Data: ");
-            console.dir(this.availabilityDataPoints);
-
+            console.dir(response);
 
             if (this.availabilityDataPoints.length) {
-              // this is basically the DTO for the chart
-              this.chartData = {
-                id: metricId,
-                startTimeStamp: this.startTimeStamp,
-                endTimeStamp: this.endTimeStamp,
-                dataPoints: this.availabilityDataPoints,
-                annotationDataPoints: []
-              };
+              this.availabilityDataPoints = response;
 
             } else {
               this.noDataFoundForId(this.getRawMetricId());
