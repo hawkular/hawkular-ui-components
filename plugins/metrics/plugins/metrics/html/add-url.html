@@ -1,31 +1,30 @@
 <div ng-controller="HawkularMetrics.AddUrlController as vm">
-  <div class="container text-center">
-    <h1>Welcome Back {{username}}!</h1>
-    <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
-
-    <form class="form-horizontal add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
-      <div class="form-group input">
-        <div class="col-lg-5 col-sm-6 align-center">
-          <div class="input-group" ng-class="{'input-group-lg': vm.resourceList.length === 0}">
-            <input type="url" class="form-control" name="resourceUrl" ng-model="vm.resourceUrl"
-                   ng-model-options="{ updateOn: 'default blur'}"
-                   placeholder="Enter a website URL (e.g., http://mysite.com/home)" required>
-            <span class="help-block"
-                  ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
+  <div class="container text-center sc-insert-url" ng-class="{'sec-urls-list': vm.resourceList.length === 0}">
+    <div ng-class="{'fade-in': vm.resourceList.length === 0}">
+      <h1>Hello {{username}}!</h1>
+      <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
+      <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
+      <form class="form-horizontal add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
+        <div class="form-group input">
+          <div class="col-lg-6 col-sm-8 col-xs-12 align-center">
+            <div class="input-group" ng-class="{'input-group-lg': vm.resourceList.length === 0}">
+              <input type="url" class="form-control" name="resourceUrl" ng-model="vm.resourceUrl"
+                     ng-model-options="{ updateOn: 'default blur'}"
+                     placeholder="Enter a website URL (e.g.: http://www.website.com)" required>
               <span class="input-group-btn">
-                   <button class="btn btn-primary" ng-class="{'btn-lg': vm.resourceList.length === 0}" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
-                     <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
-                   Add URL
-                   </button>
+                <button class="btn btn-primary" ng-class="{'btn-lg': vm.resourceList.length === 0}" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
+                 <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
+                Add URL
+                </button>
               </span>
+            </div>
+            <span class="help-block"
+                    ng-show="addUrlForm.resourceUrl.$dirty && addUrlForm.resourceUrl.$invalid">The URL you entered is not valid. Please enter a valid URL.</span>
+
           </div>
         </div>
-      </div>
-      <div class="form-group loading hide">
-        <div class="spinner spinner-lg"></div>
-        <button type="button" class="btn btn-link">Cancel</button>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <div class="row urls-list-labels" ng-show="vm.resourceList.length > 0">
       <div class="col-md-4 text-left">
@@ -52,10 +51,11 @@
         </div>
         <div class="col-md-4 summary-item">
           <span class="data"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
-          <span class="update" tooltip="Last update"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
+          <span class="time" tooltip="Last update"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
+          <button class="btn btn-link delete" tooltip="Delete" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
         </div>
       </div>
-      <hr ng-show="vm.resourceList.expanded[res.id]">
+      <hr ng-show="vm.resourceList.expanded[res.id]" class="panel-expanded">
       <div class="row row-table panel-expanded-content" ng-show="vm.resourceList.expanded[res.id]">
         <div class="col-md-4 summary-item text-left">
           <ul class="list-unstyled alert-status" ng-hide="res.alerts.length === 0">
@@ -63,7 +63,7 @@
               <i class="fa fa-flag"></i>{{alert.dataTimestamp|date:'yyyy-MM-dd HH:mm'}}: <strong>{{alert.condition.type}}: {{alert.value}}</strong>
             </li>
           </ul>
-          <div class="data text-center top-area" ng-show="res.alerts.length === 0"><i class="fa fa-thumbs-o-up"></i>No Alerts</div>
+          <span class="no-alerts" ng-show="res.alerts.length === 0">No alerts. The URL is doing great :)</span>          
           <a href="/metrics/alerts/{{res.id}}" class="bottom-area" ng-show="res.alerts.length > 0">View All Alerts ({{res.alerts.length}})</a>
         </div>
         <div class="col-md-4 summary-item">
@@ -74,11 +74,11 @@
             <span class="data">{{vm.getAverage(res.responseTime, 'value')}} <span>ms</span></span>
             <span class="item">Average Response Time</span>
           </div>
-
         </div>
         <div class="col-md-4 summary-item">
+          <span class="time" tooltip="Last update"><i class="fa fa-clock-o"></i>Last 24 hours</span>
           <div class="top-area">
-            <span class="data" ng-show="res.availability === 100"><i class="fa fa-check"></i>No Downtime</span>
+            <span class="data" ng-show="res.availability === 100"><i class="fa fa-arrow-up"></i>Always Up</span>
             <span class="data" ng-hide="res.availability === 100"><i class="fa fa-arrow-down"></i>Down {{res.downTime}} min</span>
           </div>
           <div class="bottom-area">
@@ -86,7 +86,6 @@
             <span class="data" ng-show="res.availability === 100">{{res.availability}} <span>%</span></span>
             <span class="item">Availability</span>
           </div>
-          <button class="btn btn-link delete" tooltip="Delete" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
         </div>
       </div>
     </div>
