@@ -44,6 +44,10 @@ h1 {
   margin-top: 0;
 }
 
+section > h1 {
+  margin-bottom: @grid-gutter-width/2;
+}
+
 .input-group-lg {
 
   .input-group-btn {
@@ -604,6 +608,11 @@ hr.panel-expanded {
   .update {
     font-size: 10px;
     
+    a {
+      color: @gray-dark;
+      cursor: pointer;
+    }
+    
     .fa {
       color: #74797d;
       font-size: 16px;
@@ -618,6 +627,19 @@ hr.panel-expanded {
 }
 
 // Alerts activity section 
+
+.nav-tabs > li {
+  > a:hover {
+    cursor: pointer;
+  }
+ 
+  &.active > a,
+  &.active > a:active,
+  &.active > a:focus,
+  &.active > a:hover {
+    background-color: @body-bg;
+  }
+}  
 
 p.info-top {
   font-size: 13px;
