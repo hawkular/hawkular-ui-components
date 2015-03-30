@@ -91,7 +91,6 @@ module HawkularMetrics {
     autoRefreshAvailability(intervalInSeconds:number):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
-      this.$log.debug("first time through Availability page raw metricId is: " + this.getRawMetricId());
       this.refreshAvailPageNow(this.getRawMetricId());
       this.autoRefreshPromise = this.$interval(()  => {
         console.info('Autorefresh Availabilty for: ' + this.getRawMetricId());
@@ -163,13 +162,7 @@ module HawkularMetrics {
 
             console.info("Availability Data: ");
             console.dir(response);
-
-            if (this.availabilityDataPoints.length) {
-              this.availabilityDataPoints = response;
-
-            } else {
-              this.noDataFoundForId(this.getRawMetricId());
-            }
+            this.availabilityDataPoints = response;
 
           }, (error) => {
             this.$log.error('Error Loading Avail data');
