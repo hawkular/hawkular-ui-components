@@ -78,8 +78,8 @@ module HawkularMetrics {
       var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       if (rawMetricId) {
-        this.refreshSummaryAvailabilityData(rawMetricId, startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
-        this.refreshAvailDataForTimestamp(rawMetricId, startTime ? adjStartTimeStamp : startTime, this.endTimeStamp);
+        this.refreshSummaryAvailabilityData(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshAvailDataForTimestamp(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       }
     }
 
