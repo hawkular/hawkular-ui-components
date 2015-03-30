@@ -63,13 +63,13 @@
               <i class="fa fa-flag"></i>{{alert.dataTimestamp|date:'yyyy-MM-dd HH:mm'}}: <strong>{{alert.condition.type}}: {{alert.value}}</strong>
             </li>
           </ul>
-          <span class="no-alerts" ng-show="res.alerts.length === 0">No alerts. The URL is doing great :)</span>          
+          <span class="no-alerts" ng-show="res.alerts.length === 0">No alerts. The URL is doing great :)</span>
           <a href="/metrics/alerts/{{res.id}}" class="bottom-area" ng-show="res.alerts.length > 0">View All Alerts ({{res.alerts.length}})</a>
         </div>
         <div class="col-md-4 summary-item">
-          <div id="metrics-chart" class="top-area" style="height: 44px; width: 237px;">
-            <hawkular-chart data="{{res.responseTime}}" chart-type="line" chart-height="44" chart-width="237"></hawkular-chart>
-          </div>
+          <!--<div id="metrics-chart" class="top-area" style="height: 44px; width: 237px;">-->
+            <!--<hawkular-chart data="{{res.responseTime}}" chart-type="line" chart-height="44" chart-width="237"></hawkular-chart>-->
+          <!--</div>-->
           <div class="bottom-area">
             <span class="data">{{vm.getAverage(res.responseTime, 'value')}} <span>ms</span></span>
             <span class="item">Average Response Time</span>
