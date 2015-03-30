@@ -205,7 +205,7 @@ module HawkularMetrics {
 
        */
 
-      return this.HawkularAlert.Alert.query({tags:metricId+'.status.duration'}).$promise.then((serverAlerts: any) => {
+      return this.HawkularAlert.Alert.query({triggerIds:metricId+'_trigger_avail,' + metricId+'_trigger_thres'}).$promise.then((serverAlerts: any) => {
 
         this.$log.debug('querying data finished', serverAlerts);
 
