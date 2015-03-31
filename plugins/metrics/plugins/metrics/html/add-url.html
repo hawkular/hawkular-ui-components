@@ -28,8 +28,8 @@
 
     <div class="row urls-list-labels" ng-show="vm.resourceList.length > 0">
       <div class="col-md-4 text-left">
-        <button class="btn btn-link" data-toggle="tooltip" data-placement="top" title="" data-original-title="Sort">
-          URL <b class="caret"></b>
+        <button class="btn btn-link" tooltip="Sort" tooltip-trigger tooltip-placement="top" ng-click="vm.reverse = !vm.reverse">
+          URL <i class="fa" ng-class="vm.reverse ? 'fa-caret-up' : 'fa-caret-down'"></i>
         </button>
       </div>
       <div class="col-md-4">
@@ -40,27 +40,27 @@
       </div>
     </div>
 
-    <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList">
+    <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList | orderBy:'parameters.url':vm.reverse">
       <div class="row row-table">
         <div class="col-md-4 summary-item">
-          <span class="url-link"><a href="/metrics/response-time/{{res.id}}">{{res.parameters.url}}</a></span>
-          <button class="btn btn-link trigger" tooltip="Expand/collapse" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
+          <span class="url-link"><a href="/metrics/response-time/{{res.id}}">{{res.parameters.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="res.alerts.length > 0"></i></span>
+          <button class="btn btn-link trigger" tooltip="Expand/collapse" tooltip-trigger tooltip-placement="top" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>
         <div class="col-md-4 summary-item">
           <span class="data">{{res.responseTime[0].value}} <span>ms</span></span>
         </div>
         <div class="col-md-4 summary-item">
           <span class="data"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
-          <span class="time" tooltip="Last update"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
-          <button class="btn btn-link delete" tooltip="Delete" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
+          <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
+          <button class="btn btn-link delete" tooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
         </div>
       </div>
       <hr ng-show="vm.resourceList.expanded[res.id]" class="panel-expanded">
       <div class="row row-table panel-expanded-content" ng-show="vm.resourceList.expanded[res.id]">
         <div class="col-md-4 summary-item text-left">
           <ul class="list-unstyled alert-status" ng-hide="res.alerts.length === 0">
-            <li ng-repeat="alert in res.alerts.slice().reverse()|limitTo:3">
-              <i class="fa fa-flag"></i>{{alert.dataTimestamp|date:'yyyy-MM-dd HH:mm'}}: <strong>{{alert.condition.type}}: {{alert.value}}</strong>
+            <li ng-repeat="alert in res.alerts.slice().reverse() | limitTo:3">
+              <i class="fa fa-flag"></i>{{alert.dataTimestamp|date:'hh:mm a'}}: <span ng-if="alert.condition.type=='AVAILABILITY'"><strong>server down</strong></span><span ng-if="alert.condition.type=='THRESHOLD'"><strong>high response time</strong> ({{alert.value}}ms)</span>
             </li>
           </ul>
           <span class="no-alerts" ng-show="res.alerts.length === 0">No alerts. The URL is doing great :)</span>
@@ -76,10 +76,10 @@
           </div>
         </div>
         <div class="col-md-4 summary-item">
-          <span class="time" tooltip="Last update"><i class="fa fa-clock-o"></i>Last 24 hours</span>
+          <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>Last 24 hours</span>
           <div class="top-area">
             <span class="data" ng-show="res.availability === 100"><i class="fa fa-arrow-up"></i>Always Up</span>
-            <span class="data" ng-hide="res.availability === 100"><i class="fa fa-arrow-down"></i>Down {{res.downTime}} min</span>
+            <span class="data" ng-hide="res.availability === 100"><i class="fa fa-arrow-down"></i>Down {{res.downTime / 3 | number:0}} min</span>
           </div>
           <div class="bottom-area">
             <span class="data" ng-hide="res.availability === 100">{{res.availability | number:3}} <span>%</span></span>

@@ -1,4 +1,4 @@
-<p class="info-top"><strong>{{(mac.alertList | filter:timeFilter).length}} alerts</strong> last week.</p>
+<p class="info-top"><strong>{{(mac.alertList | filter:timeFilter).length}} alerts</strong><!--  last week. --></p>
 
 <div class="alerts-activity">
   <div ng-repeat="alert in mac.alertList | filter:timeFilter | orderBy: '-start'">

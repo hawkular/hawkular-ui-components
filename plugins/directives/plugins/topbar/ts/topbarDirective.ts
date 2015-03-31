@@ -40,13 +40,17 @@ module Topbar {
       };
 
       $scope.getFormattedDate = function() {
-        var diff = $scope.hkEndTimestamp - $scope.hkStartTimestamp;
+        var diff = $scope.hkParams.timeOffset;
 
         // FIXME: Use moment ?
-        $scope.offsetName = $scope.rangeNames[diff] || 'Custom';
+        $scope.offsetName = $scope.rangeNames[$scope.hkParams.timeOffset] || 'Custom';
 
-        var momStart = moment($scope.hkStartTimestamp);
-        var momEnd = moment($scope.hkEndTimestamp);
+        // TODO: Use this for custom
+        // var momStart = moment($scope.hkStartTimestamp);
+        // var momEnd = moment($scope.hkEndTimestamp);
+
+        var momStart = moment().subtract($scope.hkParams.timeOffset, 'milliseconds');
+        var momEnd = moment();
 
         if (diff < 24 * 60 * 60 * 1000) {
           return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' + (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');

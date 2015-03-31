@@ -43,7 +43,7 @@ module HawkularMetrics {
 
     init() {
       this.endTimestamp = moment().valueOf();
-      this.startTimestamp = moment().subtract('hour', this.initialHoursDifference).valueOf();
+      this.startTimestamp = moment().subtract(this.initialHoursDifference, 'hours').valueOf();
     }
 
   }

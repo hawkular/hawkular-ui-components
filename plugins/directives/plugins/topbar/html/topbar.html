@@ -8,7 +8,7 @@
       <b class="caret"></b>
     </a>
     <ul class="dropdown-menu" role="menu">
-      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources">
+      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources | orderBy:'parameters.url'">
         <a href="" ng-click="setSelection(resource)">{{resource.parameters.url}}</a>
       </li>
       <li class="divider"></li>

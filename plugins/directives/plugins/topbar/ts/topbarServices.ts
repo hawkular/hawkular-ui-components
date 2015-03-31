@@ -39,14 +39,14 @@ module Topbar {
 
       $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
       $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-      $rootScope.hkStartTimestamp =  moment().subtract('milliseconds', $rootScope.hkParams.timeOffset).valueOf();
+      $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
       $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
         $rootScope.hkParams = current.params;
 
         $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
         $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-        $rootScope.hkStartTimestamp =  moment().subtract('milliseconds', $rootScope.hkParams.timeOffset).valueOf();
+        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
         HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
           $rootScope.hkResources = resourceList;

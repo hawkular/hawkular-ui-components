@@ -5,15 +5,17 @@
   <div class="panel panel-default summary">
     <div class="row">
       <div class="col-md-3 summary-item">
-        <span class="data">{{vm.uptimeRatio * 100}} %</span>
+        <span class="data" ng-show="vm.uptimeRatio < 1">{{vm.uptimeRatio * 100 | number:3}} %</span>
+        <span class="data" ng-show="vm.uptimeRatio === 1">{{vm.uptimeRatio * 100}} %</span>
         <span class="item">Availability</span>
       </div>
       <div class="col-md-3 summary-item">
-        <span class="data">{{vm.downtimeDuration}}</span>
+        <span class="data">{{vm.downtimeDuration / 1000 | number:0}}s</span>
         <span class="item">Total Downtime Duration</span>
       </div>
       <div class="col-md-3 summary-item">
-        <span class="data">{{vm.lastDowntime | date:'mediumDate'}}</span>
+        <span class="data" ng-show="vm.lastDowntime.valueOf() !== 0">{{vm.lastDowntime | date:'mediumDate'}}</span>
+        <span class="data" ng-show="!vm.lastDowntime || vm.lastDowntime.valueOf() === 0">Always Up</span>
         <span class="item">Last Downtime</span>
       </div>
       <div class="col-md-3 summary-item">
