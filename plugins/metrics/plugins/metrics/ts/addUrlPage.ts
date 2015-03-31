@@ -139,25 +139,26 @@ module HawkularMetrics {
         angular.forEach(this.resourceList, function(res, idx) {
           this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
-            start: moment().subtract(1, 'hour').valueOf(), end: moment().valueOf()}, (resource) => {
+            start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           });
           this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
-            start: moment().subtract(1, 'hour').valueOf(), end: moment().valueOf()}, (resource) => {
+            start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Use availability instead..
             res['isUp'] = (resource[0] && resource[0].value >= 200 && resource[0].value < 300);
-            var upTime = 0;
-            for(var i = 0; i < resource.length; i++) {
-              if(resource[i].value >= 200 && resource[i].value < 300) {
-                upTime++;
-              }
-            }
-            res['availability'] = resource.length > 0 ? upTime/resource.length * 100 : 0;
-            res['downTime'] = resource.length > 0 ? resource.length - upTime : 'every';
           });
-          this.HawkularAlert.Alert.query({ query: res.id, start: moment().subtract(1, 'hour').valueOf(),
+          this.HawkularMetric.AvailabilityMetricData.query({
+            tenantId: globalTenantId,
+            availabilityId: res.id,
+            start: moment().subtract(24, 'hours').valueOf(),
+            end: moment().valueOf(),
+            buckets: 1}, (resource) => {
+            res['availability'] = resource[0].uptimeRatio * 100;
+            res['downTime'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
+          });
+          this.HawkularAlert.Alert.query({ query: res.id, start: moment().subtract(24, 'hours').valueOf(),
             end: moment().valueOf()}, (alertsList) => {
             res['alerts'] = [];
             for(var i = 0; i < alertsList.length; i++) {

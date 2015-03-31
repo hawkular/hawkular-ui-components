@@ -128,7 +128,7 @@ module HawkularMetrics {
 
             if (availResponse && !_.last(availResponse).empty) {
 
-              this.uptimeRatio = Math.round(_.last(availResponse).uptimeRatio);
+              this.uptimeRatio = _.last(availResponse).uptimeRatio;
               this.downtimeDuration = Math.round(_.last(availResponse).downtimeDuration);
               this.lastDowntime = new Date(_.last(availResponse).lastDowntime);
               this.downtimeCount = _.last(availResponse).downtimeCount;
