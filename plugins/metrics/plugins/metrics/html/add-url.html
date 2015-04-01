@@ -52,7 +52,7 @@
         <div class="col-md-4 summary-item">
           <span class="data"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
           <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
-          <button class="btn btn-link delete" tooltip="Delete" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
+          <button class="btn btn-link delete" tooltip="Remove" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
         </div>
       </div>
       <hr ng-show="vm.resourceList.expanded[res.id]" class="panel-expanded">
@@ -76,7 +76,7 @@
           </div>
         </div>
         <div class="col-md-4 summary-item">
-          <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>Last 24 hours</span>
+          <span class="time"><i class="fa fa-clock-o"></i>Last 24 hours</span>
           <div class="top-area">
             <span class="data" ng-show="res.availability === 100"><i class="fa fa-arrow-up"></i>Always Up</span>
             <span class="data" ng-hide="res.availability === 100"><i class="fa fa-arrow-down"></i>Down {{res.downTime / 3 | number:0}} min</span>

@@ -12,16 +12,16 @@
     </fieldset>
     <fieldset>
       <legend>Response Time</legend>
-      <div class="form-group">
-        <label class="col-md-2 control-label" for="email">Status</label>
-        <div class="col-md-6">
+      <div class="form-group onffswitch-form-group">
+        <label class="col-md-2 control-label" for="trigger_thres.enabled">Status</label>
+        <div class="onoffswitch-container">
           <div class="onoffswitch">
             <input type="checkbox" id="trigger_thres.enabled" class="onoffswitch-checkbox" ng-model="mas.trigger_thres.enabled">
             <label class="onoffswitch-label" for="trigger_thres.enabled">
-                        <span class="onoffswitch-inner">
-                          <span class="onoffswitch-active ng-binding">ON</span>
-                          <span class="onoffswitch-inactive ng-binding">OFF</span>
-                        </span>
+              <span class="onoffswitch-inner">
+                <span class="onoffswitch-active ng-binding">ON</span>
+                <span class="onoffswitch-inactive ng-binding">OFF</span>
+              </span>
               <span class="onoffswitch-switch"></span>
             </label>
           </div>
@@ -29,7 +29,7 @@
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label" for="responseDuration">Threshold and duration</label>
-        <div class="col-md-6 inline-row">
+        <div class="col-md-8 inline-row">
           <div class="input-group time">
             <input type="text" class="form-control" placeholder="Threshold" ng-model="mas.trigger_thres_cond[0].threshold">
             <span class="input-group-addon">ms</span>
@@ -49,16 +49,16 @@
     </fieldset>
     <fieldset>
       <legend>Downtime</legend>
-      <div class="form-group">
-        <label class="col-md-2 control-label" for="email">Status</label>
-        <div class="col-md-6">
+      <div class="form-group onffswitch-form-group">
+        <label class="col-md-2 control-label" for="trigger_avail.enabled">Status</label>
+        <div class="onoffswitch-container">
           <div class="onoffswitch">
             <input type="checkbox" id="trigger_avail.enabled" name="trigger_avail.enabled" class="onoffswitch-checkbox" ng-model="mas.trigger_avail.enabled">
             <label class="onoffswitch-label" for="trigger_avail.enabled">
-                        <span class="onoffswitch-inner">
-                          <span class="onoffswitch-active ng-binding">ON</span>
-                          <span class="onoffswitch-inactive ng-binding">OFF</span>
-                        </span>
+              <span class="onoffswitch-inner">
+                <span class="onoffswitch-active ng-binding">ON</span>
+                <span class="onoffswitch-inactive ng-binding">OFF</span>
+              </span>
               <span class="onoffswitch-switch"></span>
             </label>
           </div>
