@@ -29,7 +29,7 @@
     <div class="row urls-list-labels" ng-show="vm.resourceList.length > 0">
       <div class="col-md-4 text-left">
         <button class="btn btn-link" tooltip="Sort" tooltip-trigger tooltip-placement="top" ng-click="vm.reverse = !vm.reverse">
-          URL <i class="fa" ng-class="vm.reverse ? 'fa-caret-up' : 'fa-caret-down'"></i>
+          URL <i class="fa" ng-class="vm.reverse ? 'fa-angle-up' : 'fa-angle-down'"></i>
         </button>
       </div>
       <div class="col-md-4">
@@ -43,7 +43,7 @@
     <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList | orderBy:'parameters.url':vm.reverse">
       <div class="row row-table">
         <div class="col-md-4 summary-item">
-          <span class="url-link"><a href="/metrics/response-time/{{res.id}}">{{res.parameters.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="res.alerts.length > 0"></i></span>
+          <span class="url-link"><a href="/hawkular/{{res.id}}">{{res.parameters.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="res.alerts.length > 0"></i></span>
           <button class="btn btn-link trigger" tooltip="Expand/collapse" tooltip-trigger tooltip-placement="top" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>
         <div class="col-md-4 summary-item">
@@ -64,7 +64,7 @@
             </li>
           </ul>
           <span class="no-alerts" ng-show="res.alerts.length === 0">No alerts. The URL is doing great :)</span>
-          <a href="/metrics/alerts/{{res.id}}" class="bottom-area" ng-show="res.alerts.length > 0">View All Alerts ({{res.alerts.length}})</a>
+          <a href="/hawkular/{{res.id}}" class="bottom-area" ng-show="res.alerts.length > 0">View All Alerts ({{res.alerts.length}})</a>
         </div>
         <div class="col-md-4 summary-item">
           <!--<div id="metrics-chart" class="top-area" style="height: 44px; width: 237px;">-->

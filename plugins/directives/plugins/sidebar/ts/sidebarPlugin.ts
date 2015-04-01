@@ -17,7 +17,7 @@
 /// <reference path="sidebarGlobals.ts"/>
 module Sidebar {
 
-  export var _module = angular.module(pluginName, []);
+  export var _module = angular.module(pluginName, ['duScroll']);
 
   _module.directive('hawkularSidebar', function () {
     return new Sidebar.SidebarDirective();
