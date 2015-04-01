@@ -25,6 +25,7 @@
   "dependencies": {
     "angular-bootstrap": "0.11.0",
     "angular-ui-select": "0.11.2",
+    "angular-scroll": "0.6.5",
     "angular-patternfly": "0.0.2",
     "bootstrap-select": "1.6",
     "d3": "3.4.8",

@@ -62,6 +62,7 @@ module HawkularMetrics {
 
   _module.config(["$routeProvider", ($routeProvider) => {
     $routeProvider.
+        when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
         when('/metrics/response-time', {templateUrl: 'plugins/metrics/html/response-time.html',
         resolve: {
           hkResourceList : function($filter, $location, $q, HawkularInventory) {

@@ -28,10 +28,14 @@ module Sidebar {
   }
 
   export var SidebarController = _module.controller("Sidebar.SidebarController",
-    ['$scope', '$rootScope', '$location' ,($scope, $rootScope, $location) => {
+    ['$scope', '$rootScope', '$location', ($scope, $rootScope, $location) => {
 
-    $scope.getClass = function (path) {
-      return $location.path().indexOf(path) === 0 ? 'active' : '';
-    };
-  }]);
+      $scope.isSinglePage = function() {
+        return $location.path().indexOf('/metrics') !== 0;
+      };
+
+      $scope.getClass = function (path) {
+        return $location.path().indexOf(path) === 0 ? 'active' : '';
+      };
+    }]);
 }
