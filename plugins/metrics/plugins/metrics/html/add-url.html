@@ -44,6 +44,7 @@
       <div class="row row-table">
         <div class="col-md-4 summary-item">
           <span class="url-link"><a href="/hawkular/{{res.id}}">{{res.parameters.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="res.alerts.length > 0"></i></span>
+          <button class="btn btn-link delete" tooltip="Remove" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
           <button class="btn btn-link trigger" tooltip="Expand/collapse" tooltip-trigger tooltip-placement="top" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>
         <div class="col-md-4 summary-item">
@@ -52,7 +53,6 @@
         <div class="col-md-4 summary-item">
           <span class="data"><i class="fa " ng-class="res.isUp ? 'fa-arrow-up' : 'fa-arrow-down'"></i>{{res.isUp ? 'Up' : 'Down'}}</span>
           <span class="time" tooltip="Last update" tooltip-trigger tooltip-placement="top"><i class="fa fa-clock-o"></i>{{res.updateTime| date:"HH:mm" }}</span>
-          <button class="btn btn-link delete" tooltip="Remove" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
         </div>
       </div>
       <hr ng-show="vm.resourceList.expanded[res.id]" class="panel-expanded">

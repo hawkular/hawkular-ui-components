@@ -318,7 +318,7 @@ h2 {
   font-weight: bold;
 }
 .url-info .url-link {
-  display: block;
+  display: inline-block;
   font-size: 16px;
   margin-bottom: 3px;
   margin-top: 3px;
@@ -327,6 +327,16 @@ h2 {
   color: #cc0000;
   font-size: 18px;
   margin-left: 10px;
+}
+.url-info .delete {
+  margin-bottom: 3px;
+  visibility: hidden;
+}
+.url-info .delete .fa {
+  font-size: 16px;
+}
+.url-info:hover .delete {
+  visibility: visible;
 }
 .url-info .time {
   position: absolute;
@@ -341,17 +351,6 @@ h2 {
 .url-info .data .fa {
   font-size: inherit;
   margin-right: 10px;
-}
-.url-info .delete {
-  position: absolute;
-  right: 38px;
-  visibility: hidden;
-}
-.url-info .delete .fa {
-  font-size: 16px;
-}
-.url-info:hover .delete {
-  visibility: visible;
 }
 hr.panel-expanded {
   border-color: #d1d1d1;
@@ -381,11 +380,12 @@ hr.panel-expanded {
   text-align: center;
 }
 .panel-expanded-content .top-area {
-  height: 44px;
-  margin-bottom: 15px;
+  height: 40px;
+  margin-bottom: 10px;
 }
 .panel-expanded-content .top-area .data {
-  line-height: 44px;
+  line-height: 40px;
+  font-size: 20px;
 }
 .panel-expanded-content .time {
   top: -28px;
