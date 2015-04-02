@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -34,6 +34,7 @@ module HawkularMetrics {
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $filter:ng.IFilterService,
+                private $modal:any,
                 private HawkularInventory:any,
                 private HawkularMetric:any,
                 private HawkularAlert:any,
@@ -184,18 +185,40 @@ module HawkularMetrics {
     }
 
     deleteResource(resource:any):any {
-      // TODO: use modal to confirm delete...
-      this.HawkularInventory.Resource.delete({
-        tenantId: globalTenantId,
-        resourceId: resource.id
-      }).$promise.then((res) => {
-          toastr.info('The site ' + resource.parameters.url + ' is no longer being monitored.');
-          this.resourceList = this.getResourceList();
-        });
+      this.$modal.open({
+        templateUrl: 'plugins/metrics/html/modals/delete-resource.html',
+        controller: DeleteResourceModalController,
+        resolve: {
+          resource: () => resource
+        }
+      }).result.then(result => this.getResourceList());
     }
-
   }
 
   _module.controller('HawkularMetrics.AddUrlController', AddUrlController);
+
+  class DeleteResourceModalController {
+
+    static $inject = ['$scope', '$modalInstance', 'HawkularInventory', 'resource'];
+
+    constructor(private $scope, private $modalInstance: any, private HawkularInventory, public resource) {
+      $scope.vm = this;
+    }
+
+    deleteResource() {
+      this.HawkularInventory.Resource.delete({
+        tenantId: globalTenantId,
+        resourceId: this.resource.id
+      }).$promise.then((res) => {
+          toastr.info('The site ' + this.resource.parameters.url + ' is no longer being monitored.');
+          this.$modalInstance.close(res);
+        });
+    }
+
+    cancel() {
+      this.$modalInstance.dismiss('cancel');
+    }
+
+  }
 
 }
