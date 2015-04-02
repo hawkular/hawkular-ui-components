@@ -29,6 +29,7 @@ module.exports = function(gulp, config, pluginName){
     tslintRules = require('../tslint.json');
 
   var plugins = gulpLoadPlugins({});
+  var isWatch = false;
 
   /** Adjust the reference path of any typescript-built plugin this project depends on */
   gulp.task('path-adjust', function() {
@@ -48,6 +49,7 @@ module.exports = function(gulp, config, pluginName){
 
   //gulp.task('tsc-' + pluginName, ['clean-defs'], function() {
   gulp.task('tsc-' + pluginName, function() {
+    var wasError = false;
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts(pluginName))
       .pipe(plugins.sourcemaps.init())
@@ -56,12 +58,17 @@ module.exports = function(gulp, config, pluginName){
         module: 'commonjs',
         declarationFiles: true,
         noExternalResolve: false,
-        removeComments: true
-      })))
-      .on('error', plugins.notify.onError({
-        message: 'Error: <%= error.message %>',
-        title: 'Typescript compilation error'
-      }));
+        removeComments: true,
+        noEmitOnError: false
+      }), {}, plugins.typescript.reporter.fullReporter(true)))
+      .on('error', function(){
+        wasError = true;
+      })
+      .on('end', function(){
+        if(wasError && !isWatch) {
+          throw 'Error in one or more TypeScript files. The build is stopped.'
+        }
+      });
 
     return eventStream.merge(
       tsResult.js
@@ -86,7 +93,7 @@ module.exports = function(gulp, config, pluginName){
       }));
   });
 
-  gulp.task('tslint-' + pluginName, function(){
+  gulp.task('tslint-' + pluginName, ['tsc-' + pluginName], function(){
     gulp.src(config.ts(pluginName))
       .pipe(tslint(config.tsLintOptions))
       .pipe(tslint.report('verbose'));
@@ -138,6 +145,8 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
+
+    isWatch = true;
 
     plugins.watch(['.tmp/gulp-connect-server/index.html', '.tmp/gulp-connect-server/dist/**'], function() {
       gulp.start(['reload']);
@@ -210,5 +219,6 @@ module.exports = function(gulp, config, pluginName){
     });
   });
 
-  gulp.task('build-' + pluginName, ['path-adjust', 'tslint-' + pluginName, 'tsc-' + pluginName, 'template-' + pluginName, 'less-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
+  gulp.task('build-' + pluginName, ['path-adjust', 'tsc-' + pluginName, 'tslint-' + pluginName, 'template-' + pluginName,
+    'less-' + pluginName, 'concat-' + pluginName, 'clean-' + pluginName]);
 };
