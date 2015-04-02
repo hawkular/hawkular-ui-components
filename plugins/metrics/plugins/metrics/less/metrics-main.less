@@ -437,7 +437,7 @@ h2 {
   }
   
   .url-link {
-    display: block;
+    display: inline-block;
     font-size: 16px;
     margin-bottom: 3px;
     margin-top: 3px;
@@ -447,6 +447,19 @@ h2 {
       font-size: 18px;
       margin-left: @grid-gutter-width/4;
     }
+  }
+  
+  .delete {
+    margin-bottom: 3px;
+    visibility: hidden;
+    
+    .fa {
+      font-size: 16px;
+    }
+  }
+  
+  &:hover .delete {
+    visibility: visible;
   }
   
   .time {
@@ -466,19 +479,6 @@ h2 {
     margin-right: @grid-gutter-width/4;
   }
   
-  .delete {
-    position: absolute;
-    right: 38px;  
-    visibility: hidden;
-    
-    .fa {
-      font-size: 16px;
-    }
-  }
-  
-  &:hover .delete {
-    visibility: visible;
-  }
 }
 
 hr.panel-expanded {
@@ -514,11 +514,12 @@ hr.panel-expanded {
   }
   
   .top-area {
-    height: 44px;
-    margin-bottom: 15px;
+    height: 40px;
+    margin-bottom: 10px;
     
     .data {
-      line-height: 44px;
+      line-height: 40px;
+      font-size: 20px;
     }
   }
   
