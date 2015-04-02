@@ -27,6 +27,7 @@
           </div>
         </div>
       </div>
+      <div ng-show="mas.trigger_thres.enabled">
       <div class="form-group">
         <label class="col-md-2 control-label" for="responseDuration">Threshold and duration</label>
         <div class="col-md-8 inline-row">
@@ -46,6 +47,7 @@
             for more than {{mas.responseDuration}} {{mas.timeUnitsDict[mas.responseUnit]}}.</span>
         </div>
       </div>
+      </div>
     </fieldset>
     <fieldset>
       <legend>Downtime</legend>
@@ -64,6 +66,7 @@
           </div>
         </div>
       </div>
+      <div ng-show="mas.trigger_avail.enabled">
       <div class="form-group">
         <label class="col-md-2 control-label" for="downtimeDuration">Duration</label>
         <div class="col-md-6 inline-row">
@@ -76,6 +79,7 @@
           <span class="help-block">Send alerts when the downtime lasts
             more than {{mas.downtimeDuration}} {{mas.timeUnitsDict[mas.downtimeUnit]}}.</span>
         </div>
+      </div>
       </div>
     </fieldset>
     <div class="form-group">
