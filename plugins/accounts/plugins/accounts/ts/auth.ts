@@ -25,6 +25,7 @@ module HawkularAccounts {
         constructor(private $rootScope:ng.IRootScopeService, private $window:ng.IWindowService) {
           this.onReady(() => {
             this.$rootScope['username'] = this.keycloak().idTokenParsed.name;
+            this.$rootScope['user_email'] = this.keycloak().idTokenParsed.email;
           });
         }
 
