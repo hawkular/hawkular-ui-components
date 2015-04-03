@@ -20,7 +20,7 @@ module HawkularAlerts {
         showRefreshForm(): void;
         hideRefreshForm(): void;
         updateRefresh(): void;
-    };
+    }
 
     export class DashboardController implements IDashboardController {
         public static  $inject = ['$scope', '$interval', '$log', 'HawkularAlert'];
@@ -123,7 +123,7 @@ module HawkularAlerts {
             }
             this.$scope.msgs.push(newAlert);
         }
-    };
+    }
 
     _module.controller('HawkularAlerts.DashboardController', DashboardController);
 

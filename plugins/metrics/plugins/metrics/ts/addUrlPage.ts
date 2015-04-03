@@ -80,6 +80,7 @@ module HawkularMetrics {
 
       globalChartTimeRange = new ChartTimeRange(1);
       var metricId: string;
+      var defaultEmail = this.$rootScope['user_email'] ? this.$rootScope['user_email'] : 'myemail@company.com';
 
       /// Add the Resource
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
@@ -108,17 +109,17 @@ module HawkularMetrics {
             });
         }).then(()=> {
           // Find if a default email exists
-          return this.HawkularAlertsManager.addEmailAction('myemail@company.com');
+          return this.HawkularAlertsManager.addEmailAction(defaultEmail);
         }, (error)=> {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving metric.');
         }).then(()=> {
           // Create threshold trigger for newly created metrics
-          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', 'myemail@company.com');
+          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail);
         }, (error)=> {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.');
         }).then((alert)=> {
           // Create availability trigger for newly created metrics
-          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', 'myemail@company.com');
+          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail);
         }, (error)=> {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving threshold trigger.');
         }).then(()=> {

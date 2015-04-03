@@ -14,6 +14,7 @@
 /// limitations under the License.
 
 /// <reference path="accountsPlugin.ts"/>
+/// <reference path="auth.ts"/>
 /**
  * Attention: this class will probably be replaced by the proper hawt.io Keycloak integration.
  * While it's not done, we are doing the integration by ourselves.

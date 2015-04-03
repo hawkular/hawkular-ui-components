@@ -52,11 +52,7 @@ module HawkularMetrics {
           return true;
         }
 
-        if ((value.start >  $scope.alertsTimeStart) && (value.start < $scope.alertsTimeEnd)) {
-          return true;
-        }
-
-        return false;
+        return !!((value.start > $scope.alertsTimeStart) && (value.start < $scope.alertsTimeEnd));
       };
 
       HawkularAlertsManager.queryConsoleAlerts(this.metricId).then((data)=> {
