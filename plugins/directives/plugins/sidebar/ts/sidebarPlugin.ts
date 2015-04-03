@@ -15,6 +15,7 @@
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="sidebarGlobals.ts"/>
+/// <reference path="sidebarDirective.ts"/>
 module Sidebar {
 
   export var _module = angular.module(pluginName, ['duScroll']);

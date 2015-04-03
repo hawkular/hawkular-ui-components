@@ -30,7 +30,7 @@ module HawkularAlerts {
         deleteCondition(conditionId: string, description: string):void;
         cancelCondition():void;
         saveDampening():void;
-    };
+    }
 
     export class DefinitionsController implements IDefinitionsController {
         public static  $inject = ['$scope', '$window', '$log', 'HawkularAlert'];
@@ -371,7 +371,7 @@ module HawkularAlerts {
             this.$scope.statusCondition = {status: ''};
         }
 
-    };
+    }
 
     _module.controller('HawkularAlerts.DefinitionsController', DefinitionsController);
 }

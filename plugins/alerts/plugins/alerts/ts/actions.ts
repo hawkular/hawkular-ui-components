@@ -24,7 +24,7 @@ module HawkularAlerts {
         deleteAction(actionId: string):void;
         closeAlertMsg(index: number):void;
         changePlugin():void;
-    };
+    }
 
     export class ActionsController implements IActionsController {
         public static  $inject = ['$scope', '$window', '$interval', '$log', 'HawkularAlert'];
@@ -152,7 +152,7 @@ module HawkularAlerts {
             this.$scope.msgs.splice(index, 1);
         }
 
-    };
+    }
 
     _module.controller('HawkularAlerts.ActionsController', ActionsController);
 }

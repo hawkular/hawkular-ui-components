@@ -15,6 +15,7 @@
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="topbarGlobals.ts"/>
+/// <reference path="topbarDirective.ts"/>
 module Topbar {
 
   export var _module = angular.module(pluginName, ['ngResource', 'hawkular.services', 'ui.bootstrap']);

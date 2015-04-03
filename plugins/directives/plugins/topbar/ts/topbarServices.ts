@@ -15,6 +15,7 @@
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="topbarGlobals.ts"/>
+/// <reference path="topbarPlugin.ts"/>
 module Topbar {
 
   export class HawkularNav {
