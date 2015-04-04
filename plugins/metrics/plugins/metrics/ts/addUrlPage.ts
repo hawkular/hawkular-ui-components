@@ -27,6 +27,7 @@ module HawkularMetrics {
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
     private resourceList;
+    public alertList;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -138,6 +139,9 @@ module HawkularMetrics {
         var expanded = this.resourceList ? this.resourceList.expanded : [];
         this.resourceList = aResourceList;
         this.resourceList.expanded = expanded;
+        this.HawkularAlert.Alert.query({}, (anAlertList) => {
+          this.alertList = anAlertList;
+        }, this);
         angular.forEach(this.resourceList, function(res, idx) {
           this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
@@ -159,15 +163,6 @@ module HawkularMetrics {
             buckets: 1}, (resource) => {
             res['availability'] = resource[0].uptimeRatio * 100;
             res['downTime'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
-          });
-          this.HawkularAlert.Alert.query({ query: res.id, start: moment().subtract(24, 'hours').valueOf(),
-            end: moment().valueOf()}, (alertsList) => {
-            res['alerts'] = [];
-            for(var i = 0; i < alertsList.length; i++) {
-              if (alertsList[i].evalSets[0][0].condition.dataId.indexOf(res.id) === 0) {
-                res['alerts'].push(alertsList[i].evalSets[0][0]);
-              }
-            }
           });
           res['updateTime'] = new Date();
         }, this);
