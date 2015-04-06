@@ -134,28 +134,28 @@ module HawkularMetrics {
     }
 
     getResourceList():any {
-      return this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
+      this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
         // FIXME: hack.. make expanded out of list
         var expanded = this.resourceList ? this.resourceList.expanded : [];
-        this.resourceList = aResourceList;
-        this.resourceList.expanded = expanded;
+        aResourceList.expanded = expanded;
         this.HawkularAlert.Alert.query({}, (anAlertList) => {
           this.alertList = anAlertList;
         }, this);
-        angular.forEach(this.resourceList, function(res, idx) {
-          this.HawkularMetric.NumericMetricData.queryMetrics({
+        var promises = [];
+        angular.forEach(aResourceList, function(res, idx) {
+          promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
             start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
-          });
-          this.HawkularMetric.NumericMetricData.queryMetrics({
+          }).$promise);
+          promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
             tenantId: globalTenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
             start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Use availability instead..
             res['isUp'] = (resource[0] && resource[0].value >= 200 && resource[0].value < 300);
-          });
-          this.HawkularMetric.AvailabilityMetricData.query({
+          }).$promise);
+          promises.push(this.HawkularMetric.AvailabilityMetricData.query({
             tenantId: globalTenantId,
             availabilityId: res.id,
             start: moment().subtract(24, 'hours').valueOf(),
@@ -163,9 +163,12 @@ module HawkularMetrics {
             buckets: 1}, (resource) => {
             res['availability'] = resource[0].uptimeRatio * 100;
             res['downTime'] = Math.round(resource[0].downtimeDuration / 1000 / 60);
-          });
+          }).$promise);
           res['updateTime'] = new Date();
         }, this);
+        this.$q.all(promises).then((result) => {
+          this.resourceList = aResourceList;
+        });
 
       });
     }
