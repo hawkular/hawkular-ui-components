@@ -173,7 +173,7 @@ h2 {
   line-height: 34px;
 }
 .navbar-pf .navbar-selector > li.context > a {
-  border-left: 1px solid #3e3e3e;
+  border-left: 1px solid #333333;
   font-weight: normal;
   padding-right: 46px;
 }
@@ -188,8 +188,8 @@ h2 {
   margin-right: 10px;
 }
 .navbar-pf .navbar-selector > li.date-range .input {
-  border-bottom: 1px solid #383838;
-  color: #dbdada;
+  border-bottom: 1px solid #333333;
+  color: #eeeeee;
   display: inline-block;
   font-size: 13px;
   margin-right: 20px;
@@ -201,7 +201,7 @@ h2 {
   border-bottom: 2px solid #00a8e1;
 }
 .navbar-pf .navbar-selector > li.date-range .input span {
-  color: #919090;
+  color: #999999;
   font-size: 11px;
 }
 .navbar-pf .navbar-selector > li.date-range.open .input {
@@ -259,7 +259,7 @@ h2 {
   width: 100%;
 }
 .sidebar-pf-dark .nav-pills > li.active > a {
-  background: #393f44!important;
+  background: #393f44 !important;
   border-color: inherit!important;
   border-left-color: #00a8e1 !important;
   border-top-color: transparent!important;

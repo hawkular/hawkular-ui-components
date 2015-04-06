@@ -7,6 +7,7 @@
 @body-bg:                                                           #f5f5f5;
 @sidebar-pf-dark-bg:                                                #292e34;
 @sidebar-pf-dark-border-color:                                      #262626;
+@sidebar-pf-dark-bg-active:                                         #393f44;
 @danger-bg:                                                         rgba(204,0,0,0.07);
 
 //navbar changes to make it taller
@@ -18,7 +19,8 @@
   }
 
   .navbar-pf .navbar-utility  > li > a {
-  padding: 12px 10px;}
+    padding: 12px 10px;
+  }
 
   .navbar-pf .navbar-utility li.dropdown > .dropdown-toggle .pficon-user{
     top: 12px;
@@ -99,7 +101,7 @@ section > h1 {
 
 .sc-insert-url.container {
   margin-top: 29px;
-  padding-top: 30px;
+  padding-top: @grid-gutter-width/4*3;
 }
 
 .sec-urls-list {
@@ -241,7 +243,7 @@ h2 {
     }
 
     &.context > a {
-      border-left: 1px solid #3e3e3e;
+      border-left: 1px solid @gray-dark;
       font-weight: normal;
       padding-right: 46px;
 
@@ -261,8 +263,8 @@ h2 {
       }
 
       .input {
-        border-bottom: 1px solid #383838;
-        color: #dbdada;
+        border-bottom: 1px solid @gray-dark;
+        color: @gray-lighter;
         display: inline-block;
         font-size: 13px;
         margin-right: @grid-gutter-width/2;
@@ -272,11 +274,10 @@ h2 {
         &:hover {
           cursor: pointer;
           border-bottom: 2px solid @brand-primary;
-
         }
 
         span {
-          color: #919090;
+          color: @gray-light;
           font-size: 11px;
         }
       }
@@ -337,7 +338,7 @@ h2 {
       text-align: center;
 
       &:hover {
-        background-color: #393f44;
+        background-color: @sidebar-pf-dark-bg-active;
         border-bottom-color: inherit;
         border-top-color: transparent;
       }
@@ -356,7 +357,7 @@ h2 {
     }
 
     &.active > a {
-      background: #393f44!important;
+      background: @sidebar-pf-dark-bg-active!important;
       border-color: inherit!important;
       border-left-color: @brand-primary!important;
       border-top-color: transparent!important;
@@ -464,7 +465,7 @@ h2 {
   
   .time {
     position: absolute;
-    right: 50px;
+    right: @grid-gutter-width/4*5;
     top: -8px;
     
     .fa {
@@ -483,13 +484,13 @@ h2 {
 
 hr.panel-expanded {
   border-color: @table-border-color;
-  margin: 15px 30px 20px;
+  margin: @grid-gutter-width/4*1.5 @grid-gutter-width/4*3 @grid-gutter-width/2;
 }
 
 .panel-expanded-content {
   color: @gray;
-  padding-bottom: 20px;
-  padding-top: 15px;
+  padding-bottom: @grid-gutter-width/2;
+  padding-top: @grid-gutter-width/4*1.5;
   
   .summary-item {
     border-right-color: @table-border-color;
@@ -515,7 +516,7 @@ hr.panel-expanded {
   
   .top-area {
     height: 40px;
-    margin-bottom: 10px;
+    margin-bottom: @grid-gutter-width/4;
     
     .data {
       line-height: 40px;
@@ -729,7 +730,7 @@ p.info-top {
     > div,
     > span {
       float: left;
-      margin-right: 10px;
+      margin-right: @grid-gutter-width/4;
     }
     
     .between-inputs {
@@ -863,3 +864,4 @@ p.info-top {
     margin-right: 35px;
   }
 }
+
