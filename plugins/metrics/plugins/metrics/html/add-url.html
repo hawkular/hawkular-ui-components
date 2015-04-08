@@ -7,12 +7,12 @@
       <form class="form-horizontal add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
         <div class="form-group input">
           <div class="col-lg-6 col-sm-8 col-xs-12 align-center">
-            <div class="input-group" ng-class="{'input-group-lg': vm.resourceList.length === 0}">
+            <div class="input-group input-group-lg">
               <input type="url" class="form-control" name="resourceUrl" ng-model="vm.resourceUrl"
                      ng-model-options="{ updateOn: 'default blur'}"
                      placeholder="Enter a website URL (e.g.: http://www.website.com)" required>
               <span class="input-group-btn">
-                <button class="btn btn-primary" ng-class="{'btn-lg': vm.resourceList.length === 0}" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
+                <button class="btn btn-primary" class="btn-lg" type="submit" ng-disabled="addUrlForm.$invalid || vm.addProgress">
                  <div ng-show="vm.addProgress" class="spinner spinner-sm"></div>
                 Add URL
                 </button>
