@@ -37,5 +37,15 @@ module HawkularAccounts {
         //HawtioNav.add(accountsTab);
     }]);
 
+    _module.run(['$rootScope', 'userDetails', ($rootScope, userDetails) => {
+        $rootScope.userDetails = userDetails;
+        $rootScope.userDetailsStr = angular.toJson(userDetails, true);
+    }]);
+
+    hawtioPluginLoader.registerPreBootstrapTask((next) => {
+        KeycloakConfig = "/keycloak.json";
+        next();
+    }, true);
+
     hawtioPluginLoader.addModule(HawkularAccounts.pluginName);
 }
