@@ -28,6 +28,10 @@ module.exports = function(gulp, config, pluginName){
     tslint = require('gulp-tslint'),
     tslintRules = require('../tslint.json');
 
+  // For error reporting
+  var nota = require('../node_modules/gulp-notify/node_modules/node-notifier');
+  var gutil = require('../node_modules/gulp-typescript/node_modules/gulp-util');
+
   var plugins = gulpLoadPlugins({});
   var isWatch = false;
 
@@ -37,7 +41,6 @@ module.exports = function(gulp, config, pluginName){
       .pipe(map(function(buf, filename) {
         var textContent = buf.toString();
         var newTextContent = textContent.replace(/"\.\.\/libs/gm, '"../../../libs');
-        // console.log("Filename: ", filename, " old: ", textContent, " new:", newTextContent);
         return newTextContent;
       }))
       .pipe(gulp.dest('libs'));
@@ -47,9 +50,35 @@ module.exports = function(gulp, config, pluginName){
     del(['.tmp/' + pluginName + 'defs.d.ts']);
   });
 
-  //gulp.task('tsc-' + pluginName, ['clean-defs'], function() {
+  function notificationReporter(fullFilename) {
+    if (fullFilename === void 0) { fullFilename = false; }
+    return {
+      error: function (error) {
+        nota.notify({title:'TypeScript Error', message: error.diagnostic.code + ' ' + error.diagnostic.messageText},
+        function(){
+          console.error('[' + gutil.colors.gray('gulp-typescript') + '] ' + gutil.colors.bgRed(error.diagnostic.code + '') + ' ' + gutil.colors.red(error.diagnostic.messageText));
+          if (error.tsFile) {
+            console.error('> ' + gutil.colors.gray('file: ') + (fullFilename ? error.fullFilename : error.relativeFilename) + gutil.colors.gray(':'));
+            var lines = error.tsFile.text.split(/(\r\n|\r|\n)/);
+            var logLine = function (lineIndex, errorStart, errorEnd) {
+              var line = lines[lineIndex - 1];
+              if (errorEnd === undefined)
+                errorEnd = line.length;
+              console.error('> ' + gutil.colors.gray('[' + lineIndex + '] ') + line.substring(0, errorStart - 1) + gutil.colors.red(line.substring(errorStart - 1, errorEnd)) + line.substring(errorEnd));
+            };
+            for (var i = error.startPosition.line; i <= error.endPosition.line; i++) {
+              logLine(i, i === error.startPosition.line ? error.startPosition.character : 0, i === error.endPosition.line ? error.endPosition.character : undefined);
+            }
+          }
+          if(!isWatch) {
+            process.exit(1);
+          }
+        });
+      }
+    };
+  }
+
   gulp.task('tsc-' + pluginName, function() {
-    var wasError = false;
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts(pluginName))
       .pipe(plugins.sourcemaps.init())
@@ -60,24 +89,10 @@ module.exports = function(gulp, config, pluginName){
         noExternalResolve: false,
         removeComments: true,
         noEmitOnError: false
-      }), {}, plugins.typescript.reporter.fullReporter(true)))
-      .on('error', function(){
-        wasError = true;
-      })
-      .on('end', function(){
-        if(wasError && !isWatch) {
-          throw 'Error in one or more TypeScript files. The build is stopped.'
-        }
-      });
+      }), {}, notificationReporter(true)));
 
     return eventStream.merge(
       tsResult.js
-        .pipe(plugins.plumber({
-          handleError: function (err) {
-            console.log(err);
-            this.emit('end');
-          }
-        }))
         .pipe(plugins.concat('compiled.js'))
         .pipe(plugins.sourcemaps.write())
         .pipe(gulp.dest('.tmp/' + pluginName + '/')),
@@ -94,7 +109,7 @@ module.exports = function(gulp, config, pluginName){
   });
 
   gulp.task('tslint-' + pluginName, ['tsc-' + pluginName], function(){
-    gulp.src(config.ts(pluginName))
+    return gulp.src(config.ts(pluginName))
       .pipe(tslint(config.tsLintOptions))
       .pipe(tslint.report('verbose'));
   });
@@ -157,6 +172,10 @@ module.exports = function(gulp, config, pluginName){
     del(['.tmp/' + pluginName + 'templates.js', '.tmp/' + pluginName + 'compiled.js']);
   });
 
+  gulp.task('set-watch', function() {
+    isWatch = true;
+  });
+
   gulp.task('watch-' + pluginName, ['build-' + pluginName], function() {
 
     isWatch = true;
@@ -193,7 +212,7 @@ module.exports = function(gulp, config, pluginName){
     'clean-' + pluginName], function() {
     var libPath = path.resolve(__dirname, '../libs');
 
-    gulp.src([libPath])
+    return gulp.src([libPath])
       .pipe(plugins.symlink('.tmp/gulp-connect-server/libs', { force: true }));
 
   });
@@ -202,14 +221,14 @@ module.exports = function(gulp, config, pluginName){
     'clean-' + pluginName], function() {
     var distPath = path.resolve(__dirname, '../dist');
 
-    gulp.src([distPath])
+    return gulp.src([distPath])
       .pipe(plugins.symlink('.tmp/gulp-connect-server/dist', { force: true }));
   });
 
   gulp.task('bower-' + pluginName, function () {
     var indexPath = path.resolve(__dirname, '../plugins/' + pluginName + '/index.html');
 
-    gulp.src(indexPath)
+    return gulp.src(indexPath)
       .pipe(wiredep())
       .pipe(gulp.dest('.tmp/gulp-connect-server/'));
   });
@@ -217,12 +236,15 @@ module.exports = function(gulp, config, pluginName){
   gulp.task('assets-' + pluginName, function () {
     var assets = path.resolve(__dirname, '../plugins/' + pluginName + '/*.json');
 
-    gulp.src(assets)
+    return gulp.src(assets)
       .pipe(gulp.dest('.tmp/gulp-connect-server/'));
   });
 
-  gulp.task('connect-' + pluginName, ['connect-prepare-libs-' + pluginName, 'connect-prepare-dist-' + pluginName, 'bower-' + pluginName, 'assets-' + pluginName, 'watch-' + pluginName], function() {
+  gulp.task('connect-' + pluginName, ['set-watch', 'connect-prepare-libs-' + pluginName, 'connect-prepare-dist-' + pluginName, 'bower-' + pluginName, 'assets-' + pluginName, 'watch-' + pluginName], function() {
     var staticPath = path.resolve(__dirname, '../.tmp/gulp-connect-server/');
+
+    // Set isWatch = true to not break the build on tsc errors
+    isWatch = true;
 
     plugins.connect.server({
       root: staticPath,
