@@ -38,11 +38,12 @@ module HawkularMetrics {
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
 
-    public static $inject = ['HawkularAlert', '$q', '$log'];
+    public static $inject = ['HawkularAlert', '$q', '$log', '$moment'];
 
     constructor(private HawkularAlert: any,
                 private $q: ng.IQService,
-                private $log: ng.ILogService) {
+                private $log: ng.ILogService,
+                private $moment: any) {
     }
 
     public createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void> {
@@ -207,6 +208,8 @@ module HawkularMetrics {
 
       return this.HawkularAlert.Alert.query({triggerIds:metricId+'_trigger_avail,' + metricId+'_trigger_thres'}).$promise.then((serverAlerts: any) => {
 
+        var momentNow = this.$moment();
+
         this.$log.debug('querying data finished', serverAlerts);
 
         for (var i = 0; i < serverAlerts.length; i++) {
@@ -233,6 +236,15 @@ module HawkularMetrics {
 
             if (!consoleAlert.type && eval.condition.type) {
               consoleAlert.type = eval.condition.type;
+            }
+
+            var momentAlert = this.$moment(consoleAlert.end);
+
+            if (momentAlert.year() === momentNow.year()) {
+              consoleAlert.isThisYear = true;
+              if (momentAlert.dayOfYear() === momentNow.dayOfYear()) {
+                consoleAlert.isToday = true;
+              }
             }
 
             sum += eval.value;
