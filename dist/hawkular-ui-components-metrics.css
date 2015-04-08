@@ -309,6 +309,7 @@ h2 {
 }
 .url-info .summary-item .btn-link.trigger {
   color: #333333;
+  display: block;
   margin-left: -6px;
 }
 .url-info .summary-item .btn-link.trigger .fa {
