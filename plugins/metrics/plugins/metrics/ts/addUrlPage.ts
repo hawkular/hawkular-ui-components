@@ -125,7 +125,8 @@ module HawkularMetrics {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving threshold trigger.');
         }).then(()=> {
           toastr.info('Your data is being collected. Please be patient (should be about another minute).');
-          this.$location.url('/hawkular/' + metricId);
+          //this.$location.url('/hawkular/' + metricId);
+          this.getResourceList();
         }, (error)=> {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving availability trigger.');
         }).finally(()=> {
