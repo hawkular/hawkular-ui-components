@@ -11,7 +11,10 @@
         {{alert.start | date:'medium' }}
       </div>
       <div class="event">
-        Server <strong>down</strong> for {{(alert.end - alert.start)/1000 }} seconds (until {{alert.end | date:'medium' }}).
+        Server <strong>down</strong> for {{(alert.end - alert.start)/1000 | number: 0}} seconds (until
+        <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+        <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+        <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
       </div>
     </div>
 
@@ -23,8 +26,11 @@
         {{alert.start | date:'medium' }}
       </div>
       <div class="event">
-        <strong>Response time</strong> was above the threshold ({{alert.threshold}}) for {{(alert.end - alert.start)/1000 }} seconds (until {{alert.end | date:'medium' }}).
-        The average value was {{alert.avg}}.
+        <strong>Response time</strong> was above the threshold ({{alert.threshold | number: 0}} ms) for {{(alert.end - alert.start) / 1000.0 | number: 0}} seconds (until
+        <span ng-if="alert.isThisYear && alert.isToday">{{alert.end | date:'shortTime' }}).</span>
+        <span ng-if="alert.isThisYear && !alert.isToday">{{alert.end | date:'MMM d, h:mm:ss a' }}).</span>
+        <span ng-if="!alert.isThisYear">{{alert.end | date:'medium' }}).</span>
+        The average response time was {{alert.avg  | number: 0}} ms.
       </div>
     </div>
 
