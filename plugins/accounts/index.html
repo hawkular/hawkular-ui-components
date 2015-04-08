@@ -6,7 +6,6 @@
     <base href='/'>
     <meta charset="UTF8">
 
-    <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css" />
 
     <!-- bower:css -->
@@ -21,7 +20,6 @@
     <!-- bower:js -->
     <!-- endbower -->
 
-    <script src="libs/bootstrap/dist/js/bootstrap.js"></script>
     <script src="libs/patternfly/dist/js/patternfly.js"></script>
 
 </head>
@@ -38,24 +36,5 @@
 
 <!-- add any scripts under dist/ here -->
 <script src="dist/hawkular-ui-components-accounts.js"></script>
-
-<script type="text/javascript">
-  window.keycloakReady = false;
-  window.keycloak = Keycloak("/keycloak.json");
-
-  window.keycloak.onAuthLogout = function() {
-    location.reload();
-  };
-
-  window.keycloak.onReady = function(authenticated) {
-    window.keycloakReady = true;
-  };
-
-  window.keycloak.init({ onLoad: 'login-required' }).error(function () {
-    alert("Couldn't log you in. Sorry.");
-    window.location.reload();
-  });
-</script>
-
 </body>
 </html>
