@@ -86,6 +86,7 @@ module HawkularMetrics {
       /// Add the Resource
       this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
         .then((newResource) => {
+          this.getResourceList();
           // we now have a resourceId from this call
           metricId = newResource.id;
           console.dir(newResource);
@@ -126,10 +127,11 @@ module HawkularMetrics {
         }).then(()=> {
           toastr.info('Your data is being collected. Please be patient (should be about another minute).');
           //this.$location.url('/hawkular/' + metricId);
-          this.getResourceList();
         }, (error)=> {
           return this.HawkularErrorManager.errorHandler(error, 'Error saving availability trigger.');
         }).finally(()=> {
+          this.resourceUrl = this.httpUriPart;
+          this.$scope.addUrlForm.$setPristine();
           this.addProgress = false;
         });
     }
