@@ -13,10 +13,14 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 
+/// <reference path="metricsTypes.ts"/>
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 
 module HawkularMetrics {
+
+
+//
 
 
   export interface IAvailabilitySummary {
@@ -29,7 +33,6 @@ module HawkularMetrics {
     empty:boolean;
   }
 
-
   export class MetricsAvailabilityController {
     /// for minification only
     public static  $inject = ['$scope', '$interval', '$log', 'HawkularMetric', '$routeParams'];
@@ -39,25 +42,25 @@ module HawkularMetrics {
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
                 private $routeParams:any,
-                public startTimeStamp:number,
-                public endTimeStamp:number) {
+                public startTimeStamp:TimestampInMillis,
+                public endTimeStamp:TimestampInMillis) {
       $scope.vm = this;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
       this.endTimeStamp = +moment();
 
-      this.metricId = $scope.hkParams.resourceId;
+      this.resourceId = $scope.hkParams.resourceId;
 
-      $scope.$watch('hkParams.resourceId', (resourceId) => {
+      $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
-          this.metricId = resourceId;
-          this.refreshAvailPageNow(this.getRawMetricId());
+          this.resourceId = resourceId;
+          this.refreshAvailPageNow(this.getResourceId());
         }
       });
 
       $scope.$on('RefreshAvailabilityChart', (event) => {
-        this.refreshAvailPageNow(this.getRawMetricId());
+        this.refreshAvailPageNow(this.getResourceId());
       });
 
       this.autoRefreshAvailability(20);
@@ -65,7 +68,7 @@ module HawkularMetrics {
 
     private availabilityDataPoints:IChartDataPoint[] = [];
     private autoRefreshPromise:ng.IPromise<number>;
-    private metricId;
+    private resourceId:ResourceId;
 
     uptimeRatio = 0;
     downtimeDuration = 0;
@@ -73,13 +76,13 @@ module HawkularMetrics {
     downtimeCount = 0;
     empty = true;
 
-    refreshAvailPageNow(rawMetricId:string, startTime?:number):void {
+    refreshAvailPageNow(resourceId:ResourceId, startTime?:number):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
       this.endTimeStamp = this.$scope.hkEndTimestamp;
-      if (rawMetricId) {
-        this.refreshSummaryAvailabilityData(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
-        this.refreshAvailDataForTimestamp(rawMetricId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+      if (resourceId) {
+        this.refreshSummaryAvailabilityData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshAvailDataForTimestamp(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       }
     }
 
@@ -88,17 +91,17 @@ module HawkularMetrics {
       toastr.info('Canceling Auto Refresh Availability');
     }
 
-    autoRefreshAvailability(intervalInSeconds:number):void {
+    autoRefreshAvailability(intervalInSeconds:TimestampInMillis):void {
       this.endTimeStamp = this.$scope.hkEndTimestamp;
       this.startTimeStamp = this.$scope.hkStartTimestamp;
-      this.refreshAvailPageNow(this.getRawMetricId());
+      this.refreshAvailPageNow(this.getResourceId());
       this.autoRefreshPromise = this.$interval(()  => {
-        console.info('Autorefresh Availabilty for: ' + this.getRawMetricId());
+        console.info('Autorefresh Availabilty for: ' + this.getResourceId());
         this.$scope.hkEndTimestamp = +moment();
         this.endTimeStamp = this.$scope.hkEndTimestamp;
         this.$scope.hkStartTimestamp = +moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds');
         this.startTimeStamp = this.$scope.hkStartTimestamp;
-        this.refreshAvailPageNow(this.getRawMetricId());
+        this.refreshAvailPageNow(this.getResourceId());
       }, intervalInSeconds * 1000);
 
       this.$scope.$on('$destroy', () => {
@@ -111,7 +114,7 @@ module HawkularMetrics {
       ///toastr.warning('No Data found for id: ' + id);
     }
 
-    refreshSummaryAvailabilityData(metricId:string, startTime:number, endTime:number):void {
+    refreshSummaryAvailabilityData(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
@@ -143,12 +146,12 @@ module HawkularMetrics {
     }
 
 
-    getRawMetricId():string {
-      return this.metricId;
+    getResourceId():ResourceId {
+      return this.resourceId;
     }
 
 
-    refreshAvailDataForTimestamp(metricId:string, startTime:number, endTime:number):void {
+    refreshAvailDataForTimestamp(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
