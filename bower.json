@@ -37,7 +37,7 @@
     "hawtio-core": "2.0.11",
     "hawtio-template-cache": "2.0.2",
     "hawtio-utilities": "2.0.21",
-    "hawtio-oauth": "2.0.0",
+    "hawtio-oauth": "2.0.1",
     "lodash": "3.2.0",
     "moment": "2.9.0",
     "toastr": "2.1.1",
