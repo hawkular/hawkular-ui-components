@@ -126,12 +126,24 @@ module.exports = function(gulp, config, pluginName){
       .pipe(gulp.dest(config.dist));
   });
 
-  gulp.task('concat-' + pluginName, ['template-' + pluginName], function() {
+  gulp.task('git-sha-' + pluginName, ['template-' + pluginName],function(){
+    return plugins.git.exec({args : 'log -n 1 --oneline'}, function (err, stdout) {
+      if (err) throw err;
+
+      var versionFile = '.tmp/' + pluginName + 'version.js';
+      var gitSha = stdout.slice(0,-1);
+      var jsString = 'if (typeof HawkularComponentsVersions !== \'undefined\') { HawkularComponentsVersions.push({name:\''+pluginName+'\', version:\'' + gitSha + '\'})} else {HawkularComponentsVersions = [{name:\''+pluginName+'\', version:\'' + gitSha + '\'}]};';
+      fs.writeFileSync(versionFile, jsString);
+    });
+  });
+
+  gulp.task('concat-' + pluginName, ['git-sha-' + pluginName, 'template-' + pluginName], function() {
     var licenceFile = '.tmp/licence.txt';
     fs.writeFileSync(licenceFile, tslintRules.rules['license-header'][1]);
 
     return gulp.src([
       licenceFile,
+      '.tmp/' + pluginName + 'version.js',
       '.tmp/' + pluginName + '/compiled.js',
       '.tmp/' + pluginName + '/templates.js'])
       .pipe(plugins.sourcemaps.init({loadMaps: true}))
