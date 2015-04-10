@@ -80,7 +80,8 @@ module HawkularMetrics {
         }}).
         when('/metrics/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
         when('/metrics/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
-        when('/metrics/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'});
+        when('/metrics/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
+        otherwise({redirectTo: '/metrics/add-url'});
   }]);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);
