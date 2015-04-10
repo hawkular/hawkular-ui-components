@@ -1,7 +1,7 @@
 <div ng-controller="HawkularMetrics.AddUrlController as vm">
   <div class="container text-center sc-insert-url" ng-class="{'sec-urls-list': vm.resourceList.length === 0}">
     <div ng-class="{'fade-in': vm.resourceList.length === 0}">
-      <h1>Hello {{username}}!</h1>
+      <h1>Hello {{userDetails.firstName}}!</h1>
       <i class="fa fa-line-chart" ng-show="vm.resourceList.length === 0"></i>
       <h2 ng-show="vm.resourceList.length === 0">Collect metrics from a website that you want to monitor.</h2>
       <form class="form-horizontal add-url" name="addUrlForm" role="form" novalidate ng-submit="vm.addUrl(vm.resourceUrl)">
