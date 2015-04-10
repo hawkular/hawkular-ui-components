@@ -126,14 +126,15 @@ module.exports = function(gulp, config, pluginName){
       .pipe(gulp.dest(config.dist));
   });
 
-  gulp.task('git-sha-' + pluginName, ['template-' + pluginName],function(){
-    return plugins.git.exec({args : 'log -n 1 --oneline'}, function (err, stdout) {
-      if (err) throw err;
 
+  gulp.task('git-sha-' + pluginName, ['template-' + pluginName], function(cb) {
+    plugins.git.exec({args : 'log -n 1 --oneline'}, function (err, stdout) {
+      if (err) throw err;
       var versionFile = '.tmp/' + pluginName + 'version.js';
-      var gitSha = stdout.slice(0,-1);
-      var jsString = 'if (typeof HawkularComponentsVersions !== \'undefined\') { HawkularComponentsVersions.push({name:\''+pluginName+'\', version:\'' + gitSha + '\'})} else {HawkularComponentsVersions = [{name:\''+pluginName+'\', version:\'' + gitSha + '\'}]};';
+      var gitSha = stdout.slice(0, -1);
+      var jsString = 'if (typeof HawkularComponentsVersions !== \'undefined\') { HawkularComponentsVersions.push({name:\'' + pluginName + '\', version:\'' + gitSha + '\'})} else {HawkularComponentsVersions = [{name:\'' + pluginName + '\', version:\'' + gitSha + '\'}]};';
       fs.writeFileSync(versionFile, jsString);
+      cb();
     });
   });
 
