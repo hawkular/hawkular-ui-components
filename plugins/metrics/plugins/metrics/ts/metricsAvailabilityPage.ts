@@ -159,11 +159,11 @@ module HawkularMetrics {
           availabilityId: metricId,
           start: startTime,
           end: endTime,
-          buckets: 60
+          distinct: true
         }).$promise
           .then((response) => {
 
-            console.info("Availability Data: ");
+            console.log("Availability Data: ");
             console.dir(response);
             this.availabilityDataPoints = response;
 

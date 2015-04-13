@@ -195,13 +195,14 @@ module HawkularMetrics {
         startTime = this.startTimeStamp;
       }
 
+
       if (metricId) {
         this.HawkularMetric.NumericMetricData.queryMetrics({
           tenantId: globalTenantId,
           numericId: metricId,
           start: startTime,
           end: endTime,
-          buckets: 60
+          buckets: 120
         }).$promise
           .then((response) => {
 

@@ -30,24 +30,5 @@ module HawkularMetrics {
   /// @todo: this will go away once we have KeyCloak integration
   export var globalTenantId = "test";
 
-  export var globalEnvironmentId = "test";
-
-  export var globalChartTimeRange:ChartTimeRange;
-
-  export class ChartTimeRange {
-    startTimestamp:number;
-    endTimestamp:number;
-
-    constructor(private initialHoursDifference:number) {
-      /// just set a default if no ctors given
-      this.init();
-    }
-
-    init() {
-      this.endTimestamp = moment().valueOf();
-      this.startTimestamp = moment().subtract(this.initialHoursDifference, 'hours').valueOf();
-    }
-
-  }
 
 }

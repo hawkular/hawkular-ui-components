@@ -31,11 +31,11 @@
     </div>
 
     <h2>Avail points: {{vm.availabilityDataPoints.length}}</h2>
-    <hawkular-chart
-      availData="{{vm.availabilityDataPoints}}"
+    <availability-chart
+      data="{{vm.availabilityDataPoints}}"
       chart-type="availability"
       chart-height="250">
-    </hawkular-chart>
+    </availability-chart>
   </div>
 
 </section>
