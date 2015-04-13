@@ -72,7 +72,7 @@ module HawkularMetrics {
 
       var resource = {
         resourceTypeId: 'URL',
-        id: md5.createHash(url || ''),
+        id: this.md5.createHash(url || ''),
         properties: {
           url: url
         }
