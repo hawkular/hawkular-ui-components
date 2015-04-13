@@ -40,10 +40,10 @@
       </div>
     </div>
 
-    <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList | orderBy:'parameters.url':vm.reverse">
+    <div class="panel panel-default summary url-info" ng-repeat="res in vm.resourceList | orderBy:'properties.url':vm.reverse">
       <div class="row row-table">
         <div class="col-md-4 summary-item">
-          <span class="url-link"><a href="/hawkular/{{res.id}}">{{res.parameters.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
+          <span class="url-link"><a href="/hawkular/{{res.id}}">{{res.properties.url}}</a><i class="fa fa-flag" tooltip="Some alert happened" tooltip-trigger tooltip-placement="top" ng-show="(vm.alertList|filter:{triggerId: (res.id + '_trigger')}).length > 0"></i></span>
           <button class="btn btn-link delete" tooltip="Remove" tooltip-trigger tooltip-placement="top" ng-click="vm.deleteResource(res)"><i class="fa fa-trash-o"></i></button>
           <button class="btn btn-link trigger" ng-show="res.responseTime.length > 0" tooltip="Expand/collapse" tooltip-trigger tooltip-placement="top" ng-click="vm.resourceList.expanded[res.id] = !vm.resourceList.expanded[res.id]"><i class="fa" ng-class="vm.resourceList.expanded[res.id] ? 'fa-minus-square-o' : 'fa-plus-square-o'"></i>Last 24 hours</button>
         </div>

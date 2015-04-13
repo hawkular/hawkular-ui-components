@@ -66,7 +66,7 @@ module HawkularMetrics {
         when('/metrics/response-time', {templateUrl: 'plugins/metrics/html/response-time.html',
         resolve: {
           hkResourceList : function($filter, $location, $q, HawkularInventory) {
-            var resPromise = HawkularInventory.Resource.query({tenantId: globalTenantId}).$promise;
+            var resPromise = HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}).$promise;
             resPromise.then(function(hkResourceList){
               $location.path('/metrics/response-time/' + hkResourceList[0].id);
             }, function(){

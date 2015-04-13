@@ -31,7 +31,7 @@
                     <h3 class="panel-title"><i class="fa fa-cube"></i> Resource <span class="pull-right" ng-show="tenantId && resources"><a href="#" ng-click="showTable = !showTable"><span ng-hide="showTable">Show</span><span ng-show="showTable">Hide</span> all</a></span></h3>
                 </div>
                 <div class="panel-body">
-                    <select class="form-control" ng-options="resource.id as resource.parameters.url + ' (' +resource.id + ')' for resource in resources" ng-model="resourceId" ng-disabled="!tenantId || !resources" ng-hide="resources.length === 0" ng-change="queryMetrics()"></select>
+                    <select class="form-control" ng-options="resource.id as resource.properties.url + ' (' +resource.id + ')' for resource in resources" ng-model="resourceId" ng-disabled="!tenantId || !resources" ng-hide="resources.length === 0" ng-change="queryMetrics()"></select>
                     <span ng-show="resources.length === 0"><i class="fa fa-warning"></i> No Resources Available</span>
                 </div>
             </div>
@@ -62,14 +62,14 @@
                 <thead>
                     <th>Resource ID</th>
                     <th>Resource Type</th>
-                    <th>Parameters</th>
+                    <th>Properties</th>
                     <th>Metrics</th>
                 </thead>
                 <tr ng-repeat="resource in resources">
                     <td>{{resource.id}}</td>
-                    <td>{{resource.type}}</td>
+                    <td>{{resource.resourceTypeId}}</td>
                     <td>
-                        <dl class="dl-horizontal" ng-repeat="(name, value) in resource.parameters">
+                        <dl class="dl-horizontal" ng-repeat="(name, value) in resource.properties">
                           <dt>{{name}}</dt>
                           <dd>{{value}}</dd>
                         </dl>
