@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager','$q', 'md5'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -42,6 +42,7 @@ module HawkularMetrics {
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $q: ng.IQService,
+                private md5: any,
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
@@ -70,9 +71,9 @@ module HawkularMetrics {
       this.addProgress = true;
 
       var resource = {
-        type: 'URL',
-        id: '',
-        parameters: {
+        resourceTypeId: 'URL',
+        id: this.md5.createHash(url || ''),
+        properties: {
           url: url
         }
       };
@@ -84,7 +85,7 @@ module HawkularMetrics {
       var defaultEmail = this.$rootScope['user_email'] ? this.$rootScope['user_email'] : 'myemail@company.com';
 
       /// Add the Resource
-      this.HawkularInventory.Resource.save({tenantId: globalTenantId}, resource).$promise
+      this.HawkularInventory.Resource.save({tenantId: globalTenantId, environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
           this.getResourceList();
           // we now have a resourceId from this call
@@ -137,7 +138,7 @@ module HawkularMetrics {
     }
 
     getResourceList():any {
-      this.HawkularInventory.Resource.query({tenantId: globalTenantId}, (aResourceList) => {
+      this.HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (aResourceList) => {
         // FIXME: hack.. make expanded out of list
         var expanded = this.resourceList ? this.resourceList.expanded : [];
         aResourceList.expanded = expanded;
@@ -210,11 +211,12 @@ module HawkularMetrics {
     deleteResource() {
       this.HawkularInventory.Resource.delete({
         tenantId: globalTenantId,
+        environmentId: globalEnvironmentId,
         resourceId: this.resource.id
       }).$promise.then((res) => {
           toastr.info('The site ' + this.resource.parameters.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
-        });
+      });
     }
 
     cancel() {

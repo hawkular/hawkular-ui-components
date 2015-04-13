@@ -17,12 +17,14 @@
 module Inventory {
 
   export var InventoryController = _module.controller("Inventory.InventoryController", ['$scope', '$rootScope', 'HawkularInventory', 'HawkularMetric' ,($scope, $rootScope, hkInventory, hkMetric) => {
+      // hard coded for now
+      var envId = 'prod';
 
       $scope.queryResources = function() {
         if(this.tenantId) {
-            this.resources = hkInventory.Resource.query({tenantId: this.tenantId, type: 'URL'}, function(data) {
+            this.resources = hkInventory.Resource.query({tenantId: this.tenantId, environmentId: envId, type: 'URL'}, function(data) {
                 angular.forEach(data, function(value) {
-                    value.metrics = hkInventory.Metric.query({tenantId: $scope.tenantId, resourceId: value.id});
+                    value.metrics = hkInventory.ResourceMetric.query({tenantId: $scope.tenantId, environmentId: envId, resourceId: value.id});
                 });
             });
         }
@@ -30,7 +32,7 @@ module Inventory {
 
       $scope.queryMetrics = function() {
         if(this.tenantId && this.resourceId) {
-            this.metrics = hkInventory.Metric.query({tenantId: this.tenantId, resourceId: this.resourceId});
+            this.metrics = hkInventory.ResourceMetric.query({tenantId: this.tenantId, environmentId: envId, resourceId: this.resourceId});
         }
       };
 

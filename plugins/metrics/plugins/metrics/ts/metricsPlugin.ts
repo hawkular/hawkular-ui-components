@@ -19,7 +19,7 @@
 module HawkularMetrics {
 
   export var _module = angular.module(HawkularMetrics.pluginName, ['ngResource', 'ui.select', 'hawkularCharts',
-    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs']);
+    'hawkular.services', 'ui.bootstrap', 'topbar', 'patternfly.select', 'angular-momentjs', 'angular-md5']);
 
   var metricsTab:any;
 

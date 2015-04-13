@@ -30,6 +30,8 @@ module HawkularMetrics {
   /// @todo: this will go away once we have KeyCloak integration
   export var globalTenantId = "test";
 
+  export var globalEnvironmentId = "test";
+
   export var globalChartTimeRange:ChartTimeRange;
 
   export class ChartTimeRange {
