@@ -70,9 +70,10 @@ module HawkularMetrics {
     addUrl(url:string):void {
       this.addProgress = true;
 
+      var resourceId = this.md5.createHash(url || '');
       var resource = {
         resourceTypeId: 'URL',
-        id: this.md5.createHash(url || ''),
+        id: resourceId,
         properties: {
           url: url
         }
@@ -88,28 +89,41 @@ module HawkularMetrics {
       this.HawkularInventory.Resource.save({tenantId: globalTenantId, environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
           this.getResourceList();
-          // we now have a resourceId from this call
-          metricId = newResource.id;
+          metricId = resourceId;
           console.dir(newResource);
           this.$log.info('New Resource ID: ' + metricId + ' created.');
-          var metrics = [{
-            name: metricId + '.status.duration',
-            unit: 'MILLI_SECOND',
-            description: 'Response Time in ms.'
-          }, {
-            name: metricId + '.status.code',
-            unit: 'NONE',
-            description: 'Status Code'
-          }];
 
+          var metricsIds: string[] = [metricId + '.status.duration', metricId + '.status.code'];
+          var metrics = [{
+            name: metricsIds[0],
+            metricTypeId: 'status.duration.type',
+            properties: {
+              description: 'Response Time in ms.'
+            }
+          }, {
+            name: metricsIds[1],
+            metricTypeId: 'status.code.type',
+            properties: {
+              description: 'Status Code'
+            }
+          }];
 
           /// For right now we will just Register a couple of metrics automatically
           return this.HawkularInventory.Metric.save({
             tenantId: globalTenantId,
-            resourceId: newResource.id
-          }, metrics).$promise.then((newMetrics) => {
+            environmentId: globalEnvironmentId,
+            resourceId: resourceId
+          }, metrics[0]).$promise.then(this.HawkularInventory.Metric.save({
+            tenantId: globalTenantId,
+            environmentId: globalEnvironmentId,
+            resourceId: resourceId
+          }, metrics[1])).$promise.then(this.HawkularInventory.ResourceMetric.save({
+            tenantId: globalTenantId,
+            environmentId: globalEnvironmentId,
+            resourceId: resourceId
+          }, metricsIds)).$promise.then((newMetrics) => {
               // TODO: Add availability...
-            });
+          });
         }).then(()=> {
           // Find if a default email exists
           return this.HawkularAlertsManager.addEmailAction(defaultEmail);

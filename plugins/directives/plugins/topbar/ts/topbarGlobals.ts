@@ -24,4 +24,6 @@ module Topbar {
 
   export var globalTenantId = "test";
 
+  export var globalEnvironmentId = "test";
+
 }

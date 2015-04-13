@@ -4,12 +4,12 @@
   </li>
   <li class="context dropdown">
     <a href="#" class="additional-info" dropdown-toggle ng-hide="resources.length === 0">
-      {{selectedResource.parameters.url}}
+      {{selectedResource.properties.url}}
       <b class="caret"></b>
     </a>
     <ul class="dropdown-menu" role="menu">
-      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources | orderBy:'parameters.url'">
-        <a href="" ng-click="setSelection(resource)">{{resource.parameters.url}}</a>
+      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources | orderBy:'properties.url'">
+        <a href="" ng-click="setSelection(resource)">{{resource.properties.url}}</a>
       </li>
       <li class="divider"></li>
       <li>

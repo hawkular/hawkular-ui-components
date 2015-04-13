@@ -18,11 +18,11 @@ module Inventory {
 
   export var InventoryController = _module.controller("Inventory.InventoryController", ['$scope', '$rootScope', 'HawkularInventory', 'HawkularMetric' ,($scope, $rootScope, hkInventory, hkMetric) => {
       // hard coded for now
-      var envId = 'prod';
+      var envId = 'test';
 
       $scope.queryResources = function() {
         if(this.tenantId) {
-            this.resources = hkInventory.Resource.query({tenantId: this.tenantId, environmentId: envId, type: 'URL'}, function(data) {
+            this.resources = hkInventory.ResourceOfType.query({tenantId: this.tenantId, resourceTypeId: 'URL'}, function(data) {
                 angular.forEach(data, function(value) {
                     value.metrics = hkInventory.ResourceMetric.query({tenantId: $scope.tenantId, environmentId: envId, resourceId: value.id});
                 });
@@ -31,7 +31,7 @@ module Inventory {
       };
 
       $scope.queryMetrics = function() {
-        if(this.tenantId && this.resourceId) {
+        if(this.tenantId && this.resourceId && envId) {
             this.metrics = hkInventory.ResourceMetric.query({tenantId: this.tenantId, environmentId: envId, resourceId: this.resourceId});
         }
       };
