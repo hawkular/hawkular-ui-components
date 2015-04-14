@@ -29,7 +29,7 @@ module Topbar {
       // default time period set to 24 hours
       var defaultOffset = 1 * 60 * 60  * 1000;
 
-      HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
+      HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
         $rootScope.hkResources = resourceList;
         for (var i = 0; i < resourceList.length; i++) {
           if(resourceList[i].id === $rootScope.hkParams.resourceId) {
@@ -49,7 +49,7 @@ module Topbar {
         $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
         $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
 
-        HawkularInventory.Resource.query({tenantId: globalTenantId}, (resourceList) => {
+        HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
             if(resourceList[i].id === $rootScope.hkParams.resourceId) {
@@ -57,6 +57,7 @@ module Topbar {
             }
           }
         });
+
       }, this);
     }
 
