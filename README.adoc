@@ -49,4 +49,6 @@ To test your component in browser, use the respective connect task, i.e.:
 gulp connect-metrics
 ....
 
+If you see `Error: watch ENOSPC` on Fedora, increase the limit of files that can be 'watched' by typing `echo 524288 | sudo tee -a /proc/sys/fs/inotify/max_user_watches`
+
 For further detail the Hawt.io plugin structure is described https://github.com/hawtio/hawtio/blob/master/docs/Overview2dotX.md[here].
