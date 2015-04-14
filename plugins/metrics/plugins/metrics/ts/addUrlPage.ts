@@ -84,8 +84,9 @@ module HawkularMetrics {
       globalChartTimeRange = new ChartTimeRange(1);
       var metricId: string;
       var defaultEmail = this.$rootScope['user_email'] ? this.$rootScope['user_email'] : 'myemail@company.com';
+      var err = (error: any, msg: string): void => this.HawkularErrorManager.errorHandler(error, msg);
 
-      /// Add the Resource
+      /// Add the Resource and its metrics
       this.HawkularInventory.Resource.save({tenantId: globalTenantId, environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
           this.getResourceList();
@@ -95,56 +96,58 @@ module HawkularMetrics {
 
           var metricsIds: string[] = [metricId + '.status.duration', metricId + '.status.code'];
           var metrics = [{
-            name: metricsIds[0],
+            id: metricsIds[0],
             metricTypeId: 'status.duration.type',
             properties: {
               description: 'Response Time in ms.'
             }
           }, {
-            name: metricsIds[1],
+            id: metricsIds[1],
             metricTypeId: 'status.code.type',
             properties: {
               description: 'Status Code'
             }
           }];
 
+          var errMetric = (error: any) => err(error, 'Error saving metric.');
+          var createMetric = (metric: any) => 
+            this.HawkularInventory.Metric.save({
+              tenantId: globalTenantId,
+              environmentId: globalEnvironmentId
+            }, metric).$promise;
+
+          var associateResourceWithMetrics = () => 
+            this.HawkularInventory.ResourceMetric.save({
+              tenantId: globalTenantId,
+              environmentId: globalEnvironmentId,
+              resourceId: resourceId
+            }, metricsIds).$promise;
+
           /// For right now we will just Register a couple of metrics automatically
-          return this.HawkularInventory.Metric.save({
-            tenantId: globalTenantId,
-            environmentId: globalEnvironmentId,
-            resourceId: resourceId
-          }, metrics[0]).$promise.then(this.HawkularInventory.Metric.save({
-            tenantId: globalTenantId,
-            environmentId: globalEnvironmentId,
-            resourceId: resourceId
-          }, metrics[1])).$promise.then(this.HawkularInventory.ResourceMetric.save({
-            tenantId: globalTenantId,
-            environmentId: globalEnvironmentId,
-            resourceId: resourceId
-          }, metricsIds)).$promise.then((newMetrics) => {
-              // TODO: Add availability...
-          });
-        }).then(()=> {
-          // Find if a default email exists
-          return this.HawkularAlertsManager.addEmailAction(defaultEmail);
-        }, (error)=> {
-          return this.HawkularErrorManager.errorHandler(error, 'Error saving metric.');
-        }).then(()=> {
-          // Create threshold trigger for newly created metrics
-          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail);
-        }, (error)=> {
-          return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.');
-        }).then((alert)=> {
-          // Create availability trigger for newly created metrics
-          return this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail);
-        }, (error)=> {
-          return this.HawkularErrorManager.errorHandler(error, 'Error saving threshold trigger.');
-        }).then(()=> {
-          toastr.info('Your data is being collected. Please be patient (should be about another minute).');
-          //this.$location.url('/hawkular/' + metricId);
-        }, (error)=> {
-          return this.HawkularErrorManager.errorHandler(error, 'Error saving availability trigger.');
-        }).finally(()=> {
+          return createMetric(metrics[0])
+            .then(createMetric(metrics[1]), errMetric)
+            .then(associateResourceWithMetrics, errMetric)
+            .catch('Error associating metrics with resource.');
+            // .catch(err('Error adding availability.'));
+        })
+
+        // Find if a default email exists
+        .then(() => this.HawkularAlertsManager.addEmailAction(defaultEmail), 
+          (e) => err(e, 'Error during saving metrics.'))
+
+        // Create threshold trigger for newly created metrics
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail), 
+          (e) => err(e, 'Error saving email action.'))
+
+        // Create availability trigger for newly created metrics
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail), 
+          (e) => err(e, 'Error saving threshold trigger.'))
+
+        //this.$location.url('/hawkular/' + metricId);
+        .then(() => toastr.info('Your data is being collected. Please be patient (should be about another minute).'), 
+          (e) => err(e, 'Error saving availability trigger.'))
+
+        .finally(()=> {
           this.resourceUrl = this.httpUriPart;
           this.$scope.addUrlForm.$setPristine();
           this.addProgress = false;
