@@ -28,25 +28,35 @@
         </div>
       </div>
       <div ng-show="mas.trigger_thres.enabled">
-      <div class="form-group">
-        <label class="col-md-2 control-label" for="responseDuration">Threshold and duration</label>
-        <div class="col-md-8 inline-row">
-          <div class="input-group time">
-            <input type="text" class="form-control" placeholder="Threshold" ng-model="mas.trigger_thres_cond[0].threshold">
-            <span class="input-group-addon">ms</span>
+        <div class="form-group">
+          <label class="col-md-2 control-label" for="responseDuration">Threshold</label>
+          <div class="col-md-10 inline-row">
+            <div class="input-group time">
+              <input type="text" class=" form-control" placeholder="Threshold" ng-model="mas.trigger_thres_cond[0].threshold">
+              <span class=" input-group-addon">ms</span>
+            </div>
           </div>
-          <span class="between-inputs">for</span>
-          <div class="input-group duration">
-            <input type="text" class="form-control" placeholder="Duration" ng-model="mas.responseDuration"
-                   ng-change="mas.changeResponseTimeUnits()" id="responseDuration">
-            <select pf-select ng-model="mas.responseUnit" id="responseUnit"
-                    ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeResponseTimeUnits()"></select>
-          </div>
-          <span class="help-block">Send alerts when the response time is over
-            {{mas.trigger_thres_cond[0].threshold}} ms
-            for more than {{mas.responseDuration}} {{mas.timeUnitsDict[mas.responseUnit]}}.</span>
         </div>
-      </div>
+
+        <div class="form-group">
+          <label class="col-md-2 control-label" for="responseDuration">Notify</label>
+          <div class="col-md-10 duration">
+            <div class="col-md-12 row">
+              <label><input type="radio" name="dampening" ng-model="">Everytime the threshold is exceeded</label>
+            </div>
+            <div class="col-md-12 row">
+              <label><input type="radio" name="dampening" ng-model="">Only when exceeded for greater than</label>
+              <div class="hk-duration-value">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Duration" ng-model="mas.responseDuration"
+                       ng-change="mas.changeResponseTimeUnits()" id="responseDuration">
+                <select pf-select ng-model="mas.responseUnit" id="responseUnit"
+                        ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeResponseTimeUnits()"></select>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </fieldset>
     <fieldset>

@@ -77,7 +77,7 @@ module HawkularMetrics {
     public saveProgress: boolean = false;
     public responseDuration: number;
     public downtimeDuration: number;
-    public responseUnit: number = 1;
+    public responseUnit: number = 60000;
     public downtimeUnit: number = 1;
 
     public timeUnits = [

@@ -85,7 +85,7 @@ module HawkularMetrics {
           }
         }).then(() => {
           // Create dampening for that trigger
-          return this.createDampening(triggerId, 7000);
+          return this.createDampening(triggerId, 7 * 60000);
         });
     }
 
