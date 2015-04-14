@@ -1,9 +1,16 @@
-<div class="alert-settings">
-  <form class="form-horizontal" name="alertsSetup">
+<div class="modal-header">
+  <button type="button" class="close" ng-click="mas.cancel()">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <h4 class="modal-title">Alert Settings</h4>
+</div>
+<div class="modal-body alert-settings">
+  <form class="form-horizontal" name="mas.alertsSetup">
     <fieldset>
-      <legend>Preferences</legend>
+      <legend>Contact</legend>
+      <p>Receive email notifications in the following address when the alert conditions are met.</p>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="email">Email</label>
+        <label class="col-md-3 control-label" for="email">Email</label>
         <div class="col-md-6">
           <input type="text" id="email" class="form-control"  ng-model="mas.trigger_thres.actions[0]">
           <span class="help-block">Send alerts to this email address.</span>
@@ -13,7 +20,7 @@
     <fieldset>
       <legend>Response Time</legend>
       <div class="form-group onffswitch-form-group">
-        <label class="col-md-2 control-label" for="trigger_thres.enabled">Status</label>
+        <label class="col-md-3 control-label" for="trigger_thres.enabled">Status</label>
         <div class="onoffswitch-container">
           <div class="onoffswitch">
             <input type="checkbox" id="trigger_thres.enabled" class="onoffswitch-checkbox" ng-model="mas.trigger_thres.enabled">
@@ -29,31 +36,33 @@
       </div>
       <div ng-show="mas.trigger_thres.enabled">
         <div class="form-group">
-          <label class="col-md-2 control-label" for="responseDuration">Threshold</label>
-          <div class="col-md-10 inline-row">
-            <div class="input-group time">
-              <input type="text" class=" form-control" placeholder="Threshold" ng-model="mas.trigger_thres_cond[0].threshold">
-              <span class=" input-group-addon">ms</span>
+          <label class="col-md-3 control-label" for="time">Time (maximum)</label>
+          <div class="col-md-9 inline-row">
+            <div class="input-group input-addon">
+              <input type="text" class="form-control" placeholder="Time" id="time" ng-model="mas.trigger_thres_cond[0].threshold">
+              <span class="input-group-addon">miliseconds</span>
             </div>
           </div>
         </div>
-
         <div class="form-group">
-          <label class="col-md-2 control-label" for="responseDuration">Notify</label>
-          <div class="col-md-10 duration">
-            <div class="col-md-12 row">
-              <label><input type="radio" name="dampening" ng-model="">Everytime the threshold is exceeded</label>
+          <label class="col-md-3 control-label">Notification Rate</label>
+          <div class="col-md-9">
+            <div class="radio">
+              <label>
+                <input type="radio" name="notification" id="every-time" value="option1" ng-model="mas.DampeningPlaceholder" checked="">
+                Every time the maximum time is exceeded.
+              </label>
             </div>
-            <div class="col-md-12 row">
-              <label><input type="radio" name="dampening" ng-model="">Only when exceeded for greater than</label>
-              <div class="hk-duration-value">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Duration" ng-model="mas.responseDuration"
-                       ng-change="mas.changeResponseTimeUnits()" id="responseDuration">
-                <select pf-select ng-model="mas.responseUnit" id="responseUnit"
-                        ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeResponseTimeUnits()"></select>
-              </div>
-              </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="notification" id="greater-time" value="option2" ng-model="mas.DampeningPlaceholder">
+                Only when exceeded for greater than
+              </label>
+            </div>
+            <div class="input-group input-select indented">
+              <input type="text" class="form-control" placeholder="Duration">
+              <select pf-select ng-model="mas.responseUnit" id="responseUnit"
+                      ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeResponseTimeUnits()"></select>
             </div>
           </div>
         </div>
@@ -62,7 +71,7 @@
     <fieldset>
       <legend>Downtime</legend>
       <div class="form-group onffswitch-form-group">
-        <label class="col-md-2 control-label" for="trigger_avail.enabled">Status</label>
+        <label class="col-md-3 control-label" for="trigger_avail.enabled">Status</label>
         <div class="onoffswitch-container">
           <div class="onoffswitch">
             <input type="checkbox" id="trigger_avail.enabled" name="trigger_avail.enabled" class="onoffswitch-checkbox" ng-model="mas.trigger_avail.enabled">
@@ -77,29 +86,25 @@
         </div>
       </div>
       <div ng-show="mas.trigger_avail.enabled">
-      <div class="form-group">
-        <label class="col-md-2 control-label" for="downtimeDuration">Duration</label>
-        <div class="col-md-6 inline-row">
-          <div class="input-group duration">
-            <input type="text" class="form-control" placeholder="Duration" ng-model="mas.downtimeDuration"
-                   ng-change="mas.changeDowntimeTimeUnits()" id="downtimeDuration">
-            <select pf-select ng-model="mas.downtimeUnit" id="downtimeUnit"
-                    ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeDowntimeTimeUnits()"></select>
-          </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="downtimeDuration">Duration (maximum)</label>
+          <div class="col-md-6 inline-row">
+            <div class="input-group duration">
+              <input type="text" class="form-control" placeholder="Duration" ng-model="mas.downtimeDuration"
+                     ng-change="mas.changeDowntimeTimeUnits()" id="downtimeDuration">
+              <select pf-select ng-model="mas.downtimeUnit" id="downtimeUnit"
+                      ng-options="item.value as item.label for item in mas.timeUnits" ng-change="mas.changeDowntimeTimeUnits()"></select>
+            </div>
           <span class="help-block">Send alerts when the downtime lasts
             more than {{mas.downtimeDuration}} {{mas.timeUnitsDict[mas.downtimeUnit]}}.</span>
+          </div>
         </div>
       </div>
-      </div>
     </fieldset>
-    <div class="form-group">
-      <div class="col-md-10 col-md-offset-2">
-
-        <button type="button" class="btn btn-primary" ng-click="mas.save()" ng-disabled="addUrlForm.$invalid || mas.saveProgress">
-          <div ng-show="mas.saveProgress" class="spinner spinner-sm"></div>Save</button>
-        <button type="button" class="btn btn-default">Cancel</button>
-      </div>
-    </div>
   </form>
-
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" ng-click="mas.save()" ng-disabled="mas.alertsSetup || mas.saveProgress">
+    <div ng-show="mas.saveProgress" class="spinner spinner-sm"></div>Save</button>
+  <button type="button" class="btn btn-default" ng-click="mas.cancel()">Cancel</button>
 </div>

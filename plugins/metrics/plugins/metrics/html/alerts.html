@@ -1,13 +1,6 @@
 <div class="row hk-alerts">
   <div class="col-md-12">
     <h1>Alerts</h1>
-    <tabset>
-      <tab heading="Alerts">
-        <div ng-include="'plugins/metrics/html/alerts-view.html'" ng-controller="MetricsAlertController as mac"></div>
-      </tab>
-      <tab heading="Alerts Setup">
-        <div ng-include="'plugins/metrics/html/alerts-setup.html'" ng-controller="MetricsAlertSetupController as mas"></div>
-      </tab>
-    </tabset>
+    <div ng-include="'plugins/metrics/html/alerts-view.html'" ng-controller="MetricsAlertController as mac"></div>
   </div>
 </div>

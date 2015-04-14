@@ -21,10 +21,11 @@
 module HawkularMetrics {
 
   export class MetricsAlertController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams'];
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams', '$modal'];
 
     private metricId: string;
     public alertList: any  = [];
+    public openSetup: any;
 
     constructor(private $scope:any,
                 private HawkularAlert:any,
@@ -33,10 +34,25 @@ module HawkularMetrics {
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
-                private $routeParams: any) {
+                private $routeParams: any,
+                private $modal: any) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams', $routeParams);
+
+      this.openSetup = () => {
+        console.log('opening modal');
+        var modalInstance = $modal.open({
+          templateUrl: 'plugins/metrics/html/alerts-setup.html',
+          controller: 'MetricsAlertSetupController as mas'
+        });
+
+        modalInstance.result.then(function (selectedItem) {
+          $scope.selected = selectedItem;
+        }, function () {
+          $log.info('Modal dismissed at: ' + new Date());
+        });
+      };
 
       this.metricId = $routeParams.resourceId;
 
@@ -65,7 +81,7 @@ module HawkularMetrics {
   _module.controller('MetricsAlertController', MetricsAlertController);
 
   export class MetricsAlertSetupController {
-    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams'];
+    public static  $inject = ['$scope', 'HawkularAlert', 'HawkularAlertsManager', 'HawkularErrorManager', '$log', '$q', '$rootScope', '$routeParams', '$modalInstance'];
 
     private metricId: string;
     private trigger_thres: any;
@@ -79,6 +95,8 @@ module HawkularMetrics {
     public downtimeDuration: number;
     public responseUnit: number = 60000;
     public downtimeUnit: number = 1;
+
+    public scope: any;
 
     public timeUnits = [
       {value: 1, label: 'miliseconds'},
@@ -94,14 +112,15 @@ module HawkularMetrics {
       '360000': 'hours'
     };
 
-    constructor(private $scope:any,
+    constructor(public $scope:any,
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
                 private $log: ng.ILogService,
                 private $q: ng.IQService,
                 private $rootScope: any,
-                private $routeParams: any) {
+                private $routeParams: any,
+                private $modalInstance: any) {
 
       this.$log.debug('querying data');
       this.$log.debug('$routeParams',$routeParams.resourceId);
@@ -152,6 +171,10 @@ module HawkularMetrics {
 
     public changeDowntimeTimeUnits():void {
       this.trigger_avail_damp[0].evalTimeSetting = this.downtimeDuration * this.downtimeUnit;
+    }
+
+    public cancel(): void {
+      this.$modalInstance.dismiss('cancel');
     }
 
     public save(): void {

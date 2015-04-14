@@ -686,10 +686,52 @@ p.info-top {
 }
 
 // Alert settings section
+.hk-alerts {
+  .btn-link .fa, a .fa {
+    color: #999999;
+  }
 
-.alert-settings .form-horizontal {
-  margin-top: @grid-gutter-width/2;
+  .fa {
+    font-size: 16px;
+    margin-right: 5px;
+  }
+
+  a:hover, a:focus {
+    color: #00618a;
+    text-decoration: underline;
+  }
+
+  .btn-link:hover .fa, a:hover .fa {
+    color: #333333;
+  }
+
+  .alert-settings .form-horizontal {
+    margin-top: 0;
+
+    .input-addon {
+      width: 175px;
+    }
+
+    .indented {
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .input-select input.form-control {
+      width: 75px;
+    }
+
+    .input-select .bootstrap-select {
+      float: left;
+      width: 100px;
+    }
+  }
+
+  .alert-settings.modal-body fieldset p {
+    margin-top: -10px;
+  }
 }
+
 
 .form-horizontal {
 
@@ -699,7 +741,6 @@ p.info-top {
   }
 
   legend {
-    color: @gray-light;
     font-size: 15px;
   }
 
