@@ -8,6 +8,7 @@
     "hawkular-ui"
   ],
   "main": [
+    "dist/hawkular-ui-components-accounts.css",
     "dist/hawkular-ui-components-accounts.js",
     "dist/hawkular-ui-components-metrics.js",
     "dist/hawkular-ui-components-metrics.css",
@@ -39,7 +40,7 @@
     "hawtio-core": "2.0.16",
     "hawtio-template-cache": "2.0.2",
     "hawtio-utilities": "2.0.21",
-    "hawtio-oauth": "2.0.1",
+    "hawtio-oauth": "2.0.2",
     "lodash": "3.2.0",
     "moment": "2.9.0",
     "toastr": "2.1.1",
