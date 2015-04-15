@@ -507,15 +507,60 @@ p.info-top {
   margin-right: 20px;
   min-width: 120px;
 }
+.hk-alerts .btn-link .fa,
+.hk-alerts a .fa {
+  color: #999999;
+}
+.hk-alerts .fa {
+  font-size: 16px;
+  margin-right: 5px;
+}
+.hk-alerts a:hover,
+.hk-alerts a:focus {
+  color: #00618a;
+  text-decoration: underline;
+}
+.hk-alerts .btn-link:hover .fa,
+.hk-alerts a:hover .fa {
+  color: #333333;
+}
 .alert-settings .form-horizontal {
-  margin-top: 20px;
+  margin-top: 0;
+}
+.alert-settings .form-horizontal .input-addon {
+  width: 175px;
+}
+.alert-settings .form-horizontal .indented {
+  margin-left: 20px;
+  margin-top: 5px;
+}
+.alert-settings .form-horizontal .input-select input.form-control {
+  width: 75px;
+}
+.alert-settings .form-horizontal .input-select .bootstrap-select {
+  float: left;
+  width: 100px;
+}
+.alert-settings .form-horizontal input[type=number] {
+  -moz-appearance: textfield;
+}
+.alert-settings .form-horizontal input[type=number]::-webkit-inner-spin-button,
+.alert-settings .form-horizontal input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hk-modal-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+.alert-settings.modal-body fieldset p {
+  margin-top: -10px;
 }
 .form-horizontal fieldset {
   margin-bottom: 5px;
   position: relative;
 }
 .form-horizontal legend {
-  color: #999999;
   font-size: 15px;
 }
 .form-horizontal .onffswitch-form-group {
@@ -633,6 +678,20 @@ p.info-top {
 }
 #metrics-chart {
   height: 270px;
+}
+.duration label {
+  font-weight: normal;
+  margin-bottom: 0;
+}
+.duration label input {
+  margin-right: 7px;
+}
+.duration .hk-duration-value {
+  display: inline-block;
+  margin-left: 7px;
+}
+.duration .hk-duration-value .input-group {
+  top: 7px;
 }
 .hk-alerts .input-group-btn {
   width: auto;
