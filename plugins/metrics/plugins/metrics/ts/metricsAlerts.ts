@@ -97,6 +97,8 @@ module HawkularMetrics {
     public downtimeUnit: number = 1;
     public thresDampDurationEnabled = false;
 
+    public isSettingChange = false;
+
     public timeUnits = [
       {value: 1, label: 'miliseconds'},
       {value: 1000, label: 'seconds'},
@@ -138,8 +140,12 @@ module HawkularMetrics {
       }).then((data)=> {
         this.trigger_thres_damp = data;
         this.alertSetupBackup.trigger_thres_damp = angular.copy(this.trigger_thres_damp);
+
         this.responseDuration = data[0].evalTimeSetting / this.responseUnit;
+        this.alertSetupBackup.responseDuration = angular.copy(this.responseDuration);
+
         this.thresDampDurationEnabled = data[0].evalTimeSetting !== 0;
+        this.alertSetupBackup.thresDampDurationEnabled = angular.copy(this.thresDampDurationEnabled);
         this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
         return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
       }, (error)=> {
@@ -175,10 +181,12 @@ module HawkularMetrics {
 
     public changeResponseTimeUnits():void {
       this.trigger_thres_damp[0].evalTimeSetting = this.responseDuration * this.responseUnit;
+      this.alertSettingTouch();
     }
 
     public changeDowntimeTimeUnits():void {
       this.trigger_avail_damp[0].evalTimeSetting = this.downtimeDuration * this.downtimeUnit;
+      this.alertSettingTouch();
     }
 
     public cancel(): void {
@@ -203,30 +211,40 @@ module HawkularMetrics {
       var isError = false;
       // Check if email action exists
       this.HawkularAlertsManager.addEmailAction(this.trigger_thres.actions[0]).then(()=> {
-        return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
+        if(!angular.equals(this.alertSetupBackup.trigger_thres, this.trigger_thres)) {
+          return this.HawkularAlertsManager.updateTrigger(this.trigger_thres.id, this.trigger_thres);
+        }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error saving email action.', errorCallback);
       }).then(() => {
         this.trigger_avail.actions = this.trigger_thres.actions;
-        return this.HawkularAlertsManager.updateTrigger(this.trigger_avail.id, this.trigger_avail);
+        if(!angular.equals(this.alertSetupBackup.trigger_avail, this.trigger_avail)) {
+          return this.HawkularAlertsManager.updateTrigger(this.trigger_avail.id, this.trigger_avail);
+        }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger.', errorCallback);
       }).then(()=> {
         this.changeResponseTimeUnits();
-        var treshDampTmp = angular.copy(this.trigger_thres_damp[0]);
-        treshDampTmp.evalTimeSetting = 0;
 
-        return this.thresDampDurationEnabled ?
-          this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]) :
-          this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, treshDampTmp);
+        if (!this.thresDampDurationEnabled) {
+          this.trigger_thres_damp[0].evalTimeSetting = 0;
+        }
+
+        if(!angular.equals(this.alertSetupBackup.trigger_thres_damp[0], this.trigger_thres_damp[0])) {
+          return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
+        }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability trigger.', errorCallback);
       }).then(()=> {
+        if(!angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0])) {
           this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId, this.trigger_avail_damp[0]);
+        }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.', errorCallback);
       }).then(()=> {
-        return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]);
+        if(!angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
+          return this.HawkularAlertsManager.updateCondition(this.trigger_thres.id, this.trigger_thres_cond[0].conditionId, this.trigger_thres_cond[0]);
+        }
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability dampening.', errorCallback);
       }).then(angular.noop, (error)=> {
@@ -245,6 +263,21 @@ module HawkularMetrics {
 
         this.cancel();
       });
+    }
+
+    public alertSettingTouch(): void {
+
+      if (!angular.equals(!!this.alertSetupBackup.thresDampDurationEnabled,!!this.thresDampDurationEnabled) ||
+        !angular.equals(this.alertSetupBackup.responseDuration, this.responseDuration) ||
+        !angular.equals(this.alertSetupBackup.trigger_thres, this.trigger_thres) ||
+        !angular.equals(this.alertSetupBackup.trigger_avail, this.trigger_avail) ||
+        !angular.equals(this.alertSetupBackup.trigger_thres_damp[0], this.trigger_thres_damp[0]) ||
+        !angular.equals(this.alertSetupBackup.trigger_avail_damp[0], this.trigger_avail_damp[0]) ||
+        !angular.equals(this.alertSetupBackup.trigger_thres_cond[0], this.trigger_thres_cond[0])) {
+        this.isSettingChange = true;
+      } else {
+        this.isSettingChange = false;
+      }
     }
   }
 

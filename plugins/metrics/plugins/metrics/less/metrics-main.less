@@ -726,6 +726,21 @@ p.info-top {
     float: left;
     width: 100px;
   }
+
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.hk-modal-spinner {
+  display: inline-block;
+  margin-right: 8px;
 }
 
 .alert-settings.modal-body fieldset p {
