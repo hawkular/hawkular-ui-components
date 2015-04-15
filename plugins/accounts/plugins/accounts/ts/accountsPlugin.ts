@@ -33,13 +33,19 @@ module HawkularAccounts {
         $locationProvider.html5Mode(true);
     }]);
 
-    _module.run(['HawtioNav', (HawtioNav:HawtioMainNav.Registry) => {
+    _module.run(['$rootScope', 'userDetails', 'HawtioNav', ($rootScope, userDetails, HawtioNav:HawtioMainNav.Registry) => {
         //HawtioNav.add(accountsTab);
-    }]);
 
-    _module.run(['$rootScope', 'userDetails', ($rootScope, userDetails) => {
         $rootScope.userDetails = userDetails;
         $rootScope.userDetailsStr = angular.toJson(userDetails, true);
+
+        $rootScope.$on('IdleStart', () => {
+            $('#idle').slideDown();
+        });
+
+        $rootScope.$on('IdleEnd', () => {
+            $("#idle").slideUp();
+        });
     }]);
 
     hawtioPluginLoader.registerPreBootstrapTask((next) => {

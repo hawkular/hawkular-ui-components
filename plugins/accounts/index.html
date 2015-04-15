@@ -7,6 +7,7 @@
     <meta charset="UTF8">
 
     <link rel="stylesheet" href="libs/patternfly/dist/css/patternfly.css" />
+    <link rel="stylesheet" href="../../dist/hawkular-ui-components-accounts.css"/>
 
     <!-- bower:css -->
     <!-- endbower -->
@@ -25,6 +26,10 @@
 </head>
 
 <body>
+<div data-idle-countdown="countdown" data-ng-init="countdown=30" id="idle">
+    <strong>You'll be logged out in {{countdown}} second(s).</strong>.
+</div>
+
 <nav class="navbar navbar-default navbar-pf" role="navigation">
     <ul class="nav navbar-nav navbar-primary" hawtio-main-nav></ul>
     <ul class="nav navbar-nav" hawtio-sub-tabs></ul>
