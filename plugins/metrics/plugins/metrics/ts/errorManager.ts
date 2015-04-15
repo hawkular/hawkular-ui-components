@@ -23,7 +23,7 @@
 module HawkularMetrics {
 
   export interface IHawkularErrorManager {
-    errorHandler(error: any, msg: string): any
+    errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): any
   }
 
   export class HawkularErrorManager implements IHawkularErrorManager {
@@ -47,9 +47,12 @@ module HawkularMetrics {
       toastr.error(errorMsgComplete);
     }
 
-    public errorHandler(error: any, msg: string): ng.IPromise<void> {
+    public errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): ng.IPromise<void> {
       if (error) {
         this.errorToastr(error, msg);
+        if (cb) {
+          cb(error, msg);
+        }
       }
       return this.$q.reject(null);
     }
