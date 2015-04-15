@@ -18,8 +18,9 @@
 module HawkularAccounts {
     export var _module = angular.module(HawkularAccounts.pluginName, []);
     var accountsTab:any = undefined;
+    var currentPersona:any = undefined;
 
-    _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, builder:HawtioMainNav.BuilderFactory) => {
+    _module.config(['$locationProvider', '$routeProvider', '$httpProvider', 'HawtioNavBuilderProvider', ($locationProvider, $routeProvider:ng.route.IRouteProvider, $httpProvider:ng.IHttpProvider, builder:HawtioMainNav.BuilderFactory) => {
         accountsTab = builder.create()
             .id(HawkularAccounts.pluginName)
             .title(() => "Accounts")
@@ -31,13 +32,12 @@ module HawkularAccounts {
 
         $routeProvider.when('/accounts/organizations/new', {templateUrl: builder.join(HawkularAccounts.templatePath, 'organization_new.html')});
         $locationProvider.html5Mode(true);
+        $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
     }]);
 
     _module.run(['$rootScope', 'userDetails', 'HawtioNav', ($rootScope, userDetails, HawtioNav:HawtioMainNav.Registry) => {
         //HawtioNav.add(accountsTab);
-
         $rootScope.userDetails = userDetails;
-        $rootScope.userDetailsStr = angular.toJson(userDetails, true);
 
         $rootScope.$on('IdleStart', () => {
             $('#idle').slideDown();
@@ -46,12 +46,38 @@ module HawkularAccounts {
         $rootScope.$on('IdleEnd', () => {
             $("#idle").slideUp();
         });
+
+        $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
+            currentPersona = persona;
+        });
+
+        $rootScope.$on('SwitchedPersona', (e, persona) => {
+            currentPersona = persona;
+        });
     }]);
 
     hawtioPluginLoader.registerPreBootstrapTask((next) => {
         KeycloakConfig = "/keycloak.json";
         next();
     }, true);
+
+    class PersonaInterceptorService {
+        public static $inject = ['$q'];
+
+        public static Factory($q:ng.IQService) {
+            return new PersonaInterceptorService($q);
+        }
+
+        constructor(private $q:ng.IQService) {
+        }
+
+        request = (request) => {
+            if (currentPersona) {
+                request.headers['X-Hawkular-Persona'] = currentPersona.id;
+            }
+            return request;
+        };
+    }
 
     hawtioPluginLoader.addModule(HawkularAccounts.pluginName);
 }
