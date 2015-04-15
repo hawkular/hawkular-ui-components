@@ -95,6 +95,7 @@ module HawkularMetrics {
     public downtimeDuration: number;
     public responseUnit: number = 60000;
     public downtimeUnit: number = 1;
+    public thresDampDurationEnabled = false;
 
     public scope: any;
 
@@ -134,7 +135,8 @@ module HawkularMetrics {
         return this.HawkularErrorManager.errorHandler(error, 'Error fetching threshold trigger.');
       }).then((data)=> {
         this.trigger_thres_damp = data;
-        this.responseDuration = data[0].evalTimeSetting;
+        this.responseDuration = data[0].evalTimeSetting / this.responseUnit;
+        this.thresDampDurationEnabled = data[0].evalTimeSetting !== 0;
         this.$log.debug('this.trigger_thres_damp', this.trigger_thres_damp);
         return HawkularAlert.Condition.query({triggerId: $routeParams.resourceId + '_trigger_thres'}).$promise;
       }, (error)=> {
@@ -192,11 +194,17 @@ module HawkularMetrics {
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger.');
       }).then(()=> {
-        return this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]);
+        this.changeResponseTimeUnits();
+        var treshDampTmp = angular.copy(this.trigger_thres_damp[0]);
+        treshDampTmp.evalTimeSetting = 0;
+
+        return this.thresDampDurationEnabled ?
+          this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, this.trigger_thres_damp[0]) :
+          this.HawkularAlertsManager.updateDampening(this.trigger_thres.id, this.trigger_thres_damp[0].dampeningId, treshDampTmp);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability trigger.');
       }).then(()=> {
-        return this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId, this.trigger_avail_damp[0]);
+          this.HawkularAlertsManager.updateDampening(this.trigger_avail.id, this.trigger_avail_damp[0].dampeningId, this.trigger_avail_damp[0]);
       }, (error)=> {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating threshold trigger dampening.');
       }).then(()=> {
@@ -207,6 +215,7 @@ module HawkularMetrics {
         return this.HawkularErrorManager.errorHandler(error, 'Error updating availability condition.');
       }).finally(()=> {
         this.saveProgress = false;
+        this.cancel();
       });
     }
   }
