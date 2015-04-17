@@ -17,16 +17,21 @@
 module HawkularAccounts {
 
     export var OrganizationsController = _module.controller("HawkularAccounts.OrganizationsController", [
-        '$scope', 'HawkularAccounts.OrganizationService', '$log', '$location',
-        ($scope, OrganizationService, $log, $location) => {
+        '$rootScope', '$scope', 'HawkularAccounts.OrganizationService', '$log', '$location',
+        ($rootScope, $scope, OrganizationService, $log, $location) => {
 
             $scope.organizations = [];
             $scope.loading = true;
+
             $scope.load = () => {
-                $log.debug("Trying to load the organizations for this user.");
+                $scope.loadOrganizations();
+            };
+
+            $scope.loadOrganizations = () => {
+                $scope.organizations = [];
+                $scope.loading = true;
                 $scope.organizations = OrganizationService.query({},
                     ()=> {
-                        $log.debug("List of organizations retrieved.");
                         $scope.loading = false;
                     },
                     () => {
@@ -41,14 +46,17 @@ module HawkularAccounts {
             $scope.remove = (organization) => {
                 organization.$remove().then(
                     () => {
-                        // removed!
-                        $log.debug("Organization removed");
+                        $scope.$emit('OrganizationRemoved');
                         $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
                     }
                 );
             };
 
             $scope.load();
+
+            $rootScope.$on('SwitchedPersona', () => {
+                $scope.loadOrganizations();
+            });
         }]);
 
     export var OrganizationNewController = _module.controller("HawkularAccounts.OrganizationNewController", [
@@ -59,8 +67,7 @@ module HawkularAccounts {
             $scope.persist = () => {
                 $scope.organizationNew.$save({},
                     () => {
-                        // success
-                        $log.debug("Organization added.");
+                        $scope.$emit('OrganizationCreated');
                         $location.path('/accounts/organizations');
                     },
                     () => {
