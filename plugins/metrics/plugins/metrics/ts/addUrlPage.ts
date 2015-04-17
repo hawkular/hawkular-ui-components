@@ -110,13 +110,13 @@ module HawkularMetrics {
           }];
 
           var errMetric = (error: any) => err(error, 'Error saving metric.');
-          var createMetric = (metric: any) => 
+          var createMetric = (metric: any) =>
             this.HawkularInventory.Metric.save({
               tenantId: globalTenantId,
               environmentId: globalEnvironmentId
             }, metric).$promise;
 
-          var associateResourceWithMetrics = () => 
+          var associateResourceWithMetrics = () =>
             this.HawkularInventory.ResourceMetric.save({
               tenantId: globalTenantId,
               environmentId: globalEnvironmentId,
@@ -132,19 +132,19 @@ module HawkularMetrics {
         })
 
         // Find if a default email exists
-        .then(() => this.HawkularAlertsManager.addEmailAction(defaultEmail), 
+        .then(() => this.HawkularAlertsManager.addEmailAction(defaultEmail),
           (e) => err(e, 'Error during saving metrics.'))
 
         // Create threshold trigger for newly created metrics
-        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail), 
+        .then(() => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_thres', true, 'THRESHOLD', defaultEmail),
           (e) => err(e, 'Error saving email action.'))
 
         // Create availability trigger for newly created metrics
-        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail), 
+        .then((alert) => this.HawkularAlertsManager.createTrigger(metricId + '_trigger_avail', false, 'AVAILABILITY', defaultEmail),
           (e) => err(e, 'Error saving threshold trigger.'))
 
         //this.$location.url('/hawkular/' + metricId);
-        .then(() => toastr.info('Your data is being collected. Please be patient (should be about another minute).'), 
+        .then(() => toastr.info('Your data is being collected. Please be patient (should be about another minute).'),
           (e) => err(e, 'Error saving availability trigger.'))
 
         .finally(()=> {
@@ -231,7 +231,7 @@ module HawkularMetrics {
         environmentId: globalEnvironmentId,
         resourceId: this.resource.id
       }).$promise.then((res) => {
-          toastr.info('The site ' + this.resource.parameters.url + ' is no longer being monitored.');
+          toastr.info('The site ' + this.resource.properties.url + ' is no longer being monitored.');
           this.$modalInstance.close(res);
       });
     }
