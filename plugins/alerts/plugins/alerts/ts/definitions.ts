@@ -142,9 +142,10 @@ module HawkularAlerts {
         }
 
         private addAlertMsg(reason: any):void {
+          console.log('reason',reason);
             var newAlert = {type: 'danger', msg: ''};
-            if (reason.data.errorMsg) {
-                newAlert.msg = reason.data.errorMsg;
+            if (reason.message) {
+                newAlert.msg = reason.message;
             } else {
                 newAlert.msg = reason.statusText;
             }
