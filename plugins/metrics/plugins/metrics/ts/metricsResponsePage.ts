@@ -142,7 +142,9 @@ module HawkularMetrics {
       this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
         .then((response) => {
 
-          this.threshold = response[0].threshold;
+          if (response[0]) {
+            this.threshold = response[0].threshold;
+          }
 
         }, (error) => {
           this.$log.error('Error Loading Threshold data');
