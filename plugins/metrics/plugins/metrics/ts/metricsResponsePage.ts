@@ -13,6 +13,7 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 
+/// <reference path="metricsTypes.ts"/>
 /// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
 
@@ -59,23 +60,23 @@ module HawkularMetrics {
                 private HawkularMetric:any,
                 private HawkularAlert:any,
                 private $routeParams:any,
-                public startTimeStamp:number,
-                public endTimeStamp:number) {
+                public startTimeStamp:TimestampInMillis,
+                public endTimeStamp:TimestampInMillis) {
       $scope.vm = this;
 
       this.startTimeStamp = moment().subtract(1, 'hours').valueOf();
       this.endTimeStamp = +moment();
 
-      this.metricId = $scope.hkParams.resourceId;
+      this.resourceId = $scope.hkParams.resourceId;
 
       $scope.$on('RefreshChart', (event) => {
         this.refreshChartDataNow(this.getMetricId());
       });
 
-      $scope.$watch('hkParams.resourceId', (resourceId) => {
+      $scope.$watch('hkParams.resourceId', (resourceId:ResourceId) => {
         /// made a selection from url switcher
         if (resourceId) {
-          this.metricId = resourceId;
+          this.resourceId = resourceId;
           this.refreshChartDataNow(this.getMetricId());
         }
       });
@@ -88,7 +89,7 @@ module HawkularMetrics {
     private chartData:any;
     private autoRefreshPromise:ng.IPromise<number>;
 
-    private metricId:string;
+    private resourceId:ResourceId;
     threshold = 5000; // default to 5 seconds some high number
 
     median = 0;
@@ -117,13 +118,13 @@ module HawkularMetrics {
       });
     }
 
-    private noDataFoundForId(id:string):void {
-      this.$log.warn('No Data found for id: ' + id);
+    private noDataFoundForId(resourceId:ResourceId):void {
+      this.$log.warn('No Data found for id: ' + resourceId);
       ///toastr.warning('No Data found for id: ' + id);
     }
 
 
-    refreshChartDataNow(metricId:string, startTime?:number):void {
+    refreshChartDataNow(metricId:string, startTime?:TimestampInMillis):void {
       this.$scope.hkEndTimestamp = +moment();
       var adjStartTimeStamp:number = moment().subtract(this.$scope.hkParams.timeOffset, 'milliseconds').valueOf();
       this.endTimeStamp = this.$scope.hkEndTimestamp;
@@ -132,8 +133,8 @@ module HawkularMetrics {
       this.retrieveThreshold();
     }
 
-    getMetricId():string {
-      return this.metricId + '.status.duration';
+    getMetricId():ResourceId {
+      return this.resourceId + '.status.duration';
     }
 
 
@@ -141,7 +142,9 @@ module HawkularMetrics {
       this.HawkularAlert.Condition.query({triggerId: this.$routeParams.resourceId + '_trigger_thres'}).$promise
         .then((response) => {
 
-          this.threshold = response[0].threshold;
+          if (response[0]) {
+            this.threshold = response[0].threshold;
+          }
 
         }, (error) => {
           this.$log.error('Error Loading Threshold data');
@@ -149,7 +152,7 @@ module HawkularMetrics {
         });
     }
 
-    refreshSummaryData(metricId:string, startTime?:number, endTime?:number):void {
+    refreshSummaryData(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
       var dataPoints:IChartDataPoint[];
       // calling refreshChartData without params use the model values
       if (!endTime) {
@@ -185,7 +188,7 @@ module HawkularMetrics {
     }
 
 
-    refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:number, endTime?:number):void {
+    refreshHistoricalChartDataForTimestamp(metricId:string, startTime?:TimestampInMillis, endTime?:TimestampInMillis):void {
       // calling refreshChartData without params use the model values
       if (!endTime) {
         endTime = this.endTimeStamp;
@@ -194,13 +197,14 @@ module HawkularMetrics {
         startTime = this.startTimeStamp;
       }
 
+
       if (metricId) {
         this.HawkularMetric.NumericMetricData.queryMetrics({
           tenantId: globalTenantId,
           numericId: metricId,
           start: startTime,
           end: endTime,
-          buckets: 60
+          buckets: 120
         }).$promise
           .then((response) => {
 

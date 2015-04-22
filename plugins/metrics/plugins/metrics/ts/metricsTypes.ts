@@ -13,23 +13,20 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 
+/// <reference path="metricsPlugin.ts"/>
 /// <reference path="../../includes.ts"/>
+/// <reference path="errorManager.ts"/>
+
 
 module HawkularMetrics {
 
-  /// some config vars
-  export var pluginName = "hawkular-metrics";
+/// Typescript 1.4 introduces type aliases: http://blogs.msdn.com/b/typescript/archive/2015/01/16/announcing-typescript-1-4.aspx
+/// Some Type aliases to make things more type safe than just string or number. Implies how it is being used and is especially useful for refactoring.
 
-  export var log:Logging.Logger = Logger.get(pluginName);
+export type TenantId = string;
+export type ResourceId = string;
+export type MetricId = string;
+export type TimestampInMillis = number;
 
-  export var templatePath = "plugins/metrics/html";
-
-
-  /// These are plugin globals used across several screens (think session vars from server side programming)
-
-  /// @todo: this will go away once we have KeyCloak integration
-  export var globalTenantId = "test";
-
-  export var globalEnvironmentId = "test";
 
 }

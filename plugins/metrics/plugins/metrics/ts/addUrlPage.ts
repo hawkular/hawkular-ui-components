@@ -81,7 +81,6 @@ module HawkularMetrics {
 
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
-      globalChartTimeRange = new ChartTimeRange(1);
       var metricId: string;
       var defaultEmail = this.$rootScope['user_email'] ? this.$rootScope['user_email'] : 'myemail@company.com';
       var err = (error: any, msg: string): void => this.HawkularErrorManager.errorHandler(error, msg);
