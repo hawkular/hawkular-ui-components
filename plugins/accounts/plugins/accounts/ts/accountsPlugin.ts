@@ -16,7 +16,7 @@
 /// <reference path="../../includes.ts"/>
 /// <reference path="accountsGlobals.ts"/>
 module HawkularAccounts {
-    export var _module = angular.module(HawkularAccounts.pluginName, []);
+    export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
     var accountsTab:any = undefined;
     var currentPersona:any = undefined;
 
@@ -35,7 +35,7 @@ module HawkularAccounts {
         $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
     }]);
 
-    _module.run(['$rootScope', 'userDetails', 'HawtioNav', ($rootScope, userDetails, HawtioNav:HawtioMainNav.Registry) => {
+    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
         //HawtioNav.add(accountsTab);
         $rootScope.userDetails = userDetails;
 
@@ -45,6 +45,15 @@ module HawkularAccounts {
 
         $rootScope.$on('IdleEnd', () => {
             $("#idle").slideUp();
+        });
+
+        $rootScope.$on('IdleTimeout', () => {
+            $log.debug('Idle timeout');
+            $document.find('body').eq(0).addClass('inactivity-modal-open');
+            $modal.open({
+                templateUrl: 'plugins/accounts/html/inactivityModal.html',
+                backdrop: 'static'
+            });
         });
 
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
