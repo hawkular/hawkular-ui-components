@@ -78,7 +78,7 @@ module.exports = function(gulp, config, pluginName){
     };
   }
 
-  gulp.task('tsc-' + pluginName, function() {
+  gulp.task('tsc-' + pluginName, ['path-adjust'], function() {
     var cwd = process.cwd();
     var tsResult = gulp.src(config.ts(pluginName))
       .pipe(plugins.sourcemaps.init())
