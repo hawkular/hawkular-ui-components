@@ -10,3 +10,8 @@
   color: #fff;
   font-weight: bold;
 }
+body.inactivity-modal-open #main,
+body.inactivity-modal-open .navbar,
+body.inactivity-modal-open #idle {
+  filter: blur(5px);
+}
