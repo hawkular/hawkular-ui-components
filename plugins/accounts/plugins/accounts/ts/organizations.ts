@@ -36,6 +36,7 @@ module HawkularAccounts {
                     },
                     () => {
                         $log.warn("List of organizations could NOT be retrieved.");
+                        Core.notification('error', "List of organizations could NOT be retrieved.");
                         $scope.loading = false;
                     }
                 );
@@ -48,6 +49,11 @@ module HawkularAccounts {
                     () => {
                         $scope.$emit('OrganizationRemoved');
                         $scope.organizations.splice($scope.organizations.indexOf(organization), 1);
+                        Core.notification('success', "Organization created");
+                    },
+                    (e) => {
+                        var message = e.data.message ? e.data.message : "Sorry, the organization could not be removed.";
+                        Core.notification('error', message);
                     }
                 );
             };
@@ -69,10 +75,12 @@ module HawkularAccounts {
                     () => {
                         $scope.$emit('OrganizationCreated');
                         $location.path('/accounts/organizations');
+                        Core.notification('success', "Organization created");
                     },
                     () => {
                         // error
-                        $log.debug("Organization could NOT be added.");
+                        $log.error("Organization could NOT be added.");
+                        Core.notification('error', "Organization could NOT be added.");
                     }
                 );
                 $log.debug("Trying to persist the organization");
