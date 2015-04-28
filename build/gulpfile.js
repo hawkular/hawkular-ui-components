@@ -50,7 +50,7 @@ module.exports = function(gulp, config, pluginName){
             console.error('> ' + gutil.colors.gray('file: ') + (fullFilename ? error.fullFilename : error.relativeFilename) + gutil.colors.gray(':'));
             var lines = error.tsFile.text.split(/(\r\n|\r|\n)/);
             var logLine = function (lineIndex, errorStart, errorEnd) {
-              var line = lines[lineIndex - 1];
+              var line = lines[lineIndex*2 - 2];
               if (errorEnd === undefined)
                 errorEnd = line.length;
               console.error('> ' + gutil.colors.gray('[' + lineIndex + '] ') + line.substring(0, errorStart - 1) + gutil.colors.red(line.substring(errorStart - 1, errorEnd)) + line.substring(errorEnd));
@@ -79,6 +79,7 @@ module.exports = function(gulp, config, pluginName){
         removeComments: true,
         noEmitOnError: false
       }), {}, notificationReporter(true)));
+
 
     return eventStream.merge(
       tsResult.js
