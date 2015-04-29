@@ -19,6 +19,7 @@ var gulp = require('gulp'),
     del = require('del'),
     wiredep = require('wiredep').stream,
     plugins = require('gulp-load-plugins')({}),
+    map = require('vinyl-map'),
     fs = require('fs'),
     path = require('path');
 
@@ -64,6 +65,18 @@ for (var i = 0; i < pluginFolders.length; i++){
   taskCreator(gulp, config, pluginName);
   pluginBuildTasks.push('build-' + pluginName);
 }
+
+/** Adjust the reference path of any typescript-built plugin this project depends on */
+gulp.task('path-adjust', function(done) {
+  gulp.src('libs/**/includes.d.ts')
+    .pipe(map(function(buf, filename) {
+      var textContent = buf.toString();
+      var newTextContent = textContent.replace(/"\.\.\/libs/gm, '"../../../libs');
+      return newTextContent;
+    }))
+    .pipe(gulp.dest('libs'))
+    .on('end', function() {done()});
+});
 
 gulp.task('reload', function() {
   var staticPath = path.resolve(__dirname, '.tmp/gulp-connect-server/');

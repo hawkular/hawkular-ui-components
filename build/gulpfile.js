@@ -35,17 +35,6 @@ module.exports = function(gulp, config, pluginName){
   var plugins = gulpLoadPlugins({});
   var isWatch = false;
 
-  /** Adjust the reference path of any typescript-built plugin this project depends on */
-  gulp.task('path-adjust', function() {
-    gulp.src('libs/**/includes.d.ts')
-      .pipe(map(function(buf, filename) {
-        var textContent = buf.toString();
-        var newTextContent = textContent.replace(/"\.\.\/libs/gm, '"../../../libs');
-        return newTextContent;
-      }))
-      .pipe(gulp.dest('libs'));
-  });
-
   gulp.task('clean-defs', function() {
     del(['.tmp/' + pluginName + 'defs.d.ts']);
   });
@@ -192,7 +181,7 @@ module.exports = function(gulp, config, pluginName){
     // For directives
     for(var i =0; i < watchList.length; i++) {
       (function(plugin) {
-        plugins.watch(['libs/**/*.d.ts', config.ts(plugin), config.templates(plugin)], function () {
+        plugins.watch([config.ts(plugin), config.templates(plugin)], function () {
           gulp.start(['tslint-watch-' + plugin, 'tsc-' + plugin, 'template-' + plugin, 'concat-' + plugin,
             'clean-' + plugin, 'connect-prepare-dist-' + plugin]);
         });
