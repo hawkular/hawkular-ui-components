@@ -30,45 +30,8 @@ module Topbar {
   export var TopbarController = _module.controller("Topbar.TopbarController",
     ['$scope', '$rootScope', '$location', '$route', '$routeParams', 'HawkularNav', 'HawkularInventory', ($scope, $rootScope, $location, $route, $routeParams, HawkularNav, HawkularInventory) => {
 
-      $scope.rangeNames = {
-        '3600000': 'Last Hour',
-        '43200000': 'Last 12 Hours',
-        '86400000': 'Last Day',
-        '604800000': 'Last Week',
-        '2592000000': 'Last Month',
-        '31536000000': 'Last Year'
-      };
-
-      $scope.getFormattedDate = function() {
-        var diff = $scope.hkParams.timeOffset;
-
-        // FIXME: Use moment ?
-        $scope.offsetName = $scope.rangeNames[$scope.hkParams.timeOffset] || 'Custom';
-
-        // TODO: Use this for custom
-        // var momStart = moment($scope.hkStartTimestamp);
-        // var momEnd = moment($scope.hkEndTimestamp);
-
-        var momStart = moment().subtract($scope.hkParams.timeOffset, 'milliseconds');
-        var momEnd = moment();
-
-        if (diff < 24 * 60 * 60 * 1000) {
-          return momStart.format('D MMM YYYY') + ' ' + momStart.format('HH:mm') + ' - ' + (momStart.day() !== momEnd.day() ? momEnd.format('D MMM YYYY ')  : '') + momEnd.format('HH:mm');
-        } else {
-          return momStart.format('D MMM YYYY') + ' - ' + momEnd.format('D MMM YYYY');
-        }
-      };
-
-      $scope.setRange = function(range) {
-        HawkularNav.setTimestamp(moment.duration(range).valueOf());
-      };
-
-      $scope.$watch(function() { return $location.path(); }, function(value) {
-        $rootScope.hideSidebar = ($location.path().indexOf('/metrics/add-url') === 0);
-      });
-
-      $scope.setSelection = function(resourceId) {
-        $route.updateParams({resourceId: resourceId.id});
+      $scope.getClass = function(path) {
+          return $location.path().indexOf(path) === 0 ? 'active' : '';
       };
 
     }]);
