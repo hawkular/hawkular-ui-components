@@ -21,6 +21,7 @@ module HawkularMetrics {
 
 
 //
+  declare var window: any;
 
 
   export interface IAvailabilitySummary {
@@ -35,16 +36,21 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$interval', '$log', 'HawkularMetric', '$routeParams'];
+    public static  $inject = ['$scope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
+
+    public math;
 
     constructor(private $scope:any,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
+                private HawkularAlert:any,
                 private $routeParams:any,
+                public alertList:any,
                 public startTimeStamp:TimestampInMillis,
                 public endTimeStamp:TimestampInMillis) {
       $scope.vm = this;
+      this.math = window.Math;
 
       this.startTimeStamp = +moment().subtract(1, 'hours');
       this.endTimeStamp = +moment();
@@ -83,6 +89,7 @@ module HawkularMetrics {
       if (resourceId) {
         this.refreshSummaryAvailabilityData(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
         this.refreshAvailDataForTimestamp(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
+        this.refreshAlerts(resourceId, startTime ? startTime : adjStartTimeStamp, this.endTimeStamp);
       }
     }
 
@@ -173,6 +180,21 @@ module HawkularMetrics {
           });
 
       }
+    }
+
+    refreshAlerts(metricId:MetricId, startTime:TimestampInMillis, endTime:TimestampInMillis):void {
+      var alertType = this.$routeParams.resourceId + '_trigger_thres';
+      this.HawkularAlert.Alert.query({}, (anAlertList) => {
+        var filteredAlerts = [];
+        for(var i = 0; i < anAlertList.length; i++) {
+          if((anAlertList[i].triggerId === alertType) && (anAlertList[i].ctime >= (+moment() - this.$scope.hkParams.timeOffset))) {
+            // cleaning a lot of data, we dont need at the template
+            anAlertList[i].evalSets.splice(1);
+            filteredAlerts.push(anAlertList[i]);
+          }
+        }
+        this.alertList = filteredAlerts.reverse();
+      }, this);
     }
 
   }

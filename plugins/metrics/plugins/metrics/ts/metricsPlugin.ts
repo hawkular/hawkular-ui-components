@@ -62,6 +62,7 @@ module HawkularMetrics {
 
   _module.config(["$routeProvider", ($routeProvider) => {
     $routeProvider.
+        // this was for single page.. remove ?
         when('/hawkular/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/single-page.html'}).
         when('/metrics/response-time', {templateUrl: 'plugins/metrics/html/response-time.html',
         resolve: {
@@ -78,10 +79,14 @@ module HawkularMetrics {
             return $q.defer().promise;
           }
         }}).
-        when('/metrics/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
-        when('/metrics/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
-        when('/metrics/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
-        otherwise({redirectTo: '/metrics/add-url'});
+        when('/hawkular-ui/url/url-list', { templateUrl: 'plugins/metrics/html/add-url.html'}).
+        when('/hawkular-ui/url/response-time/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/response-time.html'}).
+        when('/hawkular-ui/url/availability/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/availability.html'}).
+        when('/hawkular-ui/url/alerts/:resourceId/:timeOffset?/:endTime?', {templateUrl: 'plugins/metrics/html/alerts.html'}).
+
+        when('/hawkular-ui/app/app-list', { templateUrl: 'plugins/metrics/html/app-server-list.html' }).
+        when('/hawkular-ui/app/app-details/:resourceId/:timeOffset?/:endTime?', { templateUrl: 'plugins/metrics/html/app-server-details.html', resolve: { hideSubNav: function() { return true; } } }).
+        otherwise({redirectTo: '/hawkular-ui/url/url-list'});
   }]);
 
   hawtioPluginLoader.addModule(HawkularMetrics.pluginName);

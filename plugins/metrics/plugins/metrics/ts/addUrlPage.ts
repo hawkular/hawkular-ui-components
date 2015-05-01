@@ -28,6 +28,8 @@ module HawkularMetrics {
     public addProgress: boolean = false;
     private resourceList;
     public alertList;
+    private resPerPage = 5;
+    public resCurPage = 0;
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
@@ -154,8 +156,14 @@ module HawkularMetrics {
     }
 
     getResourceList():any {
-      this.HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (aResourceList) => {
+      this.HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId, per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
+        var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
+        for (var p = 0; p < pages.length; p++) {
+          if (pages[p].indexOf('')) {
+            // get things
+          }
+        }
         var expanded = this.resourceList ? this.resourceList.expanded : [];
         aResourceList.expanded = expanded;
         this.HawkularAlert.Alert.query({}, (anAlertList) => {
@@ -211,6 +219,11 @@ module HawkularMetrics {
           resource: () => resource
         }
       }).result.then(result => this.getResourceList());
+    }
+
+    setPage(page:number):void {
+      this.resCurPage = page;
+      this.getResourceList();
     }
   }
 

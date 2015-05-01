@@ -1,41 +1,8 @@
-<ul class="nav navbar-nav navbar-primary navbar-selector navbar-dark row">
-  <li class="col-sm-3 col-md-2">
-    <a href="/metrics/add-url">URLs List</a>
+<ul class="nav navbar-nav navbar-primary">
+  <li ng-class="getClass('/hawkular-ui/url/')">
+    <a href="/hawkular-ui/url/url-list">URLs</a>
   </li>
-  <li class="context dropdown">
-    <a href="#" class="additional-info" dropdown-toggle ng-hide="resources.length === 0">
-      {{selectedResource.properties.url}}
-      <b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu" role="menu">
-      <li ng-class="{'active': hkParams.resourceId === resource.id}" ng-repeat="resource in hkResources | orderBy:'properties.url'">
-        <a href="" ng-click="setSelection(resource)">{{resource.properties.url}}</a>
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a href="/metrics/add-url">Add Application...</a>
-      </li>
-    </ul>
-  </li>
-  <li class="pull-right date-range dropdown">
-    <i class="fa fa-calendar"></i>
-    <div class="input" dropdown-toggle>
-      {{offsetName}} <span class="additional-info">({{getFormattedDate()}})</span>
-    </div>
-
-    <div class="dropdown-menu infotip bottom-right">
-      <div class="arrow"></div>
-      <div class="dropdown-menu-content">
-        <span class="label">Last</span>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Hour'}" ng-click="setRange({hour: 1})">1h</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last 12 Hours'}" ng-click="setRange({hours: 12})">12h</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Day'}" ng-click="setRange({day: 1})">Day</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Week'}" ng-click="setRange({week: 1})">Week</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Month'}" ng-click="setRange({month: 1})">Month</button>
-          <button type="button" class="btn btn-default" ng-class="{'active': offsetName === 'Last Year'}" ng-click="setRange({year: 1})">Year</button>
-        </div>
-      </div>
-    </div>
+  <li ng-class="getClass('/hawkular-ui/app/')">
+    <a href="/hawkular-ui/app/app-list">Application Servers</a>
   </li>
 </ul>
