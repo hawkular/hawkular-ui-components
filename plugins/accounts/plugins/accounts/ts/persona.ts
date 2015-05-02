@@ -33,7 +33,6 @@ module HawkularAccounts {
                     },
                     () => {
                         $log.warn("Failed in retrieving the current persona");
-                        Core.notification('error', "Failed in retrieving your current persona.");
                     }
                 );
             };
@@ -48,7 +47,6 @@ module HawkularAccounts {
                     },
                     () => {
                         $log.warn("List of personas could NOT be retrieved.");
-                        Core.notification('error', "List of your available personas could NOT be retrieved.");
                         $scope.loading = false;
                     }
                 );
