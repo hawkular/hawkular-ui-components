@@ -23,7 +23,7 @@
 module HawkularMetrics {
 
   export interface IHawkularErrorManager {
-    errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): any
+    errorHandler(error: any, msg: string, cb?: (error: any, msg: string) => void): any;
   }
 
   export class HawkularErrorManager implements IHawkularErrorManager {

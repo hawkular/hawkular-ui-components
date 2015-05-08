@@ -19,8 +19,8 @@
 module HawkularMetrics {
 
   export interface IQuickAlertController {
-    toggleQuickAlert():void
-    saveQuickAlert():void
+    toggleQuickAlert():void;
+    saveQuickAlert():void;
   }
 
   export class QuickAlertController implements IQuickAlertController {

@@ -19,21 +19,21 @@
 module HawkularMetrics {
 
   export interface IHawkularAlertsManager {
-    addEmailAction(email: string): ng.IPromise<void>
-    createAction(email: string): ng.IPromise<void>
-    updateTrigger(triggerId: string, data: any): ng.IPromise<void>
-    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void>
-    createCondition(triggerId: string, condition: any): ng.IPromise<void>
-    updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>
-    createDampening(triggerId: string, duration: number): ng.IPromise<void>
-    updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void>
-    getAction(email: string): ng.IPromise<void>
-    getActions(triggerId: string): ng.IPromise<void>
-    getTrigger(triggerId: string): ng.IPromise<void>
-    setEmail(triggerId: string, email: string): ng.IPromise<void>
-    setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>
-    setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>
-    queryConsoleAlerts(metricId: string): ng.IPromise<void>
+    addEmailAction(email: string): ng.IPromise<void>;
+    createAction(email: string): ng.IPromise<void>;
+    updateTrigger(triggerId: string, data: any): ng.IPromise<void>;
+    createTrigger(triggerName: string, enabled: boolean, conditionType: string, email: string): ng.IPromise<void>;
+    createCondition(triggerId: string, condition: any): ng.IPromise<void>;
+    updateCondition(triggerId: string, conditionId: string, condition: any): ng.IPromise<void>;
+    createDampening(triggerId: string, duration: number): ng.IPromise<void>;
+    updateDampening(triggerId: string, dampeningId: string, dampening: any): ng.IPromise<void>;
+    getAction(email: string): ng.IPromise<void>;
+    getActions(triggerId: string): ng.IPromise<void>;
+    getTrigger(triggerId: string): ng.IPromise<void>;
+    setEmail(triggerId: string, email: string): ng.IPromise<void>;
+    setResponseTime(triggerId: string, treshold: number, duration: number, enabled: boolean): ng.IPromise<void>;
+    setDowntime(triggerId: string, duration: number, enabled: boolean): ng.IPromise<void>;
+    queryConsoleAlerts(metricId: string): ng.IPromise<void>;
   }
 
   export class HawkularAlertsManager implements IHawkularAlertsManager{
