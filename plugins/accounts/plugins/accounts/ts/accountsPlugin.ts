@@ -66,7 +66,7 @@ module HawkularAccounts {
     }]);
 
     hawtioPluginLoader.registerPreBootstrapTask((next) => {
-        KeycloakConfig = "/keycloak.json";
+        window['KeycloakConfig'] = "/keycloak.json";
         next();
     }, true);
 
