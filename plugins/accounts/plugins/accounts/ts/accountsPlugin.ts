@@ -17,6 +17,7 @@
 /// <reference path="accountsGlobals.ts"/>
 module HawkularAccounts {
     export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
+    export var userDetails:any = undefined;
     var accountsTab:any = undefined;
     var currentPersona:any = undefined;
 
@@ -35,9 +36,10 @@ module HawkularAccounts {
         $httpProvider.interceptors.push(PersonaInterceptorService.Factory);
     }]);
 
-    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry) => {
+    _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', 'HawkularInventory', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry, hawkularInventory) => {
         //HawtioNav.add(accountsTab);
         $rootScope.userDetails = userDetails;
+        HawkularAccounts.userDetails = userDetails;
 
         $rootScope.$on('IdleStart', () => {
             $('#idle').slideDown();
@@ -56,12 +58,61 @@ module HawkularAccounts {
             });
         });
 
+        var initializeInventory = (tenantId: string) => {
+
+            var addTenant = () => {
+                var tenant = {
+                    id: tenantId
+                };
+                return hawkularInventory.Tenant.save(tenant).$promise;
+            };
+
+            var addEnvironment = () => {
+                // todo: environment is hard-coded here
+                var environment = {
+                    id: 'test'
+                };
+                return hawkularInventory.Environment.save({tenantId: tenantId}, environment).$promise;
+            };
+
+            var addResourceType = () => {
+                var resourceType = {
+                    id: 'URL',
+                    version: '1.0'
+                };
+                return hawkularInventory.ResourceType.save({tenantId: tenantId}, resourceType).$promise;
+            };
+
+            var addMetricType = (id: string, units: string) => {
+                var metricType = {
+                    id: id,
+                    unit: units
+                };
+                return hawkularInventory.MetricType.save({tenantId: tenantId}, metricType).$promise;
+            };
+
+            var err = (error: any, msg: string): void => {
+                toastr.error(msg);
+                // todo: use HawkularErrorManager once it is available in shared services
+                // this.HawkularErrorManager.errorHandler(error, msg);
+            };
+
+            addTenant()
+            .then(addEnvironment)
+            .then(addResourceType)
+            .then(addMetricType('status.duration.type', 'MILLI_SECOND'))
+            .then(addMetricType('status.code.type', 'NONE'))
+            .catch((e) => err(e, 'Error initializing the inventory.'));
+        };
+
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
             currentPersona = persona;
+            initializeInventory(currentPersona.id);
         });
 
         $rootScope.$on('SwitchedPersona', (e, persona) => {
             currentPersona = persona;
+            initializeInventory(currentPersona.id);
         });
     }]);
 
