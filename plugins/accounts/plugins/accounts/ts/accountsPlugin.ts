@@ -89,6 +89,8 @@ module HawkularAccounts {
                 return hawkularInventory.MetricType.save({tenantId: tenantId}, metricType).$promise;
             };
 
+            var notify = () => $rootScope.$emit("UserInitialized", tenantId);
+
             var err = (error: any, msg: string): void => {
                 toastr.error(msg);
                 // todo: use HawkularErrorManager once it is available in shared services
@@ -100,8 +102,17 @@ module HawkularAccounts {
                 .then(addResourceType)
                 .then(addMetricType('status.duration.type', 'MILLI_SECOND'))
                 .then(addMetricType('status.code.type', 'NONE'))
-                .catch((e) => err(e, 'Error initializing the data for user.'))
-            ,() => console.log('Inventory has already beed initialized.'));
+                .then(notify)
+                .catch((e) => {
+                    err(e, 'Error initializing the data for user.');
+                    notify();
+                })
+            ,() => {
+                // this is called if the very first call in chain fails 
+                // (tenant has been created so we assume the rest is there as well)
+                console.log('Inventory has already beed initialized.');
+                notify();
+            });
         };
 
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {

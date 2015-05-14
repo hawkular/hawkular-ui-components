@@ -20,10 +20,10 @@ module Topbar {
 
   export class HawkularNav {
 
-    public static $inject = ['$rootScope', '$route', '$routeParams', '$interval', 'HawkularInventory'];
+    public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
 
 
-    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private $interval:ng.IIntervalService, private HawkularInventory: any) {
+    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private HawkularInventory: any) {
       $rootScope.hkParams = $routeParams || [];
 
       // default time period set to 24 hours
@@ -61,19 +61,13 @@ module Topbar {
 
           }, this);
       };
-      var initPromise:ng.IPromise<number>;
       var tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
       if (tenantId) {
         init(tenantId);
       } else {
         // currentPersona hasn't been injected to the rootScope yet, wait for it..
-        // perhaps the better way would be to listen on the events from accounts
-        initPromise = this.$interval(()  => {
-          init(this.$rootScope.currentPersona && this.$rootScope.currentPersona.id);
-        }, 1000);
-
-        $rootScope.$on('$destroy', () => {
-          this.$interval.cancel(initPromise);
+        $rootScope.$on('UserInitialized', (tenantId) => {
+          init(tenantId);
         });
       }
     }

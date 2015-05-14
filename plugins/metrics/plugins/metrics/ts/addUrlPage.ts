@@ -48,6 +48,16 @@ module HawkularMetrics {
                 public resourceUrl:string) {
       $scope.vm = this;
       this.resourceUrl = this.httpUriPart;
+
+      if (this.$rootScope.currentPersona) {
+        this.getResourceList(this.$rootScope.currentPersona.id);
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        $rootScope.$on('UserInitialized', (tenantId) => {
+          this.getResourceList(tenantId);
+        });
+      }
+
       this.autoRefresh(20);
     }
     private autoRefreshPromise:ng.IPromise<number>;
@@ -89,7 +99,7 @@ module HawkularMetrics {
       /// Add the Resource and its metrics
       this.HawkularInventory.Resource.save({tenantId: currentTenantId, environmentId: globalEnvironmentId}, resource).$promise
         .then((newResource) => {
-          this.getResourceList();
+          this.getResourceList(currentTenantId);
           metricId = resourceId;
           console.dir(newResource);
           this.$log.info('New Resource ID: ' + metricId + ' created.');
@@ -154,9 +164,9 @@ module HawkularMetrics {
         });
     }
 
-    getResourceList():any {
-      var currentTenantId = this.$rootScope.currentPersona.id;
-      this.HawkularInventory.Resource.query({tenantId: currentTenantId, environmentId: globalEnvironmentId, per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
+    getResourceList(currentTenantId?: string):any {
+      var tenantId:string = currentTenantId || this.$rootScope.currentPersona.id;
+      this.HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId, per_page: this.resPerPage, page: this.resCurPage}, (aResourceList, getResponseHeaders) => {
         // FIXME: hack.. make expanded out of list
         var pages = getResponseHeaders().link ? getResponseHeaders().link.split(', ') : [];
         for (var p = 0; p < pages.length; p++) {
@@ -172,19 +182,19 @@ module HawkularMetrics {
         var promises = [];
         angular.forEach(aResourceList, function(res, idx) {
           promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
-            tenantId: currentTenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
+            tenantId: tenantId, resourceId: res.id, numericId: (res.id + '.status.duration'),
             start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Work data so it works for chart ?
             res['responseTime'] = resource;
           }).$promise);
           promises.push(this.HawkularMetric.NumericMetricData.queryMetrics({
-            tenantId: currentTenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
+            tenantId: tenantId, resourceId: res.id, numericId: (res.id + '.status.code'),
             start: moment().subtract(24, 'hours').valueOf(), end: moment().valueOf()}, (resource) => {
             // FIXME: Use availability instead..
             res['isUp'] = (resource[0] && resource[0].value >= 200 && resource[0].value < 300);
           }).$promise);
           promises.push(this.HawkularMetric.AvailabilityMetricData.query({
-            tenantId: currentTenantId,
+            tenantId: tenantId,
             availabilityId: res.id,
             start: moment().subtract(24, 'hours').valueOf(),
             end: moment().valueOf(),
