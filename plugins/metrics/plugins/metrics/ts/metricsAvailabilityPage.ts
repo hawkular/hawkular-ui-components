@@ -36,11 +36,12 @@ module HawkularMetrics {
 
   export class MetricsAvailabilityController {
     /// for minification only
-    public static  $inject = ['$scope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
+    public static  $inject = ['$scope', '$rootScope', '$interval', '$log', 'HawkularMetric', 'HawkularAlert', '$routeParams'];
 
     public math;
 
     constructor(private $scope:any,
+                private $rootScope:any,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
@@ -125,7 +126,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
-          tenantId: globalTenantId,
+          tenantId: this.$rootScope.currentPersona.id,
           availabilityId: metricId,
           start: startTime,
           end: endTime,
@@ -162,7 +163,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.AvailabilityMetricData.query({
-          tenantId: globalTenantId,
+          tenantId: this.$rootScope.currentPersona.id,
           availabilityId: metricId,
           start: startTime,
           end: endTime,

@@ -22,7 +22,5 @@ module Sidebar {
 
   export var templatePath = "plugins/sidebar/html/sidebar.html";
 
-  export var globalTenantId = "test";
-
   export var globalEnvironmentId = "test";
 }
