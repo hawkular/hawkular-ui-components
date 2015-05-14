@@ -10,8 +10,8 @@
       <legend>Contact</legend>
       <p>Receive email notifications in the following address when the alert conditions are met.</p>
       <div class="form-group">
-        <label class="col-md-3 control-label" for="email">Email</label>
-        <div class="col-md-6">
+        <label class="col-sm-3 control-label" for="email">Email</label>
+        <div class="col-sm-6">
           <input type="text" id="email" class="form-control"  ng-model="mas.trigger_thres.actions[0]"
                  ng-change="mas.alertSettingTouch()">
           <span class="help-block">Send alerts to this email address.</span>
@@ -38,8 +38,8 @@
       </div>
       <div ng-show="mas.trigger_thres.enabled">
         <div class="form-group">
-          <label class="col-md-3 control-label" for="time">Time (maximum)</label>
-          <div class="col-md-9 inline-row">
+          <label class="col-sm-3 control-label" for="time">Time (maximum)</label>
+          <div class="col-sm-9 inline-row">
             <div class="input-group input-addon">
               <input type="number" class="form-control" placeholder="Time" id="time"
                      ng-model="mas.trigger_thres_cond[0].threshold" ng-change="mas.alertSettingTouch()">
@@ -48,8 +48,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="col-md-3 control-label">Notification Rate</label>
-          <div class="col-md-9">
+          <label class="col-sm-3 control-label">Notification Rate</label>
+          <div class="col-sm-9">
             <div class="radio">
               <label>
                 <input type="radio" name="notification" id="every-time" ng-value="false"
@@ -81,7 +81,7 @@
     <fieldset>
       <legend>Downtime</legend>
       <div class="form-group onffswitch-form-group">
-        <label class="col-md-3 control-label" for="trigger_avail.enabled">Status</label>
+        <label class="col-sm-3 control-label" for="trigger_avail.enabled">Status</label>
         <div class="onoffswitch-container">
           <div class="onoffswitch">
             <input type="checkbox" id="trigger_avail.enabled" name="trigger_avail.enabled" class="onoffswitch-checkbox"
@@ -98,8 +98,8 @@
       </div>
       <div ng-show="mas.trigger_avail.enabled">
         <div class="form-group">
-          <label class="col-md-3 control-label" for="downtimeDuration">Duration (maximum)</label>
-          <div class="col-md-6 inline-row">
+          <label class="col-sm-3 control-label" for="downtimeDuration">Duration (maximum)</label>
+          <div class="col-sm-6 inline-row">
             <div class="input-group duration">
               <input type="number" class="form-control" placeholder="Duration" ng-model="mas.downtimeDuration"
                      ng-change="mas.changeDowntimeTimeUnits()" id="downtimeDuration"
