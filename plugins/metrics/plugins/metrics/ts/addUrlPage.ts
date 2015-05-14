@@ -22,7 +22,7 @@ module HawkularMetrics {
 
   export class AddUrlController {
     /// this is for minification purposes
-    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', 'HawkularAccounts', '$q', 'md5'];
+    public static $inject = ['$location', '$scope', '$rootScope', '$interval', '$log', '$filter', '$modal', 'HawkularInventory', 'HawkularMetric', 'HawkularAlert', 'HawkularAlertsManager','HawkularErrorManager', '$q', 'md5'];
 
     private httpUriPart = 'http://';
     public addProgress: boolean = false;
@@ -33,7 +33,7 @@ module HawkularMetrics {
 
     constructor(private $location:ng.ILocationService,
                 private $scope:any,
-                private $rootScope:ng.IRootScopeService,
+                private $rootScope:any,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private $filter:ng.IFilterService,
@@ -43,7 +43,6 @@ module HawkularMetrics {
                 private HawkularAlert:any,
                 private HawkularAlertsManager: HawkularMetrics.IHawkularAlertsManager,
                 private HawkularErrorManager: HawkularMetrics.IHawkularErrorManager,
-                private HawkularAccounts: any,
                 private $q: ng.IQService,
                 private md5: any,
                 public resourceUrl:string) {
@@ -53,7 +52,7 @@ module HawkularMetrics {
       this.autoRefresh(20);
     }
 
-    private currentTenantId = this.HawkularAccounts.currentPersona.id;
+    private currentTenantId = this.$rootScope.currentPersona.id;
 
     private autoRefreshPromise:ng.IPromise<number>;
 
@@ -87,7 +86,7 @@ module HawkularMetrics {
       this.$log.info('Adding new Resource Url to Hawkular-inventory: ' + url);
 
       var metricId: string;
-      var defaultEmail = this.HawkularAccounts.userDetails.email || 'myemail@company.com';
+      var defaultEmail = this.$rootScope.userDetails.email || 'myemail@company.com';
       var err = (error: any, msg: string): void => this.HawkularErrorManager.errorHandler(error, msg);
 
       /// Add the Resource and its metrics

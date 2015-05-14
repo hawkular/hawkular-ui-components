@@ -17,7 +17,6 @@
 /// <reference path="accountsGlobals.ts"/>
 module HawkularAccounts {
     export var _module = angular.module(HawkularAccounts.pluginName, ['ui.bootstrap']);
-    export var userDetails:any = undefined;
     var accountsTab:any = undefined;
     var currentPersona:any = undefined;
 
@@ -39,7 +38,6 @@ module HawkularAccounts {
     _module.run(['$rootScope', '$log', '$modal', '$document', 'userDetails', 'HawtioNav', 'HawkularInventory', ($rootScope, $log, $modal, $document, userDetails, HawtioNav:HawtioMainNav.Registry, hawkularInventory) => {
         //HawtioNav.add(accountsTab);
         $rootScope.userDetails = userDetails;
-        HawkularAccounts.userDetails = userDetails;
 
         $rootScope.$on('IdleStart', () => {
             $('#idle').slideDown();
@@ -107,11 +105,13 @@ module HawkularAccounts {
 
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
             currentPersona = persona;
+            $rootScope.currentPersona = currentPersona;
             initializeInventory(currentPersona.id);
         });
 
         $rootScope.$on('SwitchedPersona', (e, persona) => {
             currentPersona = persona;
+            $rootScope.currentPersona = currentPersona;
             initializeInventory(currentPersona.id);
         });
     }]);
