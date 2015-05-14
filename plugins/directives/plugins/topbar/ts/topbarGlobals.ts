@@ -22,8 +22,6 @@ module Topbar {
 
   export var templatePath = "plugins/topbar/html/topbar.html";
 
-  export var globalTenantId = "test";
-
   export var globalEnvironmentId = "test";
 
 }

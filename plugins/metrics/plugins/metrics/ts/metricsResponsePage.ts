@@ -57,7 +57,7 @@ module HawkularMetrics {
     public math;
 
     constructor(private $scope:any,
-                private $rootScope:ng.IRootScopeService,
+                private $rootScope:any,
                 private $interval:ng.IIntervalService,
                 private $log:ng.ILogService,
                 private HawkularMetric:any,
@@ -185,7 +185,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: globalTenantId,
+          tenantId: this.$rootScope.currentPersona.id,
           numericId: metricId,
           start: startTime,
           end: endTime,
@@ -221,7 +221,7 @@ module HawkularMetrics {
 
       if (metricId) {
         this.HawkularMetric.NumericMetricData.queryMetrics({
-          tenantId: globalTenantId,
+          tenantId: this.$rootScope.currentPersona.id,
           numericId: metricId,
           start: startTime,
           end: endTime,

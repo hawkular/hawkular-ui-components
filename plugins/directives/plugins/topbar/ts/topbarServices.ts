@@ -20,45 +20,62 @@ module Topbar {
 
   export class HawkularNav {
 
-    public static $inject = ['$rootScope', '$route', '$routeParams', 'HawkularInventory'];
+    public static $inject = ['$rootScope', '$route', '$routeParams', '$interval', 'HawkularInventory'];
 
 
-    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private HawkularInventory: any) {
+    constructor(private $rootScope: any, private $route: any, private $routeParams: any, private $interval:ng.IIntervalService, private HawkularInventory: any) {
       $rootScope.hkParams = $routeParams || [];
 
       // default time period set to 24 hours
       var defaultOffset = 1 * 60 * 60  * 1000;
 
-      HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
-        $rootScope.hkResources = resourceList;
-        for (var i = 0; i < resourceList.length; i++) {
-          if(resourceList[i].id === $rootScope.hkParams.resourceId) {
-            $rootScope.selectedResource = resourceList[i];
-          }
-        }
-      });
-
-      $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-      $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-      $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
-
-      $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
-        $rootScope.hkParams = current.params;
-
-        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
-        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
-        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
-
-        HawkularInventory.Resource.query({tenantId: globalTenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+      var init = (tenantId: string) => {
+        HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
           $rootScope.hkResources = resourceList;
           for (var i = 0; i < resourceList.length; i++) {
             if(resourceList[i].id === $rootScope.hkParams.resourceId) {
               $rootScope.selectedResource = resourceList[i];
             }
           }
-        });
+          });
 
-      }, this);
+        $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+        $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+        $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+
+        $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+          $rootScope.hkParams = current.params;
+
+          $rootScope.hkParams.timeOffset = $routeParams.timeOffset || defaultOffset;
+          $rootScope.hkEndTimestamp = $routeParams.endTimestamp || moment().valueOf();
+          $rootScope.hkStartTimestamp =  moment().subtract($rootScope.hkParams.timeOffset, 'milliseconds').valueOf();
+
+          HawkularInventory.Resource.query({tenantId: tenantId, environmentId: globalEnvironmentId}, (resourceList) => {
+            $rootScope.hkResources = resourceList;
+            for (var i = 0; i < resourceList.length; i++) {
+              if(resourceList[i].id === $rootScope.hkParams.resourceId) {
+                $rootScope.selectedResource = resourceList[i];
+              }
+            }
+            });
+
+          }, this);
+      };
+      var initPromise:ng.IPromise<number>;
+      var tenantId = this.$rootScope.currentPersona && this.$rootScope.currentPersona.id;
+      if (tenantId) {
+        init(tenantId);
+      } else {
+        // currentPersona hasn't been injected to the rootScope yet, wait for it..
+        // perhaps the better way would be to listen on the events from accounts
+        initPromise = this.$interval(()  => {
+          init(this.$rootScope.currentPersona && this.$rootScope.currentPersona.id);
+        }, 1000);
+
+        $rootScope.$on('$destroy', () => {
+          this.$interval.cancel(initPromise);
+        });
+      }
     }
 
     public setTimestamp(offset, end) {

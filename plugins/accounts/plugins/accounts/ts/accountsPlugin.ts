@@ -96,11 +96,12 @@ module HawkularAccounts {
             };
 
             addTenant()
-            .then(addEnvironment)
-            .then(addResourceType)
-            .then(addMetricType('status.duration.type', 'MILLI_SECOND'))
-            .then(addMetricType('status.code.type', 'NONE'))
-            .catch((e) => err(e, 'Error initializing the inventory.'));
+            .then(() => addEnvironment()
+                .then(addResourceType)
+                .then(addMetricType('status.duration.type', 'MILLI_SECOND'))
+                .then(addMetricType('status.code.type', 'NONE'))
+                .catch((e) => err(e, 'Error initializing the data for user.'))
+            ,() => console.log('Inventory has already beed initialized.'));
         };
 
         $rootScope.$on('CurrentPersonaLoaded', (e, persona) => {
