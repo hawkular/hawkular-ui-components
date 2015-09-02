@@ -5,7 +5,7 @@ ifdef::env-github[]
 image:https://travis-ci.org/hawkular/hawkular-ui-components.svg["Build Status", link="https://travis-ci.org/hawkular/hawkular-ui-components"]
 endif::[]
 
-== (Currently not used -- Moved to https://github.com/hawkular/hawkular/tree/master/ui[hawkualr/hawkular] repo)
+== (Currently not used -- Moved to https://github.com/hawkular/hawkular/tree/master/console[hawkular/hawkular] repo)
 
 Please refer to http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Development Docs] for further UI development details.
 
