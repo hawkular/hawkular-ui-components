@@ -10,3 +10,12 @@ endif::[]
 
 Please refer to http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Development Docs] for further UI development details.
 
+== Prerequisites
+
+You need to have installed [Node.js and npm](https://docs.npmjs.com/getting-started/installing-node) on your system.
+
+Then install these node packages
+[source]
+npm install -g tsd bower webpack gulp
+
+
