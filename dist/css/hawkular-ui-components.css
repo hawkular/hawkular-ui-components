@@ -1,0 +1,21 @@
+.miqGreeter {
+  background-color: red;
+  color: white;
+}
+
+td.miqTextLeft {
+  text-align: left;
+}
+
+td.miqTextRight {
+  text-align: right;
+}
+
+table.mig-table-with-footer {
+  margin-bottom: 0px;
+}
+
+.dataTables_footer span {
+  margin-left: 10px;
+}
+/*# sourceMappingURL=hawkular-ui-components.css.map*/

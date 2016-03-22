@@ -1,15 +1,16 @@
 <div class="btn-group" dropdown>
-    <button type="button" dropdown-toggle class="btn dropdown-toggle btn-default" ng-class="{disabled: toolbarList.disabled}" title="{{toolbarList.title}}">
-        <i class="{{toolbarList.icon}}" style="margin-right: 5px;" ng-if="toolbarList.icon"></i>
-        {{toolbarList.title}}
-        <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li ng-repeat="item in toolbarList.children" ng-class="{disabled: item.disabled}">
-            <a href="#" ng-click="onItemClick({item: item})">
-                <i ng-if="item.icon" class="{{item.icon}}"></i>
-                {{item.title}}
-            </a>
-        </li>
-    </ul>
+  <button type="button" dropdown-toggle class="btn dropdown-toggle btn-default"
+          ng-class="{disabled: toolbarList.disabled}" title="{{toolbarList.title}}">
+    <i class="{{toolbarList.icon}}" style="margin-right: 5px;" ng-if="toolbarList.icon"></i>
+    {{toolbarList.title}}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li ng-repeat="item in toolbarList.children" ng-class="{disabled: item.disabled}">
+      <a href="#" ng-click="onItemClick({item: item})">
+        <i ng-if="item.icon" class="{{item.icon}}"></i>
+        {{item.title}}
+      </a>
+    </li>
+  </ul>
 </div>
