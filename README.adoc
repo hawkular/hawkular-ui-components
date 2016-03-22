@@ -1,11 +1,12 @@
-= Hawkular UI Components
+= Hawkular Middleware Components for ManageIQ
 
 ifdef::env-github[]
 [link=https://travis-ci.org/hawkular/hawkular-ui-components]
-image:https://travis-ci.org/hawkular/hawkular-ui-components.svg["Build Status", link="https://travis-ci.org/hawkular/hawkular-ui-components"]
+image:https://travis-ci.org/hawkular/hawkular-ui-components.svg["Build Status",
+link="https://travis-ci.org/hawkular/hawkular-ui-components"]
 endif::[]
 
-== (Currently not used -- Moved to https://github.com/hawkular/hawkular/tree/master/console[hawkular/hawkular] repo)
+== Preliminary Angular 2.x Components for ManageIQ
 
 Please refer to http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Development Docs] for further UI development details.
 
