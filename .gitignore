@@ -16,6 +16,8 @@ libs/
 node_modules/
 bower_components/
 tsd/
+vendor.js
+*.css.map
 *.js.map
 
 ._*
