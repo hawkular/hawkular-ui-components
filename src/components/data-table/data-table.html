@@ -1,0 +1,55 @@
+<div>
+    <table class="table table-bordered table-striped table-hover mig-table-with-footer">
+    <thead>
+        <tr>
+            <th ng-repeat="column in vm.columns"
+                ng-class="vm.getColumnClass(column)">
+                <a href="#" ng-click="vm.onSortClick(column)" ng-if="column.sort">
+                    {{column.text}}
+                    <div class="pull-right">
+                        <i ng-if="vm.isFilteredBy(column.col_idx) && !vm.sortReverse" class="fa fa-sort-desc"></i>
+                        <i ng-if="vm.isFilteredBy(column.col_idx) && vm.sortReverse" class="fa fa-sort-asc"></i>
+                    </div>
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="row in vm.data | orderBy : vm.sortType : vm.sortReverse"
+        ng-class="{active : row.selected}"
+        ng-click="vm.onRowClick({$event: $event, rowData: row})">
+        <td ng-repeat="(columnKey, column) in vm.columns"
+            ng-class="vm.getColumnClass(column)">
+            <input ng-if="vm.isCheckbox(row, columnKey)"
+                   ng-click="vm.onRowSelected($event)"
+                   onclick="event.stopPropagation();"
+                   type="checkbox"
+                   ng-model="row.selected"
+                   name="check_{{row.id}}"
+                   value="{{row.id}}"
+                   ng-checked="row.selected"
+                   class="list-grid-checkbox">
+            <img ng-if="vm.isIconOrImage(row, columnKey)"
+                 alt="row.cells[columnKey].title"
+                 title="row.cells[columnKey].title"
+                 ng-src="{{vm.buildImageUrl(row, columnKey)}}">
+            <span ng-if="row.cells[columnKey].text">
+                {{row.cells[columnKey].text}}
+            </span>
+        </td>
+    </tr>
+    </tbody>
+    </table>
+    <div class="dataTables_footer">
+        <span class="miq-info here">
+            <input type="checkbox" ng-model="isChecked" ng-click="vm.onCheckAll(isChecked)"> Check All
+        </span>
+        <span class="pull-right">
+            <miq-data-table-pagination resource-list="vm.data"
+                                       current-page="vm.resCurPage"
+                                       page-setter="vm.setPage"
+                                       per-page="vm.resPerPage">
+            </miq-data-table-pagination>
+        </span>
+    </div>
+</div>

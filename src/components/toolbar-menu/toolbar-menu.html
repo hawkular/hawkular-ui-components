@@ -1,0 +1,11 @@
+<div class="toolbar-pf-actions">
+    <div id="center_tb">
+        <div class="form-group">
+            <miq-toolbar-list ng-repeat="item in vm.toolbarItems | filter: children"
+                              toolbar-list="item"
+                              on-item-click="vm.onItemClick(item)">
+            </miq-toolbar-list>
+        </div>
+    </div>
+    <div id="view_tb"></div>
+</div>
