@@ -1,4 +1,4 @@
-= Hawkular Components for ManageIQ
+= Hawkular Middleware Components for ManageIQ
 
 ifdef::env-github[]
 [link=https://travis-ci.org/hawkular/hawkular-ui-components]
