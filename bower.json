@@ -1,7 +1,7 @@
 {
   "name": "hawkular-ui-components",
   "description": "Hawkular components for other projects.",
-  "version": "0.3.15",
+  "version": "1.0.0",
   "keywords": [
     "hawkular-console",
     "hawkular-ui"
@@ -16,6 +16,5 @@
     "!dist/",
     "!dist/*"
   ],
-  "dependencies": {
-  }
+  "dependencies": {}
 }
