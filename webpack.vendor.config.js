@@ -1,8 +1,12 @@
 const settings = require('./application-settings.js');
 var webpack = require('webpack'),
+    CopyWebpackPlugin = require('copy-webpack-plugin'),
     path = require('path'),
     plugins = [
-        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js")
+        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js"),
+        new CopyWebpackPlugin([
+          {from: __dirname + '/libs', to: 'libs'}
+        ])
         ];
 module.exports = {
     context: __dirname,

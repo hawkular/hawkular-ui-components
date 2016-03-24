@@ -5,6 +5,8 @@ module.exports = {
   javascriptFolder: '/js',
   stylesheetFolder: '/css',
   appName: 'hawkular-ui-components',
+  bowerLibs: 'libs/',
+  nodePackages: 'node_modules/',
   get stylesheetPath() {
     return '..' + this.stylesheetFolder + '/' + this.appName + '.css';
   },

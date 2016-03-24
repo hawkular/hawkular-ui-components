@@ -19,6 +19,6 @@
 import components from './components/loader';
 import services from './services/loader';
 
-const app = angular.module('miQStaticAssets', []);
+const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
 components(app);
 services(app);

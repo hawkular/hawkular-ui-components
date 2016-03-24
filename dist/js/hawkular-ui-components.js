@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(2);
-	module.exports = __webpack_require__(18);
+	module.exports = __webpack_require__(23);
 
 
 /***/ },
@@ -15126,7 +15126,7 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)(module), (function() { return this; }()), __webpack_require__(1)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26)(module), (function() { return this; }()), __webpack_require__(1)))
 
 /***/ },
 /* 2 */
@@ -15138,34 +15138,87 @@
 /* 3 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
+	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-click=\"oneAction.clickFunction()\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
 
 /***/ },
 /* 4 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer\">\n    <thead>\n    <tr>\n      <th ng-repeat=\"column in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <a href=\"#\" ng-click=\"vm.onSortClick(column)\" ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </a>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <input ng-if=\"vm.isCheckbox(row, columnKey)\"\n               ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div class=\"dataTables_footer\">\n        <span class=\"miq-info here\">\n            <input type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\"> Check All\n        </span>\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 5 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  Button\n</div>\n"
+	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer\">\n    <thead>\n    <tr>\n      <th ng-repeat=\"column in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <a href=\"#\" ng-click=\"vm.onSortClick(column)\" ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </a>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <input ng-if=\"vm.isCheckbox(row, columnKey)\"\n               ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div class=\"dataTables_footer\">\n        <span class=\"miq-info here\">\n            <input type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\"> Check All\n        </span>\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
 
 /***/ },
 /* 6 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: toolbarList.disabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.children\" ng-class=\"{disabled: item.disabled}\">\n      <a href=\"#\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
+	module.exports = "<div>\n  Button\n</div>\n"
 
 /***/ },
 /* 7 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"toolbar-pf-actions\">\n  <div id=\"center_tb\">\n    <div class=\"form-group\">\n      <miq-toolbar-list ng-repeat=\"item in vm.toolbarItems | filter: children\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n  </div>\n  <div id=\"view_tb\"></div>\n</div>\n"
+	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: toolbarList.disabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.children\" ng-class=\"{disabled: item.disabled}\">\n      <a href=\"#\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"toolbar-pf-actions\">\n  <div id=\"center_tb\">\n    <div class=\"form-group\">\n      <miq-toolbar-list ng-repeat=\"item in vm.toolbarItems | filter: children\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n  </div>\n  <div id=\"view_tb\"></div>\n</div>\n"
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder.userName\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder.password\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_verifyPwd\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder.verifyPwd\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var ActionButtons = (function () {
+	    function ActionButtons() {
+	        this.replace = true;
+	        this.template = __webpack_require__(3);
+	        this.scope = {
+	            actions: '='
+	        };
+	    }
+	    ActionButtons.Factory = function () {
+	        var directive = function () { return new ActionButtons(); };
+	        directive.$inject = [];
+	        return directive;
+	    };
+	    return ActionButtons;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ActionButtons;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15186,26 +15239,20 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var dataTablecontroller_1 = __webpack_require__(10);
+	var dataTablecontroller_1 = __webpack_require__(13);
 	var DataTable = (function () {
 	    function DataTable() {
 	        this.replace = true;
-	        this.template = __webpack_require__(4);
+	        this.template = __webpack_require__(5);
 	        this.controller = dataTablecontroller_1.default;
 	        this.controllerAs = 'vm';
-	        this.scope = {};
-	        this.bindToController = {
+	        this.bindings = {
 	            onRowClick: '&',
 	            onItemSelected: '&',
 	            data: '=',
 	            columns: '='
 	        };
 	    }
-	    DataTable.Factory = function () {
-	        var directive = function () { return new DataTable(); };
-	        directive.$inject = [];
-	        return directive;
-	    };
 	    return DataTable;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -15213,7 +15260,7 @@
 
 
 /***/ },
-/* 9 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15236,7 +15283,7 @@
 	///<reference path="../../tsd.d.ts"/>
 	var DataTablePagination = (function () {
 	    function DataTablePagination() {
-	        this.template = __webpack_require__(3);
+	        this.template = __webpack_require__(4);
 	        this.scope = {
 	            resourceList: '=',
 	            currentPage: '=',
@@ -15298,7 +15345,7 @@
 
 
 /***/ },
-/* 10 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {///
@@ -15392,7 +15439,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 11 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15413,17 +15460,17 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var dataTableDirective_1 = __webpack_require__(8);
-	var dataTablePaginationDirective_1 = __webpack_require__(9);
+	var dataTableComponent_1 = __webpack_require__(11);
+	var dataTablePaginationDirective_1 = __webpack_require__(12);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    module.directive('miqDataTable', dataTableDirective_1.default.Factory());
+	    module.component('miqDataTable', new dataTableComponent_1.default);
 	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
 	};
 
 
 /***/ },
-/* 12 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15444,17 +15491,21 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var loader_1 = __webpack_require__(13);
-	var loader_2 = __webpack_require__(11);
+	var loader_1 = __webpack_require__(16);
+	var loader_2 = __webpack_require__(14);
+	var actionButtonsDirective_1 = __webpack_require__(10);
+	var validateCredentialsComponent_1 = __webpack_require__(21);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    loader_1.default(module);
 	    loader_2.default(module);
+	    module.directive('miqActionButtons', actionButtonsDirective_1.default.Factory());
+	    module.component('miqValidateCredentials', new validateCredentialsComponent_1.default);
 	};
 
 
 /***/ },
-/* 13 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15475,19 +15526,19 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var toolbarDirective_1 = __webpack_require__(16);
-	var toolbarButtonDirective_1 = __webpack_require__(14);
-	var toolbarListDirective_1 = __webpack_require__(17);
+	var toolbarComponent_1 = __webpack_require__(18);
+	var toolbarButtonDirective_1 = __webpack_require__(17);
+	var toolbarListDirective_1 = __webpack_require__(20);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    module.directive('miqToolbarMenu', toolbarDirective_1.default.Factory());
+	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
 	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
 	    module.directive('miqToolbarList', toolbarListDirective_1.default.Factory());
 	};
 
 
 /***/ },
-/* 14 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15511,7 +15562,7 @@
 	var ToolbarButton = (function () {
 	    function ToolbarButton() {
 	        this.replace = true;
-	        this.template = __webpack_require__(5);
+	        this.template = __webpack_require__(6);
 	        this.scope = {
 	            toolbarButton: '='
 	        };
@@ -15528,7 +15579,46 @@
 
 
 /***/ },
-/* 15 */
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var toolbarController_1 = __webpack_require__(19);
+	var Toolbar = (function () {
+	    function Toolbar() {
+	        this.replace = true;
+	        this.template = __webpack_require__(8);
+	        this.controller = toolbarController_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            toolbarItems: '='
+	        };
+	    }
+	    return Toolbar;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Toolbar;
+
+
+/***/ },
+/* 19 */
 /***/ function(module, exports) {
 
 	///
@@ -15574,51 +15664,7 @@
 
 
 /***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../../tsd.d.ts"/>
-	var toolbarController_1 = __webpack_require__(15);
-	var Toolbar = (function () {
-	    function Toolbar() {
-	        this.controller = toolbarController_1.default;
-	        this.replace = true;
-	        this.controllerAs = 'vm';
-	        this.template = __webpack_require__(7);
-	        this.bindToController = {
-	            toolbarItems: '='
-	        };
-	    }
-	    Toolbar.Factory = function () {
-	        var directive = function () { return new Toolbar(); };
-	        directive.$inject = [];
-	        return directive;
-	    };
-	    return Toolbar;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Toolbar;
-
-
-/***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15642,7 +15688,7 @@
 	var ToolbarList = (function () {
 	    function ToolbarList() {
 	        this.replace = true;
-	        this.template = __webpack_require__(6);
+	        this.template = __webpack_require__(7);
 	        this.scope = {
 	            toolbarList: '=',
 	            onItemClick: '&'
@@ -15660,7 +15706,101 @@
 
 
 /***/ },
-/* 18 */
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var validateCredentialsController_1 = __webpack_require__(22);
+	var ValidateCredentials = (function () {
+	    function ValidateCredentials() {
+	        this.replace = true;
+	        this.template = __webpack_require__(9);
+	        this.controller = validateCredentialsController_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            modelName: '@',
+	            modelHolder: '=',
+	            validateAction: '&'
+	        };
+	    }
+	    return ValidateCredentials;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ValidateCredentials;
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var ValidateCredentialsController = (function () {
+	    function ValidateCredentialsController() {
+	        console.log(this);
+	    }
+	    ValidateCredentialsController.prototype.onValidate = function () {
+	        this.validateAction({ validateData: this.modelHolder });
+	    };
+	    ValidateCredentialsController.prototype.getValidateClass = function () {
+	        return {
+	            disabled: !this.isActive()
+	        };
+	    };
+	    ValidateCredentialsController.prototype.isActive = function () {
+	        if (this.modelHolder) {
+	            return ValidateCredentialsController.notEmpty(this.modelHolder.userName) &&
+	                ValidateCredentialsController.notEmpty(this.modelHolder.password) &&
+	                ValidateCredentialsController.notEmpty(this.modelHolder.verifyPwd);
+	        }
+	        else {
+	            return false;
+	        }
+	    };
+	    ValidateCredentialsController.notEmpty = function (item) {
+	        return item !== undefined && item !== '';
+	    };
+	    return ValidateCredentialsController;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ValidateCredentialsController;
+
+
+/***/ },
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(angular) {///
@@ -15681,16 +15821,16 @@
 	///
 	"use strict";
 	///<reference path="tsd.d.ts"/>
-	var loader_1 = __webpack_require__(12);
-	var loader_2 = __webpack_require__(20);
-	var app = angular.module('miQStaticAssets', []);
+	var loader_1 = __webpack_require__(15);
+	var loader_2 = __webpack_require__(25);
+	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
 	loader_1.default(app);
 	loader_2.default(app);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(22)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
 
 /***/ },
-/* 19 */
+/* 24 */
 /***/ function(module, exports) {
 
 	///
@@ -15735,7 +15875,7 @@
 
 
 /***/ },
-/* 20 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15756,7 +15896,7 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataTableService_1 = __webpack_require__(19);
+	var dataTableService_1 = __webpack_require__(24);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.service('MiQDataTableService', dataTableService_1.default);
@@ -15764,7 +15904,7 @@
 
 
 /***/ },
-/* 21 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -15780,7 +15920,7 @@
 
 
 /***/ },
-/* 22 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = angular;
