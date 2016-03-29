@@ -16,8 +16,8 @@ module.exports = {
   isMinified: function (production) {
     return (!production ? '.js' : '.min.js');
   },
-  get lessEntryPoint() {
-    return '.' + this.sourceFolder + this.stylesFolder + '/' + this.appName + '.less'
+  get sassEntryPoint() {
+    return '.' + this.sourceFolder + this.stylesFolder + '/' + this.appName + '.scss'
   },
   get tsEntryPoint() {
     return '.' + this.sourceFolder + '/index.ts'
