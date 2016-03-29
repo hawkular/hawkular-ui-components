@@ -5,14 +5,16 @@ module.exports = {
   javascriptFolder: '/js',
   stylesheetFolder: '/css',
   appName: 'hawkular-ui-components',
+  bowerLibs: 'libs/',
+  nodePackages: 'node_modules/',
   get stylesheetPath() {
-    return '..' + this.stylesheetFolder + '/' + this.appName + '.css';
+    return '..' + this.stylesheetFolder + '/[name]' + '.css';
   },
   get indexLocation() {
-    return __dirname + this.sourceFolder + '/index.html';
+    return __dirname + this.sourceFolder + '/demo/index.html';
   },
-  appNameByProduction: function (production) {
-    return this.appName + (!production ? '.js' : '.min.js');
+  isMinified: function (production) {
+    return (!production ? '.js' : '.min.js');
   },
   get lessEntryPoint() {
     return '.' + this.sourceFolder + this.stylesFolder + '/' + this.appName + '.less'

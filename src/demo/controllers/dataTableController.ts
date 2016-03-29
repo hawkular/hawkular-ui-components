@@ -15,10 +15,24 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
+///<reference path="../../tsd.d.ts"/>
 
-const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
-components(app);
-services(app);
+export default class DataTableController {
+  public tableData: any;
+
+  /* @ngInject */
+  constructor(public MiQDataTableService: any) {
+    this.MiQDataTableService.retrieveRowsAndColumnsFromUrl('/data/data-table.json').then( (data) => {
+      this.tableData = data;
+      return data;
+    });
+  }
+
+  public onRowClick($event, rowData) {
+    console.log(rowData);
+  }
+
+  public onRowSelected() {
+    console.log(this.tableData);
+  }
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "title": "Configuration",
+    "icon": "fa fa-cog fa-lg",
+    "children": [
+      {
+        "id": "new_provider",
+        "title": "Add a New Middleware Provider",
+        "icon": "pficon pficon-add-circle-o fa-lg"
+      },
+      {
+        "title": "Edit Selected Middleware Provider",
+        "disabled": true,
+        "icon": "pficon pficon-edit fa-lg"
+      },
+      {
+        "title": "Remove Middleware Providers from the VMDB",
+        "disabled": true,
+        "icon": "pficon pficon-delete fa-lg"
+      }
+    ]
+  },
+  {
+    "title": "Policy",
+    "icon": "fa fa-shield fa-lg",
+    "disabled": true,
+    "children": [
+      {
+        "title": "Edit Tags",
+        "disabled": true,
+        "icon": "pficon pficon-edit fa-lg"
+      }
+    ]
+  }
+]

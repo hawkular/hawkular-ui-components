@@ -15,10 +15,16 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
+///<reference path="../../tsd.d.ts"/>
 
-const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
-components(app);
-services(app);
+export default class ToolbarMenuController {
+  public toolbarMenu: any;
+  public constructor(private $http: any) {
+    this.$http({
+      method: 'GET',
+      url: '/data/toolbar.json'
+    }).then((responseData) => {
+      this.toolbarMenu = responseData.data;
+    });
+  }
+}

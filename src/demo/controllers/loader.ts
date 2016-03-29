@@ -15,10 +15,13 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
+///<reference path="../../tsd.d.ts"/>
+import AvailableComponentsController from './availableComponentsController';
+import DataTableController from './dataTableController';
+import ToolbarMenuController from './toolbarMenuController';
 
-const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
-components(app);
-services(app);
+export default (module: ng.IModule) => {
+  module.controller('demoAvailableComponents', AvailableComponentsController);
+  module.controller('demoDataTable', DataTableController);
+  module.controller('demoToolbarMenu', ToolbarMenuController);
+}
