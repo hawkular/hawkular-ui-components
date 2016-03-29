@@ -10,7 +10,7 @@ notifications:
     on_success: change
 
 before_install:
-  - 'npm install -g tsd bower webpack wiredep'
+  - 'npm install -g tsd bower webpack wiredep-cli'
 
 script:
   - 'npm install'
