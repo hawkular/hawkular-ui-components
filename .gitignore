@@ -20,6 +20,7 @@ dist/**/demo-app.*
 libs/
 node_modules/
 bower_components/
+dist/index.html
 tsd/
 vendor.js
 *.css.map
