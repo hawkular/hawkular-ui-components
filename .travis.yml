@@ -2,17 +2,15 @@ sudo: false
 language: node_js
 node_js:
   - '0.10'
-  
+
 notifications:
   irc:
     channels:
     - chat.freenode.net#hawkular
     on_success: change
-    
+
 before_install:
-  - 'npm install -g bower gulp typescript'
+  - 'npm install -g tsd bower webpack wiredep-cli'
 
 script:
   - 'npm install'
-  - 'bower install'
-  - 'gulp'

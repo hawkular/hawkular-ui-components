@@ -37,12 +37,12 @@ module.exports = {
   context: __dirname,
   entry: {
     'hawkular-ui-components': [
-      settings.lessEntryPoint,
+      settings.sassEntryPoint,
       settings.tsEntryPoint
     ],
     'demo-app': [
       '.' + settings.sourceFolder + '/demo/index.ts',
-      '.' + settings.sourceFolder + '/demo/styles/demo-app.less'
+      '.' + settings.sourceFolder + '/demo/styles/demo-app.scss'
     ]
   },
   output: {
@@ -62,8 +62,8 @@ module.exports = {
       {test: /\.ts$/, loaders: ['ts-loader'], exclude: /(node_modules|libs)/},
       {test: /\.html$/, loader: 'raw', exclude: /(node_modules|libs|dist|tsd|bower)/},
       // stylesheets
-      {test: /\.less$/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')},
-      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')}
+      {test: /\.scss/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')},
+      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')}
     ]
   },
   plugins: plugins,

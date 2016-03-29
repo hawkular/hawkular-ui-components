@@ -16,6 +16,6 @@ You need to have installed [Node.js and npm](https://docs.npmjs.com/getting-star
 
 Then install these node packages
 [source]
-npm install -g tsd bower webpack wiredep
+npm install -g tsd bower webpack wiredep-cli
 
 

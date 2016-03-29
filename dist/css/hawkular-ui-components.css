@@ -1,21 +1,17 @@
 .miqGreeter {
   background-color: red;
-  color: white;
-}
+  color: white; }
 
 td.miqTextLeft {
-  text-align: left;
-}
+  text-align: left; }
 
 td.miqTextRight {
-  text-align: right;
-}
+  text-align: right; }
 
 table.mig-table-with-footer {
-  margin-bottom: 0px;
-}
+  margin-bottom: 0px; }
 
 .dataTables_footer span {
-  margin-left: 10px;
-}
+  margin-left: 10px; }
+
 /*# sourceMappingURL=hawkular-ui-components.css.map*/
