@@ -5,13 +5,14 @@ var webpack = require('webpack'),
     plugins = [
         new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js"),
         new CopyWebpackPlugin([
-          {from: __dirname + '/libs', to: 'libs'}
+          {from: __dirname + '/libs', to: 'libs'},
+          {from: settings.indexLocation, to: __dirname + '/..'}
         ])
         ];
 module.exports = {
     context: __dirname,
     entry: {
-        vendor: ["angular", "lodash"]
+        vendor: ["angular", "lodash", "ui-router"]
     },
     plugins: plugins,
     output: {

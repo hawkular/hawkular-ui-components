@@ -3,18 +3,20 @@ var webpack = require('webpack'),
   path = require('path'),
   production = process.argv.indexOf('--production') !== -1,
   NgAnnotatePlugin = require('ng-annotate-webpack-plugin'),
-  CopyWebpackPlugin = require('copy-webpack-plugin'),
   BrowserSyncPlugin = require('browser-sync-webpack-plugin'),
+  CopyWebpackPlugin = require('copy-webpack-plugin'),
   ExtractTextPlugin = require('extract-text-webpack-plugin'),
   spa = require('browser-sync-spa'),
   plugins = [
     new CopyWebpackPlugin([
-      {from: settings.indexLocation, to: __dirname + '/..'}
+      {from: __dirname + settings.sourceFolder + '/demo/data', to: '../data'},
+      {from: __dirname + settings.sourceFolder + '/demo/assets', to: '../assets'}
     ]),
     new webpack.ProvidePlugin({
       angular: 'angular',
       '_': 'lodash'
     }),
+    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"hawkular-ui-components", /* filename= */"hawkular-ui-components.js"),
     new BrowserSyncPlugin({
       host: 'localhost',
       port: 4000,
@@ -34,15 +36,19 @@ production && plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false,
 module.exports = {
   context: __dirname,
   entry: {
-    app: [
+    'hawkular-ui-components': [
       settings.lessEntryPoint,
       settings.tsEntryPoint
+    ],
+    'demo-app': [
+      '.' + settings.sourceFolder + '/demo/index.ts',
+      '.' + settings.sourceFolder + '/demo/styles/demo-app.less'
     ]
   },
   output: {
     path: settings.outputFolder,
     publicPath: '/',
-    filename: settings.appNameByProduction(production)
+    filename: "[name]" + settings.isMinified(production)
   },
   resolve: {
     extensions: ['', '.ts', '.js']
@@ -56,7 +62,7 @@ module.exports = {
       {test: /\.ts$/, loaders: ['ts-loader'], exclude: /(node_modules|libs)/},
       {test: /\.html$/, loader: 'raw', exclude: /(node_modules|libs|dist|tsd|bower)/},
       // stylesheets
-      {test: /\.less$/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader')},
+      {test: /\.less$/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')},
       {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')}
     ]
   },
