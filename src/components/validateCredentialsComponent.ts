@@ -15,21 +15,17 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
-import ToolbarController from './toolbarController';
+///<reference path="../tsd.d.ts"/>
+import ValidateCredentialsController from './validateCredentialsController';
 
-export default class Toolbar implements ng.IDirective {
-  public controller: any = ToolbarController;
+export default class ValidateCredentials implements ng.IComponentOptions {
   public replace: boolean = true;
-  public controllerAs: string = 'vm';
-  public template = require<string>('./toolbar-menu.html');
-  public bindToController: any = {
-    toolbarItems: '='
-  };
-
-  public static Factory = () => {
-    let directive: ng.IDirectiveFactory = () => new Toolbar();
-    directive.$inject = [];
-    return directive;
+  public template = require<string>('./validate-credentials.html');
+  public controller = ValidateCredentialsController;
+  public controllerAs = 'vm';
+  public bindings: any = {
+    modelName: '@',
+    modelHolder: '=',
+    validateAction: '&'
   };
 }

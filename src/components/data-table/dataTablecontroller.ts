@@ -25,6 +25,8 @@ export default class DataTableController {
   public onItemSelected: () => void;
   public resPerPage: number = 10;
   public resCurPage: number = 0;
+  public noFooter: boolean = false;
+  public defaultAction: any;
 
   public static get assetUrl() {
     return '/assets/';

@@ -38,9 +38,15 @@
             </span>
       </td>
     </tr>
+    <tr ng-if="vm.data.length === 0">
+      <td colspan="{{vm.columns.length}}">
+        <p>It looks like this table has no data.</p>
+        <p ng-if="vm.defaultAction">So why don't you try <a ng-click="vm.defaultAction.actionFunction()">{{vm.defaultAction.title}}</a> so this table would not be empty.</p>
+      </td>
+    </tr>
     </tbody>
   </table>
-  <div class="dataTables_footer">
+  <div ng-if="!vm.noFooter" class="dataTables_footer">
         <span class="miq-info here">
             <input type="checkbox" ng-model="isChecked" ng-click="vm.onCheckAll(isChecked)"> Check All
         </span>

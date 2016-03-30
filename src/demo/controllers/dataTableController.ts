@@ -19,11 +19,22 @@
 
 export default class DataTableController {
   public tableData: any;
-
+  public emptyData: any;
+  public defaultAction: any;
   /* @ngInject */
   constructor(public MiQDataTableService: any) {
+    this.defaultAction = {
+      title: 'Create new record',
+      actionFunction: () => {
+        alert('You have tried creating new record');
+      }
+    };
     this.MiQDataTableService.retrieveRowsAndColumnsFromUrl('/data/data-table.json').then( (data) => {
       this.tableData = data;
+      this.emptyData = {
+        cols: data.cols,
+        rows: []
+      };
       return data;
     });
   }

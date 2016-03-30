@@ -15,14 +15,18 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsService from './../services/availableComponentsService';
-import {IAvailableGroup} from '../services/availableComponentsService';
+///<reference path="../tsd.d.ts"/>
 
-export default class AvailableComponentsController {
-  public availableComponents: IAvailableGroup[];
-  /* @ngInject */
-  public constructor() {
-    this.availableComponents = (new AvailableComponentsService()).availableComponents;
-  }
+export default class ActionButtons implements ng.IDirective {
+  public replace: boolean = true;
+  public template = require<string>('./action-buttons.html');
+  public scope: any = {
+    actions: '='
+  };
+
+  public static Factory = () => {
+    let directive = () => new ActionButtons();
+    directive.$inject = [];
+    return directive;
+  };
 }

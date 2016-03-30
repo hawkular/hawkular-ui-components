@@ -16,15 +16,11 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsController from './availableComponentsController';
-import DataTableController from './dataTableController';
-import ToolbarMenuController from './toolbarMenuController';
-import ValidateCredentialsController from './validateCredentialsController';
-import ActionButtonController from './actionButtonsController';
-export default (module: ng.IModule) => {
-  module.controller('demoAvailableComponents', AvailableComponentsController);
-  module.controller('demoDataTable', DataTableController);
-  module.controller('demoToolbarMenu', ToolbarMenuController);
-  module.controller('demoValidateCredentials', ValidateCredentialsController);
-  module.controller('demoActionButtons', ActionButtonController);
+
+export default class ValidateCredentialsController {
+  public credentialsData: any;
+
+  public validateCredentials(validateData) {
+    console.log(validateData, this.credentialsData);
+  }
 }
