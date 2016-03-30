@@ -15,16 +15,17 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsController from './availableComponentsController';
-import DataTableController from './dataTableController';
-import ToolbarMenuController from './toolbarMenuController';
+///<reference path="../tsd.d.ts"/>
 import ValidateCredentialsController from './validateCredentialsController';
-import ActionButtonController from './actionButtonsController';
-export default (module: ng.IModule) => {
-  module.controller('demoAvailableComponents', AvailableComponentsController);
-  module.controller('demoDataTable', DataTableController);
-  module.controller('demoToolbarMenu', ToolbarMenuController);
-  module.controller('demoValidateCredentials', ValidateCredentialsController);
-  module.controller('demoActionButtons', ActionButtonController);
+
+export default class ValidateCredentials implements ng.IComponentOptions {
+  public replace: boolean = true;
+  public template = require<string>('./validate-credentials.html');
+  public controller = ValidateCredentialsController;
+  public controllerAs = 'vm';
+  public bindings: any = {
+    modelName: '@',
+    modelHolder: '=',
+    validateAction: '&'
+  };
 }

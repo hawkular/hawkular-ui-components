@@ -16,15 +16,14 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsController from './availableComponentsController';
-import DataTableController from './dataTableController';
-import ToolbarMenuController from './toolbarMenuController';
-import ValidateCredentialsController from './validateCredentialsController';
-import ActionButtonController from './actionButtonsController';
-export default (module: ng.IModule) => {
-  module.controller('demoAvailableComponents', AvailableComponentsController);
-  module.controller('demoDataTable', DataTableController);
-  module.controller('demoToolbarMenu', ToolbarMenuController);
-  module.controller('demoValidateCredentials', ValidateCredentialsController);
-  module.controller('demoActionButtons', ActionButtonController);
+import ToolbarController from './toolbarController';
+
+export default class Toolbar {
+  public replace: boolean = true;
+  public template = require<string>('./toolbar-menu.html');
+  public controller: any = ToolbarController;
+  public controllerAs: string = 'vm';
+  public bindings: any = {
+    toolbarItems: '='
+  };
 }

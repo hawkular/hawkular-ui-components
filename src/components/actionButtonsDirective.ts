@@ -15,20 +15,18 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
-import ToolbarController from './toolbarController';
+///<reference path="../tsd.d.ts"/>
 
-export default class Toolbar implements ng.IDirective {
-  public controller: any = ToolbarController;
+export default class ActionButtons implements ng.IDirective {
   public replace: boolean = true;
-  public controllerAs: string = 'vm';
-  public template = require<string>('./toolbar-menu.html');
-  public bindToController: any = {
-    toolbarItems: '='
+  public template = require<string>('./action-buttons.html');
+  public scope: any = {
+    actions: '='
   };
 
   public static Factory = () => {
-    let directive: ng.IDirectiveFactory = () => new Toolbar();
+    console.log('blaaafffffa');
+    let directive = () => new ActionButtons();
     directive.$inject = [];
     return directive;
   };

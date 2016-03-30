@@ -1,0 +1,14 @@
+<div>
+  <button ng-repeat="oneAction in actions"
+          name="button"
+          type="submit"
+          class="btn {{oneAction.btnClass}}"
+          alt="action.title"
+          title="action.title"
+          ng-click="oneAction.clickFunction()">
+    <span>
+      <i ng-if="oneAction.iconClass" class="{{oneAction.iconClass}}"></i>
+      {{oneAction.label}}
+    </span>
+  </button>
+</div>

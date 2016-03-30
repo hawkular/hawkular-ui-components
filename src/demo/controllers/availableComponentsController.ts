@@ -16,51 +16,13 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-
-export interface IAvailComponent {
-  name: string;
-  title: string;
-  location: string;
-}
-
-export interface IAvailableGroup {
-  name: string;
-  title: string;
-  location: string;
-  components: IAvailComponent[];
-}
-
-export class AvailableGroup implements IAvailableGroup {
-  public constructor(public name: string,
-                     public title: string,
-                     public location: string,
-                     public components: IAvailComponent[]) {}
-}
-
-export class AvailableComponent implements IAvailComponent {
-  public constructor(public name: string, public title: string, public location: string) {}
-}
+import AvailableComponentsService from './../services/availableComponentsService';
+import {IAvailableGroup} from '../services/availableComponentsService';
 
 export default class AvailableComponentsController {
   public availableComponents: IAvailableGroup[];
   /* @ngInject */
   public constructor() {
-    this.initGroups();
-    this.initComponents();
-  }
-
-  private initGroups() {
-  }
-
-  private initComponents() {
-    this.availableComponents = [
-      new AvailableGroup('data-table', 'Data Table components', '/data-table', [
-        new AvailableComponent('basic', 'Table without pagination', '/basic'),
-        new AvailableComponent('with-pagination', 'Table with pagination', '/with-pagination')
-      ]),
-      new AvailableGroup('toolbar-menu', 'Toolbar menu components', '/toolbar-menu', [
-        new AvailableComponent('basic', 'Basic toolbar menu', '/basic')
-      ])
-    ];
+    this.availableComponents = (new AvailableComponentsService()).availableComponents;
   }
 }

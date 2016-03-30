@@ -25,3 +25,11 @@ table .narrow {
 .clear-navbar {
   margin-top: 60px;
 }
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-horizontal .form-group:after {
+  clear: both;
+}

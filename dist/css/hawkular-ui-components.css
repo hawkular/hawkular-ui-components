@@ -14,4 +14,7 @@ table.mig-table-with-footer {
 .dataTables_footer span {
   margin-left: 10px; }
 
+.form-actions button.btn {
+  margin-right: 5px; }
+
 /*# sourceMappingURL=hawkular-ui-components.css.map*/

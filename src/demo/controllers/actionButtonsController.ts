@@ -16,15 +16,32 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsController from './availableComponentsController';
-import DataTableController from './dataTableController';
-import ToolbarMenuController from './toolbarMenuController';
-import ValidateCredentialsController from './validateCredentialsController';
-import ActionButtonController from './actionButtonsController';
-export default (module: ng.IModule) => {
-  module.controller('demoAvailableComponents', AvailableComponentsController);
-  module.controller('demoDataTable', DataTableController);
-  module.controller('demoToolbarMenu', ToolbarMenuController);
-  module.controller('demoValidateCredentials', ValidateCredentialsController);
-  module.controller('demoActionButtons', ActionButtonController);
+
+export default class ActionButtonController {
+  public formActions: any;
+
+  constructor() {
+    this.initActions();
+  }
+
+  private initActions() {
+    this.formActions = [
+      {
+        btnClass: 'btn-primary',
+        title: 'Add button',
+        clickFunction: () => {
+          alert('Add button clicked');
+        },
+        label: 'Add'
+      },
+      {
+        btnClass: 'btn-default',
+        title: 'Cancel button',
+        clickFunction: () => {
+          alert('Cancel button clicked');
+        },
+        label: 'Cancel'
+      }
+    ];
+  }
 }

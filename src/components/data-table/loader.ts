@@ -16,10 +16,10 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-import DataTable from './dataTableDirective';
+import DataTable from './dataTableComponent';
 import DataTablePagination from './dataTablePaginationDirective';
 
 export default (module: ng.IModule) => {
-  module.directive('miqDataTable', DataTable.Factory());
+  module.component('miqDataTable', new DataTable);
   module.directive('miqDataTablePagination', DataTablePagination.Factory());
 }
