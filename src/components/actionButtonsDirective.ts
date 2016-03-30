@@ -25,7 +25,6 @@ export default class ActionButtons implements ng.IDirective {
   };
 
   public static Factory = () => {
-    console.log('blaaafffffa');
     let directive = () => new ActionButtons();
     directive.$inject = [];
     return directive;
