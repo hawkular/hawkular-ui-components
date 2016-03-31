@@ -142,19 +142,18 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(7);
+	__webpack_require__(5);
 	module.exports = __webpack_require__(41);
 
 
 /***/ },
-/* 1 */,
-/* 2 */
+/* 1 */
 /***/ function(module, exports) {
 
 	module.exports = angular;
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global, _) {/**
@@ -15231,67 +15230,67 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(44)(module), (function() { return this; }()), __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(44)(module), (function() { return this; }()), __webpack_require__(2)))
 
 /***/ },
+/* 3 */,
 /* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */
+/* 5 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-click=\"oneAction.clickFunction()\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer\">\n    <thead>\n    <tr>\n      <th ng-repeat=\"column in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <a href=\"#\" ng-click=\"vm.onSortClick(column)\" ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </a>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <input ng-if=\"vm.isCheckbox(row, columnKey)\"\n               ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">So why don't you try <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a> so this table would not be empty.</p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"miq-info here\">\n            <input type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\"> Check All\n        </span>\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  Button\n</div>\n"
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: toolbarList.disabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.children\" ng-class=\"{disabled: item.disabled}\">\n      <a href=\"#\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
-/* 13 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"toolbar-pf-actions\">\n  <div id=\"center_tb\">\n    <div class=\"form-group\">\n      <miq-toolbar-list ng-repeat=\"item in vm.toolbarItems | filter: children\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n  </div>\n  <div id=\"view_tb\"></div>\n</div>\n"
 
 /***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
+/* 13 */,
+/* 14 */,
 /* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
-/* 20 */,
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15315,13 +15314,12 @@
 	var ActionButtons = (function () {
 	    function ActionButtons() {
 	        this.replace = true;
-	        this.template = __webpack_require__(8);
+	        this.template = __webpack_require__(6);
 	        this.scope = {
 	            actions: '='
 	        };
 	    }
 	    ActionButtons.Factory = function () {
-	        console.log('blaaafffffa');
 	        var directive = function () { return new ActionButtons(); };
 	        directive.$inject = [];
 	        return directive;
@@ -15330,6 +15328,50 @@
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = ActionButtons;
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var dataTablecontroller_1 = __webpack_require__(23);
+	var DataTable = (function () {
+	    function DataTable() {
+	        this.replace = true;
+	        this.template = __webpack_require__(8);
+	        this.controller = dataTablecontroller_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            onRowClick: '&',
+	            onItemSelected: '&',
+	            data: '=',
+	            columns: '=',
+	            noFooter: '@',
+	            defaultAction: '='
+	        };
+	    }
+	    return DataTable;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = DataTable;
 
 
 /***/ },
@@ -15354,53 +15396,9 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var dataTablecontroller_1 = __webpack_require__(24);
-	var DataTable = (function () {
-	    function DataTable() {
-	        this.replace = true;
-	        this.template = __webpack_require__(10);
-	        this.controller = dataTablecontroller_1.default;
-	        this.controllerAs = 'vm';
-	        this.bindings = {
-	            onRowClick: '&',
-	            onItemSelected: '&',
-	            data: '=',
-	            columns: '=',
-	            noFooter: '@',
-	            defaultAction: '='
-	        };
-	    }
-	    return DataTable;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = DataTable;
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../../tsd.d.ts"/>
 	var DataTablePagination = (function () {
 	    function DataTablePagination() {
-	        this.template = __webpack_require__(9);
+	        this.template = __webpack_require__(7);
 	        this.scope = {
 	            resourceList: '=',
 	            currentPage: '=',
@@ -15462,7 +15460,7 @@
 
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {///
@@ -15554,7 +15552,38 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = DataTableController;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var dataTableComponent_1 = __webpack_require__(21);
+	var dataTablePaginationDirective_1 = __webpack_require__(22);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.component('miqDataTable', new dataTableComponent_1.default);
+	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
+	};
+
 
 /***/ },
 /* 25 */
@@ -15577,13 +15606,17 @@
 	/// limitations under the License.
 	///
 	"use strict";
-	///<reference path="../../tsd.d.ts"/>
-	var dataTableComponent_1 = __webpack_require__(22);
-	var dataTablePaginationDirective_1 = __webpack_require__(23);
+	///<reference path="../tsd.d.ts"/>
+	var loader_1 = __webpack_require__(26);
+	var loader_2 = __webpack_require__(24);
+	var actionButtonsDirective_1 = __webpack_require__(20);
+	var validateCredentialsComponent_1 = __webpack_require__(31);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    module.component('miqDataTable', new dataTableComponent_1.default);
-	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
+	    loader_1.default(module);
+	    loader_2.default(module);
+	    module.directive('miqActionButtons', actionButtonsDirective_1.default.Factory());
+	    module.component('miqValidateCredentials', new validateCredentialsComponent_1.default);
 	};
 
 
@@ -15608,17 +15641,15 @@
 	/// limitations under the License.
 	///
 	"use strict";
-	///<reference path="../tsd.d.ts"/>
-	var loader_1 = __webpack_require__(27);
-	var loader_2 = __webpack_require__(25);
-	var actionButtonsDirective_1 = __webpack_require__(21);
-	var validateCredentialsComponent_1 = __webpack_require__(32);
+	///<reference path="../../tsd.d.ts"/>
+	var toolbarComponent_1 = __webpack_require__(28);
+	var toolbarButtonDirective_1 = __webpack_require__(27);
+	var toolbarListDirective_1 = __webpack_require__(30);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    loader_1.default(module);
-	    loader_2.default(module);
-	    module.directive('miqActionButtons', actionButtonsDirective_1.default.Factory());
-	    module.component('miqValidateCredentials', new validateCredentialsComponent_1.default);
+	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
+	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
+	    module.directive('miqToolbarList', toolbarListDirective_1.default.Factory());
 	};
 
 
@@ -15644,15 +15675,23 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var toolbarComponent_1 = __webpack_require__(29);
-	var toolbarButtonDirective_1 = __webpack_require__(28);
-	var toolbarListDirective_1 = __webpack_require__(31);
+	var ToolbarButton = (function () {
+	    function ToolbarButton() {
+	        this.replace = true;
+	        this.template = __webpack_require__(9);
+	        this.scope = {
+	            toolbarButton: '='
+	        };
+	    }
+	    ToolbarButton.Factory = function () {
+	        var directive = function () { return new ToolbarButton(); };
+	        directive.$inject = [];
+	        return directive;
+	    };
+	    return ToolbarButton;
+	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = function (module) {
-	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
-	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
-	    module.directive('miqToolbarList', toolbarListDirective_1.default.Factory());
-	};
+	exports.default = ToolbarButton;
 
 
 /***/ },
@@ -15677,52 +15716,11 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var ToolbarButton = (function () {
-	    function ToolbarButton() {
-	        this.replace = true;
-	        this.template = __webpack_require__(11);
-	        this.scope = {
-	            toolbarButton: '='
-	        };
-	    }
-	    ToolbarButton.Factory = function () {
-	        var directive = function () { return new ToolbarButton(); };
-	        directive.$inject = [];
-	        return directive;
-	    };
-	    return ToolbarButton;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ToolbarButton;
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../../tsd.d.ts"/>
-	var toolbarController_1 = __webpack_require__(30);
+	var toolbarController_1 = __webpack_require__(29);
 	var Toolbar = (function () {
 	    function Toolbar() {
 	        this.replace = true;
-	        this.template = __webpack_require__(13);
+	        this.template = __webpack_require__(11);
 	        this.controller = toolbarController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
@@ -15736,7 +15734,7 @@
 
 
 /***/ },
-/* 30 */
+/* 29 */
 /***/ function(module, exports) {
 
 	///
@@ -15782,7 +15780,7 @@
 
 
 /***/ },
-/* 31 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15806,7 +15804,7 @@
 	var ToolbarList = (function () {
 	    function ToolbarList() {
 	        this.replace = true;
-	        this.template = __webpack_require__(12);
+	        this.template = __webpack_require__(10);
 	        this.scope = {
 	            toolbarList: '=',
 	            onItemClick: '&'
@@ -15824,7 +15822,7 @@
 
 
 /***/ },
-/* 32 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -15845,11 +15843,11 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var validateCredentialsController_1 = __webpack_require__(33);
+	var validateCredentialsController_1 = __webpack_require__(32);
 	var ValidateCredentials = (function () {
 	    function ValidateCredentials() {
 	        this.replace = true;
-	        this.template = __webpack_require__(14);
+	        this.template = __webpack_require__(12);
 	        this.controller = validateCredentialsController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
@@ -15865,7 +15863,7 @@
 
 
 /***/ },
-/* 33 */
+/* 32 */
 /***/ function(module, exports) {
 
 	///
@@ -15918,6 +15916,7 @@
 
 
 /***/ },
+/* 33 */,
 /* 34 */,
 /* 35 */,
 /* 36 */,
@@ -15946,13 +15945,13 @@
 	///
 	"use strict";
 	///<reference path="tsd.d.ts"/>
-	var loader_1 = __webpack_require__(26);
+	var loader_1 = __webpack_require__(25);
 	var loader_2 = __webpack_require__(43);
 	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
 	loader_1.default(app);
 	loader_2.default(app);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 /* 42 */
@@ -16045,8 +16044,7 @@
 
 
 /***/ },
-/* 45 */,
-/* 46 */
+/* 45 */
 /***/ function(module, exports) {
 
 	/*
@@ -16099,260 +16097,6 @@
 		};
 		return list;
 	};
-
-
-/***/ },
-/* 47 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
 
 
 /***/ }

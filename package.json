@@ -41,5 +41,9 @@
     "ui-router": "^1.0.0-alpha0",
     "webpack": "1.12.14",
     "wiredep": "^4.0.0"
+  },
+  "engines": {
+    "node": ">= 4.2.1",
+    "npm": ">= 3"
   }
 }
