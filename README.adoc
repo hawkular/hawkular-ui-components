@@ -6,16 +6,20 @@ image:https://travis-ci.org/hawkular/hawkular-ui-components.svg["Build Status",
 link="https://travis-ci.org/hawkular/hawkular-ui-components"]
 endif::[]
 
-== Preliminary Angular 2.x Components for ManageIQ
+== Preliminary Angular 1.x Components for ManageIQ
 
 Please refer to http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Development Docs] for further UI development details.
 
 == Prerequisites
 
-You need to have installed [Node.js and npm](https://docs.npmjs.com/getting-started/installing-node) on your system.
+You need to have installed https://docs.npmjs.com/getting-started/installing-node[Node.js and npm] on your system.
 
-Then install these node packages
+Install these node packages
 [source]
 npm install -g tsd bower webpack wiredep-cli
 
+To run:
+[source]
+npm start
 
+_Next up Angular 2.x components running alongside Angular 1.x via ngUpgrade_
