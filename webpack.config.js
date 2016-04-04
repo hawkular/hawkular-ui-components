@@ -33,6 +33,7 @@ var webpack = require('webpack'),
   ];
 
 production && plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false, minimize: true, drop_console: true}));
+
 module.exports = {
   context: __dirname,
   entry: {
@@ -63,7 +64,7 @@ module.exports = {
       {test: /\.html$/, loader: 'raw', exclude: /(node_modules|libs|dist|tsd|bower)/},
       // stylesheets
       {test: /\.scss/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')},
-      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')}
+      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader')}
     ]
   },
   plugins: plugins,
