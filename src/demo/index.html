@@ -28,7 +28,7 @@
           <a class="code ng-binding" href="#{{group.location}}" title="{{group.title}}">{{group.title}}</a>
         </li>
         <li ng-repeat="page in group.components track by page.name" class="api-list-item expand">
-          <a href="#{{group.location + page.location}}" tabindex="2">{{page.title}}</a>
+          <a ng-src="#{{group.location + page.location}}" tabindex="2">{{page.title}}</a>
         </li>
       </ul>
     </div>

@@ -9,14 +9,14 @@ var webpack = require('webpack'),
   spa = require('browser-sync-spa'),
   plugins = [
     new CopyWebpackPlugin([
-      {from: __dirname + settings.sourceFolder + '/demo/data', to: '../data'},
-      {from: __dirname + settings.sourceFolder + '/demo/assets', to: '../assets'}
+      {from: __dirname + settings.sourceFolder + '/demo/data', to: '../data'}
     ]),
     new webpack.ProvidePlugin({
       angular: 'angular',
       '_': 'lodash'
     }),
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"hawkular-ui-components", /* filename= */"hawkular-ui-components.js"),
+    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"hawkular-ui-components",
+      /* filename= */"hawkular-ui-components.js"),
     new BrowserSyncPlugin({
       host: 'localhost',
       port: 4000,
@@ -46,6 +46,10 @@ module.exports = {
       '.' + settings.sourceFolder + '/demo/styles/demo-app.scss'
     ]
   },
+  stats: {
+    colors: true,
+    reasons: true
+  },
   output: {
     path: settings.outputFolder,
     publicPath: '/',
@@ -63,8 +67,11 @@ module.exports = {
       {test: /\.ts$/, loaders: ['ts-loader'], exclude: /(node_modules|libs)/},
       {test: /\.html$/, loader: 'raw', exclude: /(node_modules|libs|dist|tsd|bower)/},
       // stylesheets
-      {test: /\.scss/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')},
-      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader')}
+      {test: /\.scss/, exclude: /(node_modules|lib)/, loader: ExtractTextPlugin.extract('style-loader',
+        'css-loader!sass-loader')},
+      {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader')},
+      {test: /\.(png|jpg|gif|svg|woff|ttf|eot)/, loader:  'url-loader?limit=20480'}
+      // inline images/fonts less than  20Kb otherwise file-loader is used
     ]
   },
   plugins: plugins,
