@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack --watch",
-    "postinstall": "bower install && tsd install && webpack && webpack --config webpack.vendor.config.js && wiredep -b bower.json -s dist/index.html --devDependencies -d dist/js/libs"
+    "postinstall": "bower install && tsd install && webpack && webpack --config webpack.vendor.config.js"
   },
   "devDependencies": {
     "angular": "1.5.2",
@@ -21,6 +21,23 @@
     "event-stream": "3.2.1",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "^0.8.5",
+    "gulp": "3.8.11",
+    "gulp-angular-templatecache": "1.5.0",
+    "gulp-concat": "2.4.3",
+    "gulp-connect": "2.2.0",
+    "gulp-git": "1.1.0",
+    "gulp-less": "3.0.1",
+    "gulp-load-plugins": "0.8.0",
+    "gulp-ng-annotate": "0.5.2",
+    "gulp-notify": "2.1.0",
+    "gulp-plumber": "0.6.6",
+    "gulp-size": "1.2.0",
+    "gulp-sourcemaps": "1.5.0",
+    "gulp-symlink": "2.1.0",
+    "gulp-tslint": "1.4.3",
+    "gulp-typescript": "2.4.2",
+    "gulp-watch": "3.0.0",
+    "html-webpack-plugin": "^2.15.0",
     "imports-loader": "^0.6.5",
     "jquery": "2.1.4",
     "less": "2.6.1",

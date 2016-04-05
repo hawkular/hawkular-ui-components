@@ -15,7 +15,7 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 import AvailableComponentsService from './../services/availableComponentsService';
 
 export default (module: ng.IModule) => {

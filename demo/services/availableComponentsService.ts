@@ -15,7 +15,7 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 
 export interface IAvailComponent {
   name: string;

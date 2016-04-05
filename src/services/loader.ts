@@ -17,7 +17,9 @@
 
 ///<reference path="../tsd.d.ts"/>
 import DataTableService from './dataTableService';
+import FormValidatorService from './formValidatorService';
 
 export default (module: ng.IModule) => {
-  module.service('MiQDataTableService', DataTableService);
+  module.provider('MiQDataTableService', DataTableService);
+  module.provider('MiQFormValidatorService', FormValidatorService);
 }

@@ -15,33 +15,16 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 
-export default class ActionButtonController {
-  public formActions: any;
-
-  constructor() {
-    this.initActions();
-  }
-
-  private initActions() {
-    this.formActions = [
-      {
-        btnClass: 'btn-primary',
-        title: 'Add button',
-        clickFunction: () => {
-          alert('Add button clicked');
-        },
-        label: 'Add'
-      },
-      {
-        btnClass: 'btn-default',
-        title: 'Cancel button',
-        clickFunction: () => {
-          alert('Cancel button clicked');
-        },
-        label: 'Cancel'
-      }
-    ];
+export default class ToolbarMenuController {
+  public toolbarMenu: any;
+  public constructor(private $http: any) {
+    this.$http({
+      method: 'GET',
+      url: '/data/toolbar.json'
+    }).then((responseData) => {
+      this.toolbarMenu = responseData.data;
+    });
   }
 }

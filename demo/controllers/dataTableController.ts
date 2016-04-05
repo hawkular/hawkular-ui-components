@@ -15,7 +15,7 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 
 export default class DataTableController {
   public tableData: any;
@@ -29,7 +29,7 @@ export default class DataTableController {
         alert('You have tried creating new record');
       }
     };
-    this.MiQDataTableService.retrieveRowsAndColumnsFromUrl('/data/data-table.json').then( (data) => {
+    this.MiQDataTableService.retrieveRowsAndColumnsFromUrl().then( (data) => {
       this.tableData = data;
       this.emptyData = {
         cols: data.cols,

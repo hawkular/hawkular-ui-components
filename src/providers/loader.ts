@@ -15,12 +15,9 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
+import DataAccessService from './dataAccessService';
 
-export default class ValidateCredentialsController {
-  public credentialsData: any;
-
-  public validateCredentials(validateData) {
-    console.log(validateData, this.credentialsData);
-  }
+export default (module: ng.IModule) => {
+  module.provider('MiQDataAccessService', DataAccessService);
 }

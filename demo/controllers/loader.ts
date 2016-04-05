@@ -15,7 +15,7 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 import AvailableComponentsController from './availableComponentsController';
 import DataTableController from './dataTableController';
 import ToolbarMenuController from './toolbarMenuController';

@@ -15,14 +15,16 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
-import AvailableComponentsService from './../services/availableComponentsService';
-import {IAvailableGroup} from '../services/availableComponentsService';
+///<reference path="tsd.d.ts"/>
+import views from './views/loader';
+import controllers from './controllers/loader';
 
-export default class AvailableComponentsController {
-  public availableComponents: IAvailableGroup[];
-  /* @ngInject */
-  public constructor() {
-    this.availableComponents = (new AvailableComponentsService()).availableComponents;
-  }
-}
+const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router', 'ui.bootstrap.tabs']);
+app.config((MiQDataAccessServiceProvider: any, MiQDataTableServiceProvider: any) => {
+  MiQDataTableServiceProvider.endpoints = {
+    list: '/data-table.json'
+  };
+  MiQDataAccessServiceProvider.setUrlPrefix('/data');
+});
+controllers(app);
+views(app);

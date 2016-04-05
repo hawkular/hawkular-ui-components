@@ -16,9 +16,19 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
-import views from './views/loader';
-import controllers from './controllers/loader';
+export interface  IDataAccessService {
+  getUrlPrefix(): string;
+}
+export default class DataAccessService implements ng.IServiceProvider {
+  private urlPrefix: string;
 
-const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router', 'ui.bootstrap.tabs']);
-controllers(app);
-views(app);
+  public setUrlPrefix(urlPrefix: string) {
+    this.urlPrefix = urlPrefix;
+  }
+
+  public $get() : IDataAccessService {
+    return {
+      getUrlPrefix: () => this.urlPrefix
+    };
+  }
+}

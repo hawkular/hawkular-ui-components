@@ -21,20 +21,34 @@ export interface IRowsColsResponse {
   cols: any[];
 }
 
-export default class DataTableService {
-  /*@ngInject*/
-  constructor(private $http: any) {
-  }
+export interface IDataTableService {
+  retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse>;
+}
 
-  public retrieveRowsAndColumnsFromUrl(url): ng.IPromise<IRowsColsResponse> {
+export default class DataTableService {
+  private $http: any;
+  private MiQDataAccessService: any;
+  public endpoints = {
+    list : '/list'
+  };
+  public retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse> {
     return this.$http({
       method: 'GET',
-      url: location.origin + url
+      url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
     }).then((responseData) => {
       return {
         rows: responseData.data.rows,
         cols: responseData.data.head
       };
     });
+  }
+
+  /*@ngInject*/
+  public $get($http: any, MiQDataAccessService: any): IDataTableService {
+    this.$http = $http;
+    this.MiQDataAccessService = MiQDataAccessService;
+    return {
+      retrieveRowsAndColumnsFromUrl: () => this.retrieveRowsAndColumnsFromUrl()
+    };
   }
 }
