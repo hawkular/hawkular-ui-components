@@ -39,11 +39,12 @@
     "tslint-loader": "2.1.1",
     "typescript": "1.8.9",
     "ui-router": "^1.0.0-alpha0",
+    "url-loader": "^0.5.7",
     "webpack": "1.12.14",
     "wiredep": "^4.0.0"
   },
   "engines": {
     "node": ">= 4.2.1",
-    "npm": ">= 3"
+    "npm": ">= 2.15.0"
   }
 }
