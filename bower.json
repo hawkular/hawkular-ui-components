@@ -14,7 +14,9 @@
   "ignore": [
     "*",
     "!dist/",
-    "!dist/*"
+    "!dist/*",
+    "!LICENSE",
+    "!README.adoc"
   ],
   "dependencies": {},
   "devDependencies": {

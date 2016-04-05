@@ -6,17 +6,23 @@ var webpack = require('webpack'),
   BrowserSyncPlugin = require('browser-sync-webpack-plugin'),
   CopyWebpackPlugin = require('copy-webpack-plugin'),
   ExtractTextPlugin = require('extract-text-webpack-plugin'),
+  HtmlWebpackPlugin = require('html-webpack-plugin'),
   spa = require('browser-sync-spa'),
+  appEntry = {},
   plugins = [
     new CopyWebpackPlugin([
-      {from: __dirname + settings.sourceFolder + '/demo/data', to: '../data'}
+      {from: __dirname + '/demo/data', to: 'data'},
+      {from: __dirname + '/demo/assets', to: 'assets'}
     ]),
-    new webpack.ProvidePlugin({
-      angular: 'angular',
-      '_': 'lodash'
+    new HtmlWebpackPlugin({
+      title: 'Powered by webpack',
+      template: 'demo/template-index.ejs', // Load a custom template
+      inject: 'body'
     }),
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"hawkular-ui-components",
-      /* filename= */"hawkular-ui-components.js"),
+    new webpack.optimize.CommonsChunkPlugin(
+      settings.appName,
+      settings.javascriptFolder + '/' + settings.appName + settings.isMinified(production)
+    ),
     new BrowserSyncPlugin({
       host: 'localhost',
       port: 4000,
@@ -31,32 +37,30 @@ var webpack = require('webpack'),
     new webpack.optimize.OccurenceOrderPlugin(),
     new NgAnnotatePlugin({add: true})
   ];
-
 production && plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false, minimize: true, drop_console: true}));
 
+appEntry[settings.appName] = [
+  settings.sassEntryPoint,
+  settings.tsEntryPoint
+];
+appEntry['demo-app'] = [
+  './demo/index.ts',
+  './demo/styles/demo-app.scss'
+];
 module.exports = {
   context: __dirname,
-  entry: {
-    'hawkular-ui-components': [
-      settings.sassEntryPoint,
-      settings.tsEntryPoint
-    ],
-    'demo-app': [
-      '.' + settings.sourceFolder + '/demo/index.ts',
-      '.' + settings.sourceFolder + '/demo/styles/demo-app.scss'
-    ]
+  entry: appEntry,
+  output: {
+    path: settings.outputFolder,
+    publicPath: '.',
+    filename: settings.javascriptFolder + "/[name]" + settings.isMinified(production)
+  },
+  resolve: {
+    extensions: ['', '.ts', '.js']
   },
   stats: {
     colors: true,
     reasons: true
-  },
-  output: {
-    path: settings.outputFolder,
-    publicPath: '/',
-    filename: "[name]" + settings.isMinified(production)
-  },
-  resolve: {
-    extensions: ['', '.ts', '.js']
   },
   devtool: !production && 'source-map',
   module: {

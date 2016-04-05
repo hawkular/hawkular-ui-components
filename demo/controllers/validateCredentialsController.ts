@@ -15,16 +15,12 @@
 /// limitations under the License.
 ///
 
-///<reference path="../../tsd.d.ts"/>
+///<reference path="../tsd.d.ts"/>
 
-export default class ToolbarMenuController {
-  public toolbarMenu: any;
-  public constructor(private $http: any) {
-    this.$http({
-      method: 'GET',
-      url: '/data/toolbar.json'
-    }).then((responseData) => {
-      this.toolbarMenu = responseData.data;
-    });
+export default class ValidateCredentialsController {
+  public credentialsData: any;
+
+  public validateCredentials(validateData) {
+    console.log(validateData, this.credentialsData);
   }
 }

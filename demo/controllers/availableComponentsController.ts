@@ -15,12 +15,14 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
-import providers from './providers/loader';
+///<reference path="../tsd.d.ts"/>
+import AvailableComponentsService from './../services/availableComponentsService';
+import {IAvailableGroup} from '../services/availableComponentsService';
 
-const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
-components(app);
-services(app);
-providers(app);
+export default class AvailableComponentsController {
+  public availableComponents: IAvailableGroup[];
+  /* @ngInject */
+  public constructor() {
+    this.availableComponents = (new AvailableComponentsService()).availableComponents;
+  }
+}

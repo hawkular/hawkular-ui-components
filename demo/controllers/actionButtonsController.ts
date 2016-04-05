@@ -15,12 +15,33 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
-import providers from './providers/loader';
+///<reference path="../tsd.d.ts"/>
 
-const app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs']);
-components(app);
-services(app);
-providers(app);
+export default class ActionButtonController {
+  public formActions: any;
+
+  constructor() {
+    this.initActions();
+  }
+
+  private initActions() {
+    this.formActions = [
+      {
+        btnClass: 'btn-primary',
+        title: 'Add button',
+        clickFunction: () => {
+          alert('Add button clicked');
+        },
+        label: 'Add'
+      },
+      {
+        btnClass: 'btn-default',
+        title: 'Cancel button',
+        clickFunction: () => {
+          alert('Cancel button clicked');
+        },
+        label: 'Cancel'
+      }
+    ];
+  }
+}
