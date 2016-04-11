@@ -27,6 +27,7 @@ export default class DataTableController {
   public resCurPage: number = 0;
   public noFooter: boolean = false;
   public defaultAction: any;
+  public selectable: boolean = true;
 
   public static get assetUrl() {
     return '/assets/';
@@ -45,8 +46,10 @@ export default class DataTableController {
   }
 
   public onSortClick(column: any): void {
-    this.sortType = column.col_idx;
-    this.sortReverse = !this.sortReverse;
+    if (column.sort) {
+      this.sortType = column['col_idx'];
+      this.sortReverse = !this.sortReverse;
+    }
   }
 
   public isCheckbox(row, columnKey): boolean {
@@ -92,7 +95,6 @@ export default class DataTableController {
 
   public onRowSelected($event) {
     $event.stopPropagation();
-    console.log(this);
     this.onItemSelected();
   }
 }

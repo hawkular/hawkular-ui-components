@@ -18,12 +18,14 @@
 ///<reference path="../tsd.d.ts"/>
 import toolbarMenuLoader from './toolbar-menu/loader';
 import dataTableLoader from './data-table/loader';
+import notifications from './notifications/loader';
 import ActionButtons from './actionButtonsDirective';
 import ValidateCredentials from './validateCredentialsComponent';
 
 export default (module: ng.IModule) => {
   toolbarMenuLoader(module);
   dataTableLoader(module);
+  notifications(module);
   module.directive('miqActionButtons', ActionButtons.Factory());
   module.component('miqValidateCredentials', new ValidateCredentials);
 }

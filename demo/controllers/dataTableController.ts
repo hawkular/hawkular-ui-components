@@ -29,14 +29,13 @@ export default class DataTableController {
         alert('You have tried creating new record');
       }
     };
-    this.MiQDataTableService.retrieveRowsAndColumnsFromUrl().then( (data) => {
+    this.fetchData().then( (data) => {
       this.tableData = data;
-      this.emptyData = {
-        cols: data.cols,
-        rows: []
-      };
-      return data;
     });
+  }
+
+  public fetchData() {
+    return this.MiQDataTableService.retrieveRowsAndColumnsFromUrl();
   }
 
   public onRowClick($event, rowData) {
@@ -45,5 +44,20 @@ export default class DataTableController {
 
   public onRowSelected() {
     console.log(this.tableData);
+  }
+
+  public toggleData(isChecked) {
+    if (isChecked) {
+      this.fetchData().then( (data) => {
+        this.tableData = {
+          cols: data.cols,
+          rows: []
+        };
+      });
+    } else {
+      this.fetchData().then( (data) => {
+        this.tableData = data;
+      });
+    }
   }
 }

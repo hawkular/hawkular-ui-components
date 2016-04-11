@@ -15,13 +15,28 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
+///<reference path="../../tsd.d.ts"/>
+import NotificationsController from './notificationsController';
 
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+export default class Notifications implements ng.IDirective {
+  public replace: boolean = true;
+  public template = require<string>('./notifications.html');
+  public controller: any = NotificationsController;
+  public controllerAs: string = 'vm';
+  public scope = {};
+  public bindToController = {
+    dismissible: '=',
+    header: '=',
+    body: '=',
+    type: '=',
+    onDismiss: '&'
+  };
+
+  public static Factory = () => {
+    let directive = () => new Notifications();
+
+    directive.$inject = [];
+
+    return directive;
+  };
 }

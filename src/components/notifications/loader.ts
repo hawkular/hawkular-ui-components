@@ -15,13 +15,11 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
+///<reference path="../../tsd.d.ts"/>
+import Notifications from './notificationsDirective';
+import NotificationSection from './notificationSectionComponent';
 
 export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+  module.directive('miqNotifications', Notifications.Factory());
+  module.component('miqNotificationSection', new NotificationSection);
 }

@@ -25,7 +25,7 @@ export interface IDataTableService {
   retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse>;
 }
 
-export default class DataTableService {
+export default class DataTableService implements ng.IServiceProvider {
   private $http: any;
   private MiQDataAccessService: any;
   public endpoints = {

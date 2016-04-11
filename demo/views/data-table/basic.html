@@ -1,4 +1,32 @@
 <div>
+  <div class="form-horizontal">
+    <div class="form-group">
+      <div class="col-md-3">
+        <label for="hide_data">
+          Hide data
+        </label>
+        <span class="demo-checkbox" style="">
+          <input type="checkbox" name="hide_data" id="hide_data" class="ng-empty" ng-model="hideData" ng-click="vm.toggleData(hideData)">
+        </span>
+      </div>
+      <div class="col-md-3">
+        <label for="hide_footer">
+          Hide footer
+        </label>
+        <span class="demo-checkbox" style="">
+          <input type="checkbox" name="hide_footer" id="hide_footer" class="ng-empty" ng-model="hideFooter">
+        </span>
+      </div>
+      <div class="col-md-3">
+        <label for="selectable">
+          Is selectable
+        </label>
+        <span class="demo-checkbox" style="">
+          <input type="checkbox" name="selectable" id="selectable" class="ng-empty" ng-model="isSelectable" checked="checked">
+        </span>
+      </div>
+    </div>
+  </div>
   <miq-data-table columns="vm.tableData.cols" data="vm.tableData.rows" on-row-click="vm.onRowClick($event, rowData)"
-                  on-item-selected="vm.onRowSelected()" no-footer="true"></miq-data-table>
+                  on-item-selected="vm.onRowSelected()" no-footer="hideFooter" selectable="isSelectable" default-action="vm.defaultAction"></miq-data-table>
 </div>

@@ -15,13 +15,18 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
+///<reference path="../../tsd.d.ts"/>
 
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+import NotificationSectionController from './notificationSectionController';
+
+export default class NotificationSection {
+  public replace: boolean = true;
+  public template = require<string>('./notification-section.html');
+  public controller: any = NotificationSectionController;
+  public controllerAs: string = 'vm';
+  public bindings: any = {
+    limit: '=',
+    timer: '=',
+    showInfo: '@'
+  };
 }

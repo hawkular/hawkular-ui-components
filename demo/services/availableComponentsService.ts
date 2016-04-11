@@ -65,23 +65,19 @@ export default class AvailableComponentsService {
           'Action buttons',
           '/action-buttons',
           require<string>('./../views/action-buttons.html'),
-          'demoActionButtons as vm')
+          'demoActionButtons as vm'),
+        new AvailableComponent('notifications',
+          'Notifications',
+          '/notifications',
+          require<string>('./../views/notification.html'),
+          'basicNotification as vm')
       ]),
       new AvailableGroup('data-table', 'Data Table components', '/data-table', [
         new AvailableComponent('basic',
-          'Table without pagination',
+          'Data table with options',
           '/basic',
           require<string>('./../views/data-table/basic.html'),
-          'demoDataTable as vm'),
-        new AvailableComponent('with-pagination',
-          'Table with pagination', '/with-pagination',
-          require<string>('./../views/data-table/with-pagination.html'),
-          'demoDataTable as vm'),
-        new AvailableComponent('no-data',
-          'Table without any data',
-          '/no-data',
-          require<string>('./../views/data-table/no-data.html'),
-          'demoDataTable as vm'),
+          'demoDataTable as vm')
       ]),
       new AvailableGroup('toolbar-menu', 'Toolbar menu components', '/toolbar-menu', [
         new AvailableComponent('basic', '' +

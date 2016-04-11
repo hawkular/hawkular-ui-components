@@ -16,20 +16,28 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-import DataTableController from './dataTablecontroller';
+export default class NotificationsController {
+  public dismissible: boolean;
+  public header: string;
+  public body: string;
+  public type: string;
 
-export default class DataTable {
-  public replace: boolean = true;
-  public template = require<string>('./data-table.html');
-  public controller: any = DataTableController;
-  public controllerAs: string = 'vm';
-  public bindings: any = {
-    onRowClick: '&',
-    onItemSelected: '&',
-    data: '=',
-    columns: '=',
-    selectable: '=',
-    noFooter: '=',
-    defaultAction: '='
-  };
+  public getClassFromType() {
+    return {
+      'alert-danger': this.type === 'danger',
+      'alert-warning': this.type === 'warning',
+      'alert-success': this.type === 'success',
+      'alert-info': this.type === 'info',
+      'alert-dismissable': this.dismissible
+    };
+  }
+
+  public getIconByType() {
+    return {
+      'pficon-error-circle-o': this.type === 'danger',
+      'pficon-warning-triangle-o': this.type === 'warning',
+      'pficon-ok': this.type === 'success',
+      'pficon-info': this.type === 'info'
+    };
+  }
 }

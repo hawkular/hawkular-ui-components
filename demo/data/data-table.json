@@ -3,9 +3,6 @@
       "is_narrow": true
     },
     {
-      "is_narrow": true
-    },
-    {
       "text": "Name",
       "sort": "str",
       "col_idx": 0,
@@ -26,7 +23,6 @@
     {
       "text": "Port",
       "sort": "str",
-      "col_idx": 3,
       "align": "right"
     },
     {
@@ -40,9 +36,6 @@
     {
       "id": "1r12",
       "cells": [
-        {
-          "is_checkbox": true
-        },
         {
           "title": "View this item",
           "image": "100/vendor-hawkular.png",
@@ -62,6 +55,31 @@
         },
         {
           "text": "Hawkular"
+        }
+      ]
+    },
+    {
+      "id": "1r13",
+      "cells": [
+        {
+          "title": "View this item",
+          "image": "100/vendor-hawkular.png",
+          "icon": null
+        },
+        {
+          "text": "aa"
+        },
+        {
+          "text": "10.40.0.248"
+        },
+        {
+          "text": ""
+        },
+        {
+          "text": "a8080"
+        },
+        {
+          "text": "aHawkular"
         }
       ]
     }

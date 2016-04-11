@@ -1,16 +1,19 @@
 <div>
-  <table class="table table-bordered table-striped table-hover mig-table-with-footer">
+  <table class="table table-bordered table-striped table-hover mig-table-with-footer mig-table">
     <thead>
     <tr>
-      <th ng-repeat="column in vm.columns"
+      <th class="narrow miq-select" ng-if="vm.selectable">
+        <input ng-if="vm.data.length !== 0" type="checkbox" ng-model="isChecked" ng-click="vm.onCheckAll(isChecked)" title="Select all">
+      </th>
+      <th ng-repeat="column in vm.columns" ng-click="vm.onSortClick(column)"
           ng-class="vm.getColumnClass(column)">
-        <a href="#" ng-click="vm.onSortClick(column)" ng-if="column.sort">
+        <div ng-if="column.sort">
           {{column.text}}
           <div class="pull-right">
             <i ng-if="vm.isFilteredBy(column.col_idx) && !vm.sortReverse" class="fa fa-sort-desc"></i>
             <i ng-if="vm.isFilteredBy(column.col_idx) && vm.sortReverse" class="fa fa-sort-asc"></i>
           </div>
-        </a>
+        </div>
       </th>
     </tr>
     </thead>
@@ -18,10 +21,8 @@
     <tr ng-repeat="row in vm.data | orderBy : vm.sortType : vm.sortReverse"
         ng-class="{active : row.selected}"
         ng-click="vm.onRowClick({$event: $event, rowData: row})">
-      <td ng-repeat="(columnKey, column) in vm.columns"
-          ng-class="vm.getColumnClass(column)">
-        <input ng-if="vm.isCheckbox(row, columnKey)"
-               ng-click="vm.onRowSelected($event)"
+      <td class="narrow" ng-if="vm.selectable" onclick="event.stopPropagation();">
+        <input ng-click="vm.onRowSelected($event)"
                onclick="event.stopPropagation();"
                type="checkbox"
                ng-model="row.selected"
@@ -29,6 +30,9 @@
                value="{{row.id}}"
                ng-checked="row.selected"
                class="list-grid-checkbox">
+      </td>
+      <td ng-repeat="(columnKey, column) in vm.columns"
+          ng-class="vm.getColumnClass(column)">
         <img ng-if="vm.isIconOrImage(row, columnKey)"
              alt="row.cells[columnKey].title"
              title="row.cells[columnKey].title"
@@ -39,17 +43,18 @@
       </td>
     </tr>
     <tr ng-if="vm.data.length === 0">
-      <td colspan="{{vm.columns.length}}">
+      <td colspan="{{vm.columns.length + (vm.selectable? 1 : 0)}}">
         <p>It looks like this table has no data.</p>
-        <p ng-if="vm.defaultAction">So why don't you try <a ng-click="vm.defaultAction.actionFunction()">{{vm.defaultAction.title}}</a> so this table would not be empty.</p>
+        <p ng-if="vm.defaultAction">
+          Why don't you try
+            <a ng-click="vm.defaultAction.actionFunction()">{{vm.defaultAction.title}}</a>
+          so this table would not be empty.
+        </p>
       </td>
     </tr>
     </tbody>
   </table>
   <div ng-if="!vm.noFooter" class="dataTables_footer">
-        <span class="miq-info here">
-            <input type="checkbox" ng-model="isChecked" ng-click="vm.onCheckAll(isChecked)"> Check All
-        </span>
         <span class="pull-right">
             <miq-data-table-pagination resource-list="vm.data"
                                        current-page="vm.resCurPage"

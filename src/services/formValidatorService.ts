@@ -30,6 +30,7 @@ export interface IFormValidatorService {
 export interface IValidatorService extends IFormValidatorService {
   $http: any;
   MiQDataAccessService: any;
+  $get($http: any, MiQDataAccessService: any): IFormValidatorService;
 }
 
 export default class FormValidatorService implements IValidatorService {

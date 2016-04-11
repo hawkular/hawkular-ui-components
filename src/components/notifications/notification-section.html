@@ -1,0 +1,12 @@
+<div class="miq-alert-section">
+  <div class="miq-info-alert" ng-if="vm.showInfo && (vm.limit ? vm.limit : 1) < vm.activeNotifications.length">
+    And {{vm.activeNotifications.length - (vm.limit ? vm.limit : 1)}} more
+  </div>
+  <miq-notifications ng-repeat="(key, alert) in vm.activeNotifications | limitTo: (vm.limit ? vm.limit : 1)"
+                     type="alert.type"
+                     header="alert.header"
+                     body="alert.body"
+                     dismissible="alert.dismissible"
+                     on-dismiss="vm.onDismiss(key)">
+  </miq-notifications>
+</div>

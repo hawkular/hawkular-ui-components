@@ -98,8 +98,13 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	__webpack_require__(21);
 	module.exports = __webpack_require__(23);
+=======
+	__webpack_require__(3);
+	module.exports = __webpack_require__(46);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 
 /***/ },
@@ -112,6 +117,7 @@
 /* 7 */,
 /* 8 */,
 /* 9 */,
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 10 */,
 /* 11 */,
 /* 12 */,
@@ -175,13 +181,29 @@
 		return list;
 	};
 
+=======
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-click=\"oneAction.clickFunction($event)\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 20 */,
 /* 21 */
 /***/ function(module, exports) {
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	// removed by extract-text-webpack-plugin
+=======
+	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer mig-table\">\n    <thead>\n    <tr>\n      <th class=\"narrow miq-select\" ng-if=\"vm.selectable\">\n        <input ng-if=\"vm.data.length !== 0\" type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\" title=\"Select all\">\n      </th>\n      <th ng-repeat=\"column in vm.columns\" ng-click=\"vm.onSortClick(column)\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <div ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </div>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td class=\"narrow\" ng-if=\"vm.selectable\" onclick=\"event.stopPropagation();\">\n        <input ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n      </td>\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length + (vm.selectable? 1 : 0)}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">\n          Why don't you try\n            <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a>\n          so this table would not be empty.\n        </p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 22 */,
@@ -214,6 +236,10 @@
 	loader_2.default(app);
 	loader_3.default(app);
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
+=======
+	module.exports = "<div class=\"miq-alert-section\">\n  <div class=\"miq-info-alert\" ng-if=\"vm.showInfo && (vm.limit ? vm.limit : 1) < vm.activeNotifications.length\">\n    And {{vm.activeNotifications.length - (vm.limit ? vm.limit : 1)}} more\n  </div>\n  <miq-notifications ng-repeat=\"(key, alert) in vm.activeNotifications | limitTo: (vm.limit ? vm.limit : 1)\"\n                     type=\"alert.type\"\n                     header=\"alert.header\"\n                     body=\"alert.body\"\n                     dismissible=\"alert.dismissible\"\n                     on-dismiss=\"vm.onDismiss(key)\">\n  </miq-notifications>\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 24 */
@@ -249,6 +275,10 @@
 	    module.component('miqValidateCredentials', new validateCredentialsComponent_1.default);
 	};
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
+=======
+	module.exports = "<div class=\"alert\" ng-class=\"vm.getClassFromType()\">\n  <button type=\"button\" class=\"close\" ng-click=\"vm.onDismiss()\" aria-hidden=\"true\" ng-if=\"vm.dismissible\">\n    <span class=\"pficon pficon-close\"></span>\n  </button>\n  <span ng-class=\"vm.getIconByType()\" class=\"pficon\"></span>\n  <strong ng-if=\"vm.header\">{{vm.header}}</strong> <span>{{(vm.body?vm.body:'&nbsp;')}}</span>\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 25 */
@@ -321,11 +351,16 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Toolbar;
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
+=======
+	module.exports = "<div>\n  Button\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 27 */
 /***/ function(module, exports) {
 
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	///
 	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
 	/// and other contributors as indicated by the @author tags.
@@ -367,15 +402,39 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = ToolbarController;
 
+=======
+	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: toolbarList.disabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.children\" ng-class=\"{disabled: item.disabled}\">\n      <a href=\"#\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
+>>>>>>> Add Rx, new component for alerts, add them to demo
 
 /***/ },
 /* 28 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"toolbar-pf-actions\">\n  <div id=\"center_tb\">\n    <div class=\"form-group\">\n      <miq-toolbar-list ng-repeat=\"item in vm.toolbarItems | filter: children\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n  </div>\n  <div id=\"view_tb\"></div>\n</div>\n"
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 
 /***/ },
 /* 29 */
+=======
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
+
+/***/ },
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -399,7 +458,11 @@
 	var ToolbarButton = (function () {
 	    function ToolbarButton() {
 	        this.replace = true;
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	        this.template = __webpack_require__(30);
+=======
+	        this.template = __webpack_require__(10);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.scope = {
 	            toolbarButton: '='
 	        };
@@ -416,6 +479,7 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 30 */
 /***/ function(module, exports) {
 
@@ -423,6 +487,9 @@
 
 /***/ },
 /* 31 */
+=======
+/* 29 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -443,6 +510,7 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var ToolbarList = (function () {
 	    function ToolbarList() {
 	        this.replace = true;
@@ -450,6 +518,23 @@
 	        this.scope = {
 	            toolbarList: '=',
 	            onItemClick: '&'
+=======
+	var dataTablecontroller_1 = __webpack_require__(31);
+	var DataTable = (function () {
+	    function DataTable() {
+	        this.replace = true;
+	        this.template = __webpack_require__(12);
+	        this.controller = dataTablecontroller_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            onRowClick: '&',
+	            onItemSelected: '&',
+	            data: '=',
+	            columns: '=',
+	            selectable: '=',
+	            noFooter: '=',
+	            defaultAction: '='
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        };
 	    }
 	    ToolbarList.Factory = function () {
@@ -501,7 +586,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 34 */
+=======
+/* 30 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -522,9 +611,22 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var dataTablecontroller_1 = __webpack_require__(35);
 	var DataTable = (function () {
 	    function DataTable() {
+=======
+	var DataTablePagination = (function () {
+	    function DataTablePagination() {
+	        this.template = __webpack_require__(11);
+	        this.scope = {
+	            resourceList: '=',
+	            currentPage: '=',
+	            linkHeader: '=',
+	            pageSetter: '&',
+	            perPage: '='
+	        };
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.replace = true;
 	        this.template = __webpack_require__(36);
 	        this.controller = dataTablecontroller_1.default;
@@ -545,7 +647,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 35 */
+=======
+/* 31 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	///
@@ -572,6 +678,7 @@
 	        this.resPerPage = 10;
 	        this.resCurPage = 0;
 	        this.noFooter = false;
+	        this.selectable = true;
 	    }
 	    Object.defineProperty(DataTableController, "assetUrl", {
 	        get: function () {
@@ -591,8 +698,10 @@
 	        };
 	    };
 	    DataTableController.prototype.onSortClick = function (column) {
-	        this.sortType = column.col_idx;
-	        this.sortReverse = !this.sortReverse;
+	        if (column.sort) {
+	            this.sortType = column['col_idx'];
+	            this.sortReverse = !this.sortReverse;
+	        }
 	    };
 	    DataTableController.prototype.isCheckbox = function (row, columnKey) {
 	        return row.cells[columnKey].hasOwnProperty('is_checkbox') && row.cells[columnKey]['is_checkbox'];
@@ -629,7 +738,6 @@
 	    };
 	    DataTableController.prototype.onRowSelected = function ($event) {
 	        $event.stopPropagation();
-	        console.log(this);
 	        this.onItemSelected();
 	    };
 	    return DataTableController;
@@ -639,13 +747,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 36 */
 /***/ function(module, exports) {
-
-	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer\">\n    <thead>\n    <tr>\n      <th ng-repeat=\"column in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <a href=\"#\" ng-click=\"vm.onSortClick(column)\" ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </a>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <input ng-if=\"vm.isCheckbox(row, columnKey)\"\n               ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">So why don't you try <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a> so this table would not be empty.</p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"miq-info here\">\n            <input type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\"> Check All\n        </span>\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
-
-/***/ },
-/* 37 */
+=======
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -666,9 +772,356 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
+	var dataTableComponent_1 = __webpack_require__(29);
+	var dataTablePaginationDirective_1 = __webpack_require__(30);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.component('miqDataTable', new dataTableComponent_1.default);
+	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
+	};
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var loader_1 = __webpack_require__(39);
+	var loader_2 = __webpack_require__(32);
+	var loader_3 = __webpack_require__(34);
+	var actionButtonsDirective_1 = __webpack_require__(28);
+	var validateCredentialsComponent_1 = __webpack_require__(44);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    loader_1.default(module);
+	    loader_2.default(module);
+	    loader_3.default(module);
+	    module.directive('miqActionButtons', actionButtonsDirective_1.default.Factory());
+	    module.component('miqValidateCredentials', new validateCredentialsComponent_1.default);
+	};
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var notificationsDirective_1 = __webpack_require__(38);
+	var notificationSectionComponent_1 = __webpack_require__(35);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.directive('miqNotifications', notificationsDirective_1.default.Factory());
+	    module.component('miqNotificationSection', new notificationSectionComponent_1.default);
+	};
+
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var notificationSectionController_1 = __webpack_require__(36);
+	var NotificationSection = (function () {
+	    function NotificationSection() {
+	        this.replace = true;
+	        this.template = __webpack_require__(13);
+	        this.controller = notificationSectionController_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            limit: '=',
+	            timer: '=',
+	            showInfo: '@'
+	        };
+	    }
+	    return NotificationSection;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NotificationSection;
+
+
+/***/ },
+/* 36 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	var NotificationSectionController = (function () {
+	    /* @ngInject */
+	    function NotificationSectionController(MiQNotificationService, $timeout, $scope) {
+	        var _this = this;
+	        this.MiQNotificationService = MiQNotificationService;
+	        this.$timeout = $timeout;
+	        this.$scope = $scope;
+	        this.activeNotifications = [];
+	        MiQNotificationService.notificationSubject.subscribe(function (data) { return _this.onSuccess(data); }, function (error) { return _this.onError(error); });
+	    }
+	    NotificationSectionController.$inject = ["MiQNotificationService", "$timeout", "$scope"];
+	    NotificationSectionController.prototype.onSuccess = function (data) {
+	        var _this = this;
+	        this.activeNotifications.push(data);
+	        this.$timeout(function () {
+	            _this.$scope.$digest();
+	        });
+	        console.log(this);
+	        //if (this.timer) {
+	        //  this.removeItemAfterTimer(data);
+	        //}
+	    };
+	    NotificationSectionController.prototype.removeItemAfterTimer = function (item) {
+	        var _this = this;
+	        this.$timeout(function () {
+	            var indexToRemove = _.findIndex(_this.activeNotifications, item);
+	            if (indexToRemove !== -1) {
+	                _this.activeNotifications.splice(indexToRemove, 1);
+	            }
+	        }, this.timer);
+	    };
+	    NotificationSectionController.prototype.onError = function (err) {
+	        console.log('On error ', err);
+	    };
+	    NotificationSectionController.prototype.onDismiss = function (key) {
+	        this.activeNotifications.splice(key, 1);
+	    };
+	    return NotificationSectionController;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NotificationSectionController;
+
+
+/***/ },
+/* 37 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var NotificationsController = (function () {
+	    function NotificationsController() {
+	    }
+	    NotificationsController.prototype.getClassFromType = function () {
+	        return {
+	            'alert-danger': this.type === 'danger',
+	            'alert-warning': this.type === 'warning',
+	            'alert-success': this.type === 'success',
+	            'alert-info': this.type === 'info',
+	            'alert-dismissable': this.dismissible
+	        };
+	    };
+	    NotificationsController.prototype.getIconByType = function () {
+	        return {
+	            'pficon-error-circle-o': this.type === 'danger',
+	            'pficon-warning-triangle-o': this.type === 'warning',
+	            'pficon-ok': this.type === 'success',
+	            'pficon-info': this.type === 'info'
+	        };
+	    };
+	    return NotificationsController;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NotificationsController;
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var notificationsController_1 = __webpack_require__(37);
+	var Notifications = (function () {
+	    function Notifications() {
+	        this.replace = true;
+	        this.template = __webpack_require__(14);
+	        this.controller = notificationsController_1.default;
+	        this.controllerAs = 'vm';
+	        this.scope = {};
+	        this.bindToController = {
+	            dismissible: '=',
+	            header: '=',
+	            body: '=',
+	            type: '=',
+	            onDismiss: '&'
+	        };
+	    }
+	    Notifications.Factory = function () {
+	        var directive = function () { return new Notifications(); };
+	        directive.$inject = [];
+	        return directive;
+	    };
+	    return Notifications;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Notifications;
+
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var toolbarComponent_1 = __webpack_require__(41);
+	var toolbarButtonDirective_1 = __webpack_require__(40);
+	var toolbarListDirective_1 = __webpack_require__(43);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
+	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
+	    module.directive('miqToolbarList', toolbarListDirective_1.default.Factory());
+	};
+>>>>>>> Add Rx, new component for alerts, add them to demo
+
+	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer\">\n    <thead>\n    <tr>\n      <th ng-repeat=\"column in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <a href=\"#\" ng-click=\"vm.onSortClick(column)\" ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </a>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <input ng-if=\"vm.isCheckbox(row, columnKey)\"\n               ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">So why don't you try <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a> so this table would not be empty.</p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"miq-info here\">\n            <input type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\"> Check All\n        </span>\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
+
+/***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
+/* 37 */
+=======
+/* 40 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var DataTablePagination = (function () {
 	    function DataTablePagination() {
 	        this.template = __webpack_require__(38);
+=======
+	var ToolbarButton = (function () {
+	    function ToolbarButton() {
+	        this.replace = true;
+	        this.template = __webpack_require__(15);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.scope = {
 	            resourceList: '=',
 	            currentPage: '=',
@@ -676,6 +1129,7 @@
 	            pageSetter: '&',
 	            perPage: '='
 	        };
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	        this.replace = true;
 	        this.link = function ($scope, element, attrs) {
 	            $scope.currentPageView = $scope.currentPage + 1;
@@ -716,6 +1170,51 @@
 	                $scope.pagesNumber = getPagesNumber();
 	                $scope.goTos = new Array($scope.pagesNumber);
 	            });
+=======
+	    }
+	    ToolbarButton.Factory = function () {
+	        var directive = function () { return new ToolbarButton(); };
+	        directive.$inject = [];
+	        return directive;
+	    };
+	    return ToolbarButton;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ToolbarButton;
+
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var toolbarController_1 = __webpack_require__(42);
+	var Toolbar = (function () {
+	    function Toolbar() {
+	        this.replace = true;
+	        this.template = __webpack_require__(17);
+	        this.controller = toolbarController_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            toolbarItems: '='
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        };
 	    }
 	    DataTablePagination.Factory = function () {
@@ -730,13 +1229,21 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 38 */
+=======
+/* 42 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 39 */
+=======
+/* 43 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -760,7 +1267,11 @@
 	var ActionButtons = (function () {
 	    function ActionButtons() {
 	        this.replace = true;
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	        this.template = __webpack_require__(40);
+=======
+	        this.template = __webpack_require__(16);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.scope = {
 	            actions: '='
 	        };
@@ -777,6 +1288,7 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 40 */
 /***/ function(module, exports) {
 
@@ -784,6 +1296,9 @@
 
 /***/ },
 /* 41 */
+=======
+/* 44 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -804,11 +1319,19 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var validateCredentialsController_1 = __webpack_require__(42);
 	var ValidateCredentials = (function () {
 	    function ValidateCredentials() {
 	        this.replace = true;
 	        this.template = __webpack_require__(43);
+=======
+	var validateCredentialsController_1 = __webpack_require__(45);
+	var ValidateCredentials = (function () {
+	    function ValidateCredentials() {
+	        this.replace = true;
+	        this.template = __webpack_require__(18);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.controller = validateCredentialsController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
@@ -824,7 +1347,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 42 */
+=======
+/* 45 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	///
@@ -877,13 +1404,52 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 43 */
+=======
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="tsd.d.ts"/>
+	var loader_1 = __webpack_require__(33);
+	var loader_2 = __webpack_require__(51);
+	var loader_3 = __webpack_require__(48);
+	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
+	loader_1.default(app);
+	loader_2.default(app);
+	loader_3.default(app);
+
+
+/***/ },
+/* 47 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 44 */
+=======
+/* 48 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -904,8 +1470,12 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var dataTableService_1 = __webpack_require__(45);
 	var formValidatorService_1 = __webpack_require__(46);
+=======
+	var dataAccessService_1 = __webpack_require__(47);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataTableService', dataTableService_1.default);
@@ -914,7 +1484,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 45 */
+=======
+/* 49 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	///
@@ -969,7 +1543,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 46 */
+=======
+/* 50 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	///
@@ -1030,7 +1608,11 @@
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 47 */
+=======
+/* 51 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1051,15 +1633,91 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 	var dataAccessService_1 = __webpack_require__(48);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataAccessService', dataAccessService_1.default);
+=======
+	var dataTableService_1 = __webpack_require__(49);
+	var formValidatorService_1 = __webpack_require__(50);
+	var notificationService_1 = __webpack_require__(52);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.provider('MiQDataTableService', dataTableService_1.default);
+	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
+	    module.service('MiQNotificationService', notificationService_1.default);
+>>>>>>> Add Rx, new component for alerts, add them to demo
 	};
 
 
 /***/ },
+<<<<<<< b9e5a028c6c0b592911fc1e780641125afa55703
 /* 48 */
+=======
+/* 52 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var NotificationService = (function () {
+	    /* @ngInject */
+	    function NotificationService(rx) {
+	        this.rx = rx;
+	        this.notificationSubject = new this.rx.Subject();
+	    }
+	    NotificationService.$inject = ["rx"];
+	    NotificationService.prototype.sendNext = function (data) {
+	        this.notificationSubject.onNext(data);
+	    };
+	    NotificationService.prototype.sendDanger = function (data) {
+	        data.type = 'danger';
+	        this.notificationSubject.onNext(data);
+	    };
+	    NotificationService.prototype.sendWarning = function (data) {
+	        data.type = 'warning';
+	        this.notificationSubject.onNext(data);
+	    };
+	    NotificationService.prototype.sendSuccess = function (data) {
+	        data.type = 'success';
+	        this.notificationSubject.onNext(data);
+	    };
+	    NotificationService.prototype.sendInfo = function (data) {
+	        data.type = 'info';
+	        this.notificationSubject.onNext(data);
+	    };
+	    NotificationService.prototype.dismissibleMessage = function (body, header) {
+	        return {
+	            body: body,
+	            dismissible: true,
+	            header: header
+	        };
+	    };
+	    return NotificationService;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NotificationService;
+
+
+/***/ },
+/* 53 */
+>>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
 
 	///

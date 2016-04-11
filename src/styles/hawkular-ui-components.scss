@@ -22,3 +22,15 @@ table.mig-table-with-footer {
 .form-actions button.btn {
   margin-right: 5px;
 }
+
+.mig-table thead th{
+  color: #0099d3;
+  cursor: pointer;
+}
+
+.miq-alert-section {
+  margin-top: 10px;
+  .miq-info-alert {
+    text-align: center;
+  }
+}

@@ -21,10 +21,13 @@ import DataTableController from './dataTableController';
 import ToolbarMenuController from './toolbarMenuController';
 import ValidateCredentialsController from './validateCredentialsController';
 import ActionButtonController from './actionButtonsController';
+import BasicNotificationController from './basicNotificationController';
+
 export default (module: ng.IModule) => {
   module.controller('demoAvailableComponents', AvailableComponentsController);
   module.controller('demoDataTable', DataTableController);
   module.controller('demoToolbarMenu', ToolbarMenuController);
   module.controller('demoValidateCredentials', ValidateCredentialsController);
   module.controller('demoActionButtons', ActionButtonController);
+  module.controller('basicNotification', BasicNotificationController);
 }

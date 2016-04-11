@@ -11,7 +11,7 @@ var webpack = require('webpack'),
 module.exports = {
     context: __dirname,
     entry: {
-        vendor: ["angular", "lodash", "ui-router"]
+        vendor: ["angular", "lodash", "ui-router", "rxjs", "rx-angular"]
     },
     plugins: plugins,
     output: {
