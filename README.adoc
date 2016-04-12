@@ -17,7 +17,7 @@ your system.
 
 Install these node packages globally in the system
 [source]
-npm install -g tsd bower webpack wiredep-cli
+npm install -g typings bower webpack wiredep-cli
 
 Install local node dependencies
 [source]
