@@ -22,6 +22,7 @@ node_modules/
 bower_components/
 dist/index.html
 tsd/
+typings/
 vendor.js
 *.css.map
 *.js.map

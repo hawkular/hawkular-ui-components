@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack --watch",
-    "postinstall": "bower install && tsd install && webpack && webpack --config webpack.vendor.config.js"
+    "postinstall": "bower install && typings install && webpack && webpack --config webpack.vendor.config.js"
   },
   "devDependencies": {
     "angular": "1.5.2",
