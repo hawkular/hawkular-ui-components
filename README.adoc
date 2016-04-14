@@ -14,7 +14,7 @@ Please refer to http://www.hawkular.org/docs/dev/ui-dev.html[Hawkular UI Develop
 
 == Prerequisites
 
-You need to have installed https://docs.npmjs.com/getting-started/installing-node[Node.js >= 4.2.1 and npm >= 3] on
+You need to have installed https://docs.npmjs.com/getting-started/installing-node[Node.js >= 5 and npm >= 3] on
 your system.
 
 Install these node packages globally in the system
