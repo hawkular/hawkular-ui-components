@@ -7,8 +7,12 @@ npm:
   - '3.8.3'
 
 notifications:
-  gitter:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/3e375d2611253a8d24e3
     on_success: change
+    on_failure: always
+    on_start: never
 
 before_install:
   - 'npm install -g typings bower webpack'
