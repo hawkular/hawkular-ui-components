@@ -1,16 +1,17 @@
 sudo: false
 language: node_js
 node_js:
-  - '0.10'
+  - '5.10.1'
+
+npm:
+  - '3.8.3'
 
 notifications:
-  irc:
-    channels:
-    - chat.freenode.net#hawkular
+  gitter:
     on_success: change
 
 before_install:
-  - 'npm install -g tsd bower webpack wiredep-cli'
+  - 'npm install -g typings bower webpack'
 
 script:
   - 'npm install'
