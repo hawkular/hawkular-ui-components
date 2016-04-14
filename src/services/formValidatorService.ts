@@ -20,6 +20,7 @@ export interface IValidationResponse {
   isValid: boolean;
   errorMsg: string;
   formObject: any;
+  serverAlerts: any;
 }
 
 export interface IFormValidatorService {
@@ -51,12 +52,22 @@ export default class FormValidatorService implements IValidatorService {
 
   private httpPost(url: string, dataObject: any): ng.IPromise<IValidationResponse> {
     return this.$http.post(url, dataObject).then( (validationData: any) => {
+      console.log(validationData);
       return {
         isValid: validationData.data.result,
         errorMsg: validationData.data.details,
-        formObject: validationData.data.ems_object
+        formObject: validationData.data.ems_object,
+        serverAlerts: this.mergeAlerts(validationData.data.database_errors)
       };
     });
+  }
+
+  private mergeAlerts(alertsData): any {
+    let allAlerts = {};
+    _.each(alertsData, (item, key) => {
+      allAlerts[key] = item.join();
+    });
+    return allAlerts;
   }
 
   /*@ngInject*/

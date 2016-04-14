@@ -21,7 +21,8 @@ export default class ActionButtons implements ng.IDirective {
   public replace: boolean = true;
   public template = require<string>('./action-buttons.html');
   public scope: any = {
-    actions: '='
+    actions: '=',
+    isValid: '='
   };
 
   public static Factory = () => {

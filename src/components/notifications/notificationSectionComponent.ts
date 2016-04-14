@@ -24,6 +24,7 @@ export default class NotificationSection {
   public template = require<string>('./notification-section.html');
   public controller: any = NotificationSectionController;
   public controllerAs: string = 'vm';
+  public scope = {};
   public bindings: any = {
     limit: '=',
     timer: '=',

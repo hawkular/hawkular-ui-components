@@ -22,9 +22,13 @@ export interface INotificationAlert {
   header?: string;
   dismissible?: boolean;
   noTimeout?: boolean;
+  loadingItem?: any;
 }
 
 export default class NotificationService {
+  public static get bodyTag(): string {return '<body>';};
+  public static get closeBodyTag(): string {return '</body>';};
+
   public notificationSubject: Rx.Subject<INotificationAlert>;
 
   /* @ngInject */
@@ -32,33 +36,54 @@ export default class NotificationService {
     this.notificationSubject = new this.rx.Subject();
   }
 
-  public sendNext(data: INotificationAlert) {
+  public sendNext(data: INotificationAlert): INotificationAlert {
     this.notificationSubject.onNext(data);
+    return data;
   }
 
-  public sendDanger(data: any){
+  public sendDanger(data: any): INotificationAlert {
     data.type = 'danger';
-    this.notificationSubject.onNext(data);
+    return this.sendNext(data);
   }
 
-  public sendWarning(data: any){
+  public sendWarning(data: any): INotificationAlert {
     data.type = 'warning';
-    this.notificationSubject.onNext(data);
-  }
-  public sendSuccess(data: any){
-    data.type = 'success';
-    this.notificationSubject.onNext(data);
-  }
-  public sendInfo(data: any){
-    data.type = 'info';
-    this.notificationSubject.onNext(data);
+    return this.sendNext(data);
   }
 
-  public dismissibleMessage(body: string, header?: string) {
+  public sendSuccess(data: any): INotificationAlert {
+    data.type = 'success';
+    return this.sendNext(data);
+  }
+
+  public sendInfo(data: any): INotificationAlert {
+    data.type = 'info';
+    return this.sendNext(data);
+  }
+
+  public sendLoading(data: any): INotificationAlert {
+    data.type = 'loading';
+    return this.sendNext(data);
+  }
+
+  public dismissibleMessage(body: string, header?: string, loadingItem?: INotificationAlert) {
     return {
-      body: body,
+      body: NotificationService.checkForBody(body),
       dismissible: true,
-      header: header
+      header: header,
+      loadingItem: loadingItem
+    };
+  }
+
+  private static checkForBody(msg: string): string {
+    if (msg && msg !== '') {
+      const bodyIndex = msg.indexOf(NotificationService.bodyTag);
+      if (bodyIndex !== -1 ) {
+        return msg.substring(
+          bodyIndex + NotificationService.bodyTag.length, msg.indexOf(NotificationService.closeBodyTag)
+        );
+      }
     }
+    return msg;
   }
 }

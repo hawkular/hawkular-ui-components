@@ -27,7 +27,7 @@ export default class NotificationsController {
       'alert-danger': this.type === 'danger',
       'alert-warning': this.type === 'warning',
       'alert-success': this.type === 'success',
-      'alert-info': this.type === 'info',
+      'alert-info': this.type === 'info' || this.type === 'loading',
       'alert-dismissable': this.dismissible
     };
   }
@@ -37,7 +37,8 @@ export default class NotificationsController {
       'pficon-error-circle-o': this.type === 'danger',
       'pficon-warning-triangle-o': this.type === 'warning',
       'pficon-ok': this.type === 'success',
-      'pficon-info': this.type === 'info'
+      'pficon-info': this.type === 'info',
+      'spinner miq-alert-loading': this.type === 'loading'
     };
   }
 }

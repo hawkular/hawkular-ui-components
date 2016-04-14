@@ -185,7 +185,7 @@
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-click=\"oneAction.clickFunction($event)\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
+	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-disabled=\"oneAction.validate && !isValid\"\n          ng-click=\"oneAction.clickFunction($event)\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
 
 /***/ },
 /* 11 */
@@ -464,7 +464,12 @@
 	        this.template = __webpack_require__(10);
 >>>>>>> Add Rx, new component for alerts, add them to demo
 	        this.scope = {
+<<<<<<< 7e9f5935c08d60402e46d08e08a65b5bf3895475
 	            toolbarButton: '='
+=======
+	            actions: '=',
+	            isValid: '='
+>>>>>>> Fix notification services to work more with Rxjs
 	        };
 	    }
 	    ToolbarButton.Factory = function () {
@@ -841,7 +846,7 @@
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
 	var notificationsDirective_1 = __webpack_require__(38);
-	var notificationSectionComponent_1 = __webpack_require__(35);
+	var notificationSectionComponent_1 = __webpack_require__(57);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.directive('miqNotifications', notificationsDirective_1.default.Factory());
@@ -851,47 +856,6 @@
 
 /***/ },
 /* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../../tsd.d.ts"/>
-	var notificationSectionController_1 = __webpack_require__(36);
-	var NotificationSection = (function () {
-	    function NotificationSection() {
-	        this.replace = true;
-	        this.template = __webpack_require__(13);
-	        this.controller = notificationSectionController_1.default;
-	        this.controllerAs = 'vm';
-	        this.bindings = {
-	            limit: '=',
-	            timer: '=',
-	            showInfo: '@'
-	        };
-	    }
-	    return NotificationSection;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = NotificationSection;
-
-
-/***/ },
-/* 36 */
 /***/ function(module, exports) {
 
 	///
@@ -913,38 +877,63 @@
 	"use strict";
 	var NotificationSectionController = (function () {
 	    /* @ngInject */
-	    function NotificationSectionController(MiQNotificationService, $timeout, $scope) {
+	    function NotificationSectionController(MiQNotificationService, $timeout, $scope, rx) {
 	        var _this = this;
 	        this.MiQNotificationService = MiQNotificationService;
 	        this.$timeout = $timeout;
 	        this.$scope = $scope;
+	        this.rx = rx;
 	        this.activeNotifications = [];
-	        MiQNotificationService.notificationSubject.subscribe(function (data) { return _this.onSuccess(data); }, function (error) { return _this.onError(error); });
+	        console.log(this.rx);
+	        var disposable = MiQNotificationService.notificationSubject.subscribe(function (data) { return _this.onNext(data); }, function (error) { return _this.onError(error); });
+	        $scope.$eventToObservable('$destroy')
+	            .subscribe(function () { return disposable.dispose(); });
 	    }
-	    NotificationSectionController.$inject = ["MiQNotificationService", "$timeout", "$scope"];
-	    NotificationSectionController.prototype.onSuccess = function (data) {
-	        var _this = this;
-	        this.activeNotifications.push(data);
-	        this.$timeout(function () {
-	            _this.$scope.$digest();
-	        });
-	        console.log(this);
-	        //if (this.timer) {
-	        //  this.removeItemAfterTimer(data);
-	        //}
+	    NotificationSectionController.$inject = ["MiQNotificationService", "$timeout", "$scope", "rx"];
+	    /**
+	     *
+	     * @param data
+	       */
+	    NotificationSectionController.prototype.onNext = function (data) {
+	        console.log(data, this.activeNotifications);
+	        if (data.loadingItem) {
+	            this.disposeItem(data.loadingItem);
+	        }
+	        this.activeNotifications.unshift(data);
+	        //Work arround for safeApply on Scope
+	        this.rx.Observable.interval()
+	            .safeApply(this.$scope)
+	            .subscribe();
+	        if (this.timer) {
+	            this.removeItemAfterTimer(data);
+	        }
 	    };
+	    /**
+	     *
+	     * @param item
+	       */
 	    NotificationSectionController.prototype.removeItemAfterTimer = function (item) {
 	        var _this = this;
-	        this.$timeout(function () {
-	            var indexToRemove = _.findIndex(_this.activeNotifications, item);
-	            if (indexToRemove !== -1) {
-	                _this.activeNotifications.splice(indexToRemove, 1);
-	            }
-	        }, this.timer);
+	        this.rx.Observable.timer(this.timer)
+	            .subscribe(function () { return _this.disposeItem(item); });
 	    };
+	    /**
+	     *
+	     * @param err
+	       */
 	    NotificationSectionController.prototype.onError = function (err) {
-	        console.log('On error ', err);
+	        console.error('On error ', err);
 	    };
+	    NotificationSectionController.prototype.disposeItem = function (item) {
+	        var indexToRemove = _.findIndex(this.activeNotifications, item);
+	        if (indexToRemove !== -1) {
+	            this.onDismiss(indexToRemove);
+	        }
+	    };
+	    /**
+	     *
+	     * @param key
+	       */
 	    NotificationSectionController.prototype.onDismiss = function (key) {
 	        this.activeNotifications.splice(key, 1);
 	    };
@@ -955,6 +944,7 @@
 
 
 /***/ },
+/* 36 */,
 /* 37 */
 /***/ function(module, exports) {
 
@@ -984,7 +974,7 @@
 	            'alert-danger': this.type === 'danger',
 	            'alert-warning': this.type === 'warning',
 	            'alert-success': this.type === 'success',
-	            'alert-info': this.type === 'info',
+	            'alert-info': this.type === 'info' || this.type === 'loading',
 	            'alert-dismissable': this.dismissible
 	        };
 	    };
@@ -993,7 +983,8 @@
 	            'pficon-error-circle-o': this.type === 'danger',
 	            'pficon-warning-triangle-o': this.type === 'warning',
 	            'pficon-ok': this.type === 'success',
-	            'pficon-info': this.type === 'info'
+	            'pficon-info': this.type === 'info',
+	            'spinner miq-alert-loading': this.type === 'loading'
 	        };
 	    };
 	    return NotificationsController;
@@ -1582,13 +1573,23 @@
 	        return this.httpPost(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.create, dataObject);
 	    };
 	    FormValidatorService.prototype.httpPost = function (url, dataObject) {
+	        var _this = this;
 	        return this.$http.post(url, dataObject).then(function (validationData) {
+	            console.log(validationData);
 	            return {
 	                isValid: validationData.data.result,
 	                errorMsg: validationData.data.details,
-	                formObject: validationData.data.ems_object
+	                formObject: validationData.data.ems_object,
+	                serverAlerts: _this.mergeAlerts(validationData.data.database_errors)
 	            };
 	        });
+	    };
+	    FormValidatorService.prototype.mergeAlerts = function (alertsData) {
+	        var allAlerts = {};
+	        _.each(alertsData, function (item, key) {
+	            allAlerts[key] = item.join();
+	        });
+	        return allAlerts;
 	    };
 	    /*@ngInject*/
 	    FormValidatorService.prototype.$get = function ($http, MiQDataAccessService) {
@@ -1683,31 +1684,58 @@
 	        this.notificationSubject = new this.rx.Subject();
 	    }
 	    NotificationService.$inject = ["rx"];
+	    Object.defineProperty(NotificationService, "bodyTag", {
+	        get: function () { return '<body>'; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ;
+	    Object.defineProperty(NotificationService, "closeBodyTag", {
+	        get: function () { return '</body>'; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ;
 	    NotificationService.prototype.sendNext = function (data) {
 	        this.notificationSubject.onNext(data);
+	        return data;
 	    };
 	    NotificationService.prototype.sendDanger = function (data) {
 	        data.type = 'danger';
-	        this.notificationSubject.onNext(data);
+	        return this.sendNext(data);
 	    };
 	    NotificationService.prototype.sendWarning = function (data) {
 	        data.type = 'warning';
-	        this.notificationSubject.onNext(data);
+	        return this.sendNext(data);
 	    };
 	    NotificationService.prototype.sendSuccess = function (data) {
 	        data.type = 'success';
-	        this.notificationSubject.onNext(data);
+	        return this.sendNext(data);
 	    };
 	    NotificationService.prototype.sendInfo = function (data) {
 	        data.type = 'info';
-	        this.notificationSubject.onNext(data);
+	        return this.sendNext(data);
 	    };
-	    NotificationService.prototype.dismissibleMessage = function (body, header) {
+	    NotificationService.prototype.sendLoading = function (data) {
+	        data.type = 'loading';
+	        return this.sendNext(data);
+	    };
+	    NotificationService.prototype.dismissibleMessage = function (body, header, loadingItem) {
 	        return {
-	            body: body,
+	            body: NotificationService.checkForBody(body),
 	            dismissible: true,
-	            header: header
+	            header: header,
+	            loadingItem: loadingItem
 	        };
+	    };
+	    NotificationService.checkForBody = function (msg) {
+	        if (msg && msg !== '') {
+	            var bodyIndex = msg.indexOf(NotificationService.bodyTag);
+	            if (bodyIndex !== -1) {
+	                return msg.substring(bodyIndex + NotificationService.bodyTag.length, msg.indexOf(NotificationService.closeBodyTag));
+	            }
+	        }
+	        return msg;
 	    };
 	    return NotificationService;
 	}());
@@ -1716,9 +1744,18 @@
 
 
 /***/ },
+<<<<<<< 7e9f5935c08d60402e46d08e08a65b5bf3895475
 /* 53 */
 >>>>>>> Add Rx, new component for alerts, add them to demo
 /***/ function(module, exports) {
+=======
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+>>>>>>> Fix notification services to work more with Rxjs
 
 	///
 	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
@@ -1737,6 +1774,7 @@
 	/// limitations under the License.
 	///
 	"use strict";
+<<<<<<< 7e9f5935c08d60402e46d08e08a65b5bf3895475
 	///<reference path="../tsd.d.ts"/>
 	var DataAccessService = (function () {
 	    function DataAccessService() {
@@ -1754,6 +1792,27 @@
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = DataAccessService;
+=======
+	///<reference path="../../tsd.d.ts"/>
+	var notificationSectionController_1 = __webpack_require__(35);
+	var NotificationSection = (function () {
+	    function NotificationSection() {
+	        this.replace = true;
+	        this.template = __webpack_require__(13);
+	        this.controller = notificationSectionController_1.default;
+	        this.controllerAs = 'vm';
+	        this.scope = {};
+	        this.bindings = {
+	            limit: '=',
+	            timer: '=',
+	            showInfo: '@'
+	        };
+	    }
+	    return NotificationSection;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NotificationSection;
+>>>>>>> Fix notification services to work more with Rxjs
 
 
 /***/ }

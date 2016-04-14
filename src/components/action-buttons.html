@@ -5,6 +5,7 @@
           class="btn {{oneAction.btnClass}}"
           alt="action.title"
           title="action.title"
+          ng-disabled="oneAction.validate && !isValid"
           ng-click="oneAction.clickFunction($event)">
     <span>
       <i ng-if="oneAction.iconClass" class="{{oneAction.iconClass}}"></i>

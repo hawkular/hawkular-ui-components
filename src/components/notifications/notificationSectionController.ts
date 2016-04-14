@@ -23,38 +23,70 @@ export default class NotificationSectionController {
   public timer: any;
   public activeNotifications: INotificationAlert[] = [];
   public showInfo: boolean;
+
   /* @ngInject */
-  constructor(private MiQNotificationService: any, private $timeout: any, private $scope: any) {
-    MiQNotificationService.notificationSubject.subscribe(
-      (data: INotificationAlert) => this.onSuccess(data),
+  constructor(private MiQNotificationService: any,
+              private $timeout: any,
+              private $scope: any,
+              private rx: any) {
+    console.log(this.rx);
+    const disposable = MiQNotificationService.notificationSubject.subscribe(
+      (data: INotificationAlert) => this.onNext(data),
       (error) => this.onError(error)
     );
+    $scope.$eventToObservable('$destroy')
+      .subscribe(() => disposable.dispose());
   }
 
-  public onSuccess(data: INotificationAlert) {
-    this.activeNotifications.push(data);
-    this.$timeout(() => {
-      this.$scope.$digest();
-    });
-    console.log(this);
-    //if (this.timer) {
-    //  this.removeItemAfterTimer(data);
-    //}
+  /**
+   *
+   * @param data
+     */
+  public onNext(data: INotificationAlert) {
+    console.log(data, this.activeNotifications);
+    if (data.loadingItem) {
+      this.disposeItem(data.loadingItem);
+    }
+    this.activeNotifications.unshift(data);
+
+    //Work arround for safeApply on Scope
+    this.rx.Observable.interval()
+      .safeApply(this.$scope)
+      .subscribe();
+
+    if (this.timer) {
+      this.removeItemAfterTimer(data);
+    }
   }
 
+  /**
+   *
+   * @param item
+     */
   public removeItemAfterTimer(item) {
-    this.$timeout(() => {
-      const indexToRemove = _.findIndex(this.activeNotifications, item);
-      if (indexToRemove !== -1) {
-        this.activeNotifications.splice(indexToRemove, 1);
-      }
-    }, this.timer);
+    this.rx.Observable.timer(this.timer)
+      .subscribe(() => this.disposeItem(item));
   }
 
+  /**
+   *
+   * @param err
+     */
   public onError(err) {
-    console.log('On error ', err);
+    console.error('On error ', err);
   }
 
+  private disposeItem(item) {
+    const indexToRemove = _.findIndex(this.activeNotifications, item);
+    if (indexToRemove !== -1) {
+      this.onDismiss(indexToRemove);
+    }
+  }
+
+  /**
+   *
+   * @param key
+     */
   public onDismiss(key) {
     this.activeNotifications.splice(key, 1);
   }
