@@ -1,16 +1,21 @@
 sudo: false
 language: node_js
 node_js:
-  - '0.10'
+  - '5.10.1'
+
+npm:
+  - '3.8.3'
 
 notifications:
-  irc:
-    channels:
-    - chat.freenode.net#hawkular
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/3e375d2611253a8d24e3
     on_success: change
+    on_failure: always
+    on_start: never
 
 before_install:
-  - 'npm install -g tsd bower webpack wiredep-cli'
+  - 'npm install -g typings bower webpack'
 
 script:
   - 'npm install'
