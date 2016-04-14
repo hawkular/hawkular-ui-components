@@ -33,11 +33,14 @@ var webpack = require('webpack'),
       })
     }),
     new ExtractTextPlugin(settings.stylesheetPath),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
     new NgAnnotatePlugin({add: true})
   ];
-production && plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false, minimize: true, drop_console: true}));
+
+if(production){
+  plugins.push(new webpack.optimize.DedupePlugin());
+  plugins.push(new webpack.optimize.OccurenceOrderPlugin());
+  plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false, minimize: true, drop_console: true}));
+}
 
 appEntry[settings.appName] = [
   settings.sassEntryPoint,
