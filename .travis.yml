@@ -6,6 +6,12 @@ node_js:
 npm:
   - '3'
 
+env:
+  global:
+  - GH_REF: github.com/hawkular/hawkular-ui-components
+  - GH_BRANCH: gh-pages
+
+
 notifications:
   webhooks:
     urls:
@@ -14,8 +20,11 @@ notifications:
     on_failure: always
     on_start: never
 
+cache:
+  directories:
+    - node_modules
+
 before_install:
   - 'npm install -g typings bower webpack'
 
-script:
-  - 'npm install'
+script: ./build.sh
