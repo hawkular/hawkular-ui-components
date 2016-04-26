@@ -15,21 +15,11 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import toolbarMenuLoader from './toolbar-menu/loader';
-import dataTableLoader from './data-table/loader';
-import notifications from './notifications/loader';
-import tileView from './tile-view/loader';
-import ActionButtons from './actionButtonsDirective';
-import ValidateCredentials from './validateCredentialsComponent';
-import SortItems from './sortItemsComponent';
+///<reference path="../../tsd.d.ts"/>
+
+import TileView from './tileViewComponent';
 
 export default (module: ng.IModule) => {
-  toolbarMenuLoader(module);
-  dataTableLoader(module);
-  notifications(module);
-  tileView(module);
-  module.directive('miqActionButtons', ActionButtons.Factory());
-  module.component('miqValidateCredentials', new ValidateCredentials);
-  module.component('miqSortItems', new SortItems);
+  module.component('miqTileView', new TileView(require('./tile-view.html')));
+  module.component('miqSmallTileView', new TileView(require('./small-tile.html')));
 }

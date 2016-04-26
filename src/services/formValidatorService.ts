@@ -52,7 +52,6 @@ export default class FormValidatorService implements IValidatorService {
 
   private httpPost(url: string, dataObject: any): ng.IPromise<IValidationResponse> {
     return this.$http.post(url, dataObject).then( (validationData: any) => {
-      console.log(validationData);
       return {
         isValid: validationData.data.result,
         errorMsg: validationData.data.details,

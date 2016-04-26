@@ -36,10 +36,65 @@ export default class DataTableService implements ng.IServiceProvider {
       method: 'GET',
       url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
     }).then((responseData) => {
+      DataTableService.mockData(responseData.data.rows);
+      DataTableService.filterSelectBox(responseData.data.head, responseData.data.rows);
+      DataTableService.bindHeadersToRows(responseData.data.head, responseData.data.rows);
+      DataTableService.exposeName(responseData.data.head, responseData.data.rows);
+      DataTableService.exposeIcon(responseData.data.rows);
       return {
         rows: responseData.data.rows,
         cols: responseData.data.head
       };
+    });
+  }
+
+  private static exposeName(headers: any[], rows: any[]) {
+    _.each(rows, (row: any) => {
+      row.nameItem = DataTableService.findNameItem(row.cells, headers);
+    });
+  }
+
+  private static bindHeadersToRows(headers: any[], rows: any[]) {
+    _.each(rows, (row) => {
+      row['headers'] = headers;
+    });
+  }
+
+  private static filterSelectBox(headers: any[], rows: any[]) {
+    _.each(rows, (row: any) => {
+      row.cells = row.cells.filter(cell => !cell.hasOwnProperty('is_checkbox'));
+    });
+    headers.splice(0, 1);
+  }
+
+  private static exposeIcon(rows: any[]) {
+    _.each(rows, (oneRow: any) => {
+      oneRow.icon = DataTableService.findIconItem(oneRow.cells);
+    });
+  }
+
+  private static findIconItem(cells: any): any {
+    return _.find(cells, (row) => {
+      return row.hasOwnProperty('image') || row.hasOwnProperty('icon');
+    });
+  }
+
+  private static findNameItem(cells: any[], headers: any[]): any {
+    const nameIndex = _.findIndex(headers, {text: 'Name'});
+    if (nameIndex !== -1) {
+      return cells[nameIndex];
+    }
+  }
+
+  // TODO: Remove this method
+  private static mockData(rows: any[]) {
+    rows.push(_.cloneDeep(rows[0]));
+    rows.push(_.cloneDeep(rows[0]));
+    rows.push(_.cloneDeep(rows[0]));
+    rows.push(_.cloneDeep(rows[0]));
+    _.each(rows, (row: any, key: any) => {
+      row.id += key;
+      row.cells[2].text += row.id;
     });
   }
 

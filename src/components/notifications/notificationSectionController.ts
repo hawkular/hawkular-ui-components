@@ -29,7 +29,6 @@ export default class NotificationSectionController {
               private $timeout: any,
               private $scope: any,
               private rx: any) {
-    console.log(this.rx);
     const disposable = MiQNotificationService.notificationSubject.subscribe(
       (data: INotificationAlert) => this.onNext(data),
       (error) => this.onError(error)
@@ -43,7 +42,6 @@ export default class NotificationSectionController {
    * @param data
      */
   public onNext(data: INotificationAlert) {
-    console.log(data, this.activeNotifications);
     if (data.loadingItem) {
       this.disposeItem(data.loadingItem);
     }
