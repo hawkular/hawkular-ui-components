@@ -80,7 +80,7 @@ export default class DataTableService implements ng.IServiceProvider {
       return {
         sortIndex: this.sortId,
         isAscending: this.isAscending
-      }
+      };
     }
   }
 
@@ -91,7 +91,7 @@ export default class DataTableService implements ng.IServiceProvider {
 
   public loadMore() {
     this.visibleCount += this.perPage;
-    this.visibleItems = this.rows.slice(0, (this.perPage !== -1? this.visibleCount: this.rows.length));
+    this.visibleItems = this.rows.slice(0, (this.perPage !== -1 ? this.visibleCount : this.rows.length));
   }
 
   private exposeData() {

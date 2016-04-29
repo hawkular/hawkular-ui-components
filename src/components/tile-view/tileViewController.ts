@@ -32,7 +32,7 @@ export default class TileViewcontroller {
   constructor(public observeOnScope: any,
               public $scope: any) {
     observeOnScope($scope, () => {
-      return this.items
+      return this.items;
     }).subscribe((changedItems) => {
       this.options.selectedItems = this.filterSelected();
     });

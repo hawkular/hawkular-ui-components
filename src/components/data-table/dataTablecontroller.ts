@@ -37,13 +37,13 @@ export default class DataTableController {
                      public observeOnScope: any,
                      public $scope: any) {
     observeOnScope($scope, () => {
-      return this.data
+      return this.data;
     }).subscribe(() => {
       this.setPage(0);
     });
 
     observeOnScope($scope, () => {
-      return this.perPage
+      return this.perPage;
     }).subscribe(() => {
       this.setPage(0);
     });
@@ -67,7 +67,7 @@ export default class DataTableController {
       return {
         'fa-sort-asc': this.sortReverse,
         'fa-sort-desc': !this.sortReverse
-      }
+      };
     }
   }
 
