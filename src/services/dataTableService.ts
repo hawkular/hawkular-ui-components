@@ -23,52 +23,115 @@ export interface IRowsColsResponse {
 
 export interface IDataTableService {
   retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse>;
+  sortItemsBy(sortBy: any, isAscending: boolean): any;
+  getSortedIndexAndAscending(): any;
+  setPerPage(perPage: number): void;
+  loadMore(): void;
+  dataTableService: any;
 }
 
 export default class DataTableService implements ng.IServiceProvider {
   private $http: any;
   private MiQDataAccessService: any;
+  private rows: any[];
+  private columns: any[];
+  private sortId: any;
+  private isAscending: boolean;
+  public perPage: number = 5;
+  public visibleCount: number = 0;
+  public visibleItems: any[];
   public endpoints = {
     list : '/list'
   };
+
   public retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse> {
     return this.$http({
       method: 'GET',
       url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
     }).then((responseData) => {
       DataTableService.mockData(responseData.data.rows);
-      DataTableService.filterSelectBox(responseData.data.head, responseData.data.rows);
-      DataTableService.bindHeadersToRows(responseData.data.head, responseData.data.rows);
-      DataTableService.exposeName(responseData.data.head, responseData.data.rows);
-      DataTableService.exposeIcon(responseData.data.rows);
+      this.columns = responseData.data.head;
+      this.rows = responseData.data.rows;
+      this.exposeData();
       return {
-        rows: responseData.data.rows,
-        cols: responseData.data.head
+        rows: this.rows,
+        cols: this.columns
       };
     });
   }
 
-  private static exposeName(headers: any[], rows: any[]) {
-    _.each(rows, (row: any) => {
-      row.nameItem = DataTableService.findNameItem(row.cells, headers);
+  public sortItemsBy(sortId: any, isAscending: boolean): any {
+    this.sortId = sortId;
+    this.isAscending = isAscending;
+    const itemIndex = _.findIndex(this.columns, {text: sortId.title});
+    this.rows.sort( (item1, item2) => {
+      let compValue = 0;
+      if (sortId.sortType === 'numeric') {
+        compValue = item1.cells[itemIndex] - item2[itemIndex];
+      } else {
+        compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
+      }
+      return (isAscending) ? compValue : compValue * -1;
     });
   }
 
-  private static bindHeadersToRows(headers: any[], rows: any[]) {
-    _.each(rows, (row) => {
-      row['headers'] = headers;
+  public getSortedIndexAndAscending() {
+    if (this.sortId) {
+      return {
+        sortIndex: this.sortId,
+        isAscending: this.isAscending
+      }
+    }
+  }
+
+  public setPerPage(perPage: number) {
+    this.perPage = perPage;
+    this.visibleCount = perPage;
+  }
+
+  public loadMore() {
+    this.visibleCount += this.perPage;
+    this.visibleItems = this.rows.slice(0, (this.perPage !== -1? this.visibleCount: this.rows.length));
+  }
+
+  private exposeData() {
+    this.filterSelectBox();
+    this.bindHeadersToRows();
+    this.exposeName();
+    this.exposeIcon();
+    this.makeSelectable();
+    this.loadMore();
+  }
+
+  private makeSelectable() {
+    _.each(this.rows, (row: any) => {
+      row.selecteItem = (selected) => {
+        row.selected = selected;
+      };
     });
   }
 
-  private static filterSelectBox(headers: any[], rows: any[]) {
-    _.each(rows, (row: any) => {
+  private exposeName() {
+    _.each(this.rows, (row: any) => {
+      row.nameItem = this.findNameItem(row.cells);
+    });
+  }
+
+  private bindHeadersToRows() {
+    _.each(this.rows, (row) => {
+      row['headers'] = this.columns;
+    });
+  }
+
+  private filterSelectBox() {
+    _.each(this.rows, (row: any) => {
       row.cells = row.cells.filter(cell => !cell.hasOwnProperty('is_checkbox'));
     });
-    headers.splice(0, 1);
+    this.columns.splice(0, 1);
   }
 
-  private static exposeIcon(rows: any[]) {
-    _.each(rows, (oneRow: any) => {
+  private exposeIcon() {
+    _.each(this.rows, (oneRow: any) => {
       oneRow.icon = DataTableService.findIconItem(oneRow.cells);
     });
   }
@@ -79,8 +142,8 @@ export default class DataTableService implements ng.IServiceProvider {
     });
   }
 
-  private static findNameItem(cells: any[], headers: any[]): any {
-    const nameIndex = _.findIndex(headers, {text: 'Name'});
+  private findNameItem(cells: any): any {
+    const nameIndex = _.findIndex(this.columns, {text: 'Name'});
     if (nameIndex !== -1) {
       return cells[nameIndex];
     }
@@ -92,6 +155,7 @@ export default class DataTableService implements ng.IServiceProvider {
     rows.push(_.cloneDeep(rows[0]));
     rows.push(_.cloneDeep(rows[0]));
     rows.push(_.cloneDeep(rows[0]));
+    rows.push(_.cloneDeep(rows[0]));
     _.each(rows, (row: any, key: any) => {
       row.id += key;
       row.cells[2].text += row.id;
@@ -99,11 +163,24 @@ export default class DataTableService implements ng.IServiceProvider {
   }
 
   /*@ngInject*/
-  public $get($http: any, MiQDataAccessService: any): IDataTableService {
+  public $get($http: any, MiQDataAccessService: any, rx: any, $rootScope: any): IDataTableService {
     this.$http = $http;
     this.MiQDataAccessService = MiQDataAccessService;
     return {
-      retrieveRowsAndColumnsFromUrl: () => this.retrieveRowsAndColumnsFromUrl()
+      retrieveRowsAndColumnsFromUrl: () => this.retrieveRowsAndColumnsFromUrl(),
+      sortItemsBy: (sortBy: any, isAscending: boolean) => {
+        this.sortItemsBy(sortBy, isAscending);
+        this.visibleCount -= this.perPage;
+        this.loadMore();
+      },
+      getSortedIndexAndAscending: () => this.getSortedIndexAndAscending(),
+      setPerPage: (perPage: number) => {
+        this.setPerPage(perPage);
+        this.visibleCount -= this.perPage;
+        this.loadMore();
+      },
+      loadMore: () => this.loadMore(),
+      dataTableService: this
     };
   }
 }

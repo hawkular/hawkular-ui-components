@@ -152,8 +152,8 @@
 	"use strict";
 	///<reference path="tsd.d.ts"/>
 	var loader_1 = __webpack_require__(24);
-	var loader_2 = __webpack_require__(56);
-	var loader_3 = __webpack_require__(60);
+	var loader_2 = __webpack_require__(59);
+	var loader_3 = __webpack_require__(63);
 	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
 	loader_1.default(app);
 	loader_2.default(app);
@@ -188,7 +188,7 @@
 	var loader_4 = __webpack_require__(46);
 	var actionButtonsDirective_1 = __webpack_require__(51);
 	var validateCredentialsComponent_1 = __webpack_require__(53);
-	var sortItemsComponent_1 = __webpack_require__(62);
+	var sortItemsComponent_1 = __webpack_require__(56);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    loader_1.default(module);
@@ -479,15 +479,20 @@
 	        this.replace = true;
 	        this.template = __webpack_require__(36);
 	        this.controller = dataTablecontroller_1.default;
+	        this.transclude = true;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
-	            onRowClick: '&',
-	            onItemSelected: '&',
+	            perPage: '=',
+	            showHeader: '=',
 	            data: '=',
 	            columns: '=',
 	            selectable: '=',
 	            noFooter: '=',
-	            defaultAction: '='
+	            defaultAction: '=',
+	            loadMoreItems: '&',
+	            onSort: '&',
+	            onRowClick: '&',
+	            onItemSelected: '&'
 	        };
 	    }
 	    return DataTable;
@@ -519,13 +524,28 @@
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
 	var DataTableController = (function () {
-	    function DataTableController() {
+	    /* @ngInject */
+	    function DataTableController(MiQDataTableService, observeOnScope, $scope) {
+	        var _this = this;
+	        this.MiQDataTableService = MiQDataTableService;
+	        this.observeOnScope = observeOnScope;
+	        this.$scope = $scope;
 	        this.sortType = -1;
-	        this.resPerPage = 10;
-	        this.resCurPage = 0;
+	        this.sortReverse = true;
 	        this.noFooter = false;
 	        this.selectable = true;
+	        observeOnScope($scope, function () {
+	            return _this.data;
+	        }).subscribe(function () {
+	            _this.setPage(0);
+	        });
+	        observeOnScope($scope, function () {
+	            return _this.perPage;
+	        }).subscribe(function () {
+	            _this.setPage(0);
+	        });
 	    }
+	    DataTableController.$inject = ["MiQDataTableService", "observeOnScope", "$scope"];
 	    Object.defineProperty(DataTableController, "assetUrl", {
 	        get: function () {
 	            return '/assets/';
@@ -533,8 +553,21 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    DataTableController.prototype.isFilteredBy = function (key) {
-	        return this.sortType === key;
+	    DataTableController.prototype.isFilteredBy = function (column) {
+	        var sortIndexAndAsc = this.MiQDataTableService.getSortedIndexAndAscending();
+	        if (sortIndexAndAsc) {
+	            this.sortReverse = !sortIndexAndAsc.isAscending;
+	            return column === _.find(this.columns, { text: sortIndexAndAsc.sortIndex.title });
+	        }
+	        return false;
+	    };
+	    DataTableController.prototype.getSortClass = function (column) {
+	        if (this.isFilteredBy(column)) {
+	            return {
+	                'fa-sort-asc': this.sortReverse,
+	                'fa-sort-desc': !this.sortReverse
+	            };
+	        }
 	    };
 	    DataTableController.prototype.getColumnClass = function (column) {
 	        return {
@@ -545,8 +578,8 @@
 	    };
 	    DataTableController.prototype.onSortClick = function (column) {
 	        if (column.sort) {
-	            this.sortType = column['col_idx'];
-	            this.sortReverse = !this.sortReverse;
+	            this.onSort({ sortId: { title: column.text, id: column.text.toLocaleLowerCase() }, isAscending: this.sortReverse });
+	            this.setPage(this.resCurPage);
 	        }
 	    };
 	    DataTableController.prototype.isCheckbox = function (row, columnKey) {
@@ -569,6 +602,7 @@
 	    };
 	    DataTableController.prototype.setPage = function (page) {
 	        this.resCurPage = page;
+	        this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
 	    };
 	    DataTableController.prototype.getSortTypeAsText = function () {
 	        var selectedFilter = _.find(this.columns, { col_idx: this.sortType });
@@ -578,12 +612,13 @@
 	    };
 	    DataTableController.prototype.onCheckAll = function (isChecked) {
 	        _.each(this.data, function (oneItem) {
-	            oneItem.selected = isChecked;
+	            oneItem.selecteItem(isChecked);
 	        });
 	        this.onItemSelected();
 	    };
-	    DataTableController.prototype.onRowSelected = function ($event) {
+	    DataTableController.prototype.onRowSelected = function ($event, isSelected, item) {
 	        $event.stopPropagation();
+	        item.selecteItem(isSelected);
 	        this.onItemSelected();
 	    };
 	    return DataTableController;
@@ -596,7 +631,7 @@
 /* 36 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer mig-table\">\n    <thead>\n    <tr>\n      <th class=\"narrow miq-select\" ng-if=\"vm.selectable\">\n        <input ng-if=\"vm.data.length !== 0\" type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\" title=\"Select all\">\n      </th>\n      <th ng-repeat=\"column in vm.columns\" ng-click=\"vm.onSortClick(column)\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <div ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && !vm.sortReverse\" class=\"fa fa-sort-desc\"></i>\n            <i ng-if=\"vm.isFilteredBy(column.col_idx) && vm.sortReverse\" class=\"fa fa-sort-asc\"></i>\n          </div>\n        </div>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.data | orderBy : vm.sortType : vm.sortReverse\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td class=\"narrow\" ng-if=\"vm.selectable\" onclick=\"event.stopPropagation();\">\n        <input ng-click=\"vm.onRowSelected($event)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"row.selected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n      </td>\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length + (vm.selectable? 1 : 0)}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">\n          Why don't you try\n            <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a>\n          so this table would not be empty.\n        </p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage\"\n                                       per-page=\"vm.resPerPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
+	module.exports = "<div>\n  <div ng-if=\"vm.showHeader\" class=\"dataTables_header miq-data-tables-header\">\n    <div class=\"row\">\n      <div class=\"col-md-11 col-md-11\">\n      </div>\n      <div class=\"col-md-1 col-ld-1\">\n        <ng-transclude></ng-transclude>\n      </div>\n    </div>\n  </div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer mig-table\">\n    <thead>\n    <tr>\n      <th class=\"narrow miq-select\" ng-if=\"vm.selectable\">\n        <input ng-if=\"vm.data.length !== 0\" type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\" title=\"Select all\">\n      </th>\n      <th ng-repeat=\"column in vm.columns\" ng-click=\"vm.onSortClick(column)\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <div ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i class=\"fa\" ng-if=\"vm.isFilteredBy(column)\" ng-class=\"vm.getSortClass(column)\"></i>\n          </div>\n        </div>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.limitedData\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td class=\"narrow\" ng-if=\"vm.selectable\" onclick=\"event.stopPropagation();\">\n        <input ng-click=\"vm.onRowSelected($event, isSelected, row)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"isSelected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n      </td>\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length + (vm.selectable? 1 : 0)}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">\n          Why don't you try\n            <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a>\n          so this table would not be empty.\n        </p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage(pageNumber)\"\n                                       per-page=\"vm.perPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
 
 /***/ },
 /* 37 */
@@ -666,7 +701,7 @@
 	            $scope.$watch('currentPage', function (recentCurrentPage) {
 	                $scope.currentPageView = parseInt(recentCurrentPage, 10) + 1;
 	            });
-	            $scope.$watchGroup(['perPage'], function () {
+	            $scope.$watchGroup(['perPage', 'resourceList'], function () {
 	                $scope.pagesNumber = getPagesNumber();
 	                $scope.goTos = new Array($scope.pagesNumber);
 	            });
@@ -687,7 +722,7 @@
 /* 38 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: pagesNumber === 1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
+	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: currentPage === 0}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: currentPage === 0}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: currentPage === goTos.length -1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: currentPage === goTos.length -1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 39 */
@@ -1019,6 +1054,9 @@
 	        this.controller = tileViewController_1.default;
 	        this.controllerAs = 'vmCtrl';
 	        this.bindings = {
+	            hasLoader: '=',
+	            perPage: '=',
+	            loadMoreItems: '&',
 	            items: '=',
 	            headers: '=',
 	            onTileSelect: '&',
@@ -1054,15 +1092,18 @@
 	"use strict";
 	var TileViewcontroller = (function () {
 	    /* @ngInject */
-	    function TileViewcontroller() {
-	        this.numberOfVisible = 10;
-	        this.slicedData = [];
-	        this.perPage = 10;
-	        this.$onInit = function () {
-	            this.slicedData = this.items.slice(0, this.numberOfVisible);
-	        };
+	    function TileViewcontroller(observeOnScope, $scope) {
+	        var _this = this;
+	        this.observeOnScope = observeOnScope;
+	        this.$scope = $scope;
+	        observeOnScope($scope, function () {
+	            return _this.items;
+	        }).subscribe(function (changedItems) {
+	            _this.options.selectedItems = _this.filterSelected();
+	        });
 	        this.initOptions();
 	    }
+	    TileViewcontroller.$inject = ["observeOnScope", "$scope"];
 	    TileViewcontroller.prototype.initOptions = function () {
 	        this.options = {
 	            selectionMatchProp: 'id',
@@ -1084,14 +1125,10 @@
 	            this.onTileClick({ $event: event, rowData: item });
 	        }
 	        else {
-	            item.selected = !item.selected;
+	            item.selecteItem(!item.selected);
 	            this.options.selectedItems = this.filterSelected();
 	            this.onTileSelect();
 	        }
-	    };
-	    TileViewcontroller.prototype.loadMoreItems = function () {
-	        this.numberOfVisible += this.perPage;
-	        this.slicedData = this.items.slice(0, this.numberOfVisible);
 	    };
 	    return TileViewcontroller;
 	}());
@@ -1103,13 +1140,13 @@
 /* 49 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-tile-with-body\">\n    <a href=\"#\">{{item.nameItem.text}}</a>\n    <div class=\"row miq-row-margin-only-top \">\n      <div class=\"col-md-3 col-ld-3 miq-icon-section\">\n        <a href=\"#\">\n          <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n        </a>\n      </div>\n      <div class=\"col-md-9 col-ld-9 miq-info-section\">\n        <dl class=\"dl-horizontal tile\">\n          <dt ng-repeat-start=\"(key, header) in item.headers\" ng-if=\"header.text && header.text !== 'Name'\">{{header.text}}</dt>\n          <dd ng-repeat-end ng-if=\"header.text && header.text !== 'Name'\">{{item.cells[key].text}}</dd>\n        </dl>\n      </div>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length > vmCtrl.numberOfVisible\" class=\"miq-load-more\">\n    <a href=\"#\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-tile-with-body\">\n    <a href=\"#\">{{item.nameItem.text}}</a>\n    <div class=\"row miq-row-margin-only-top \">\n      <div class=\"col-md-3 col-ld-3 miq-icon-section\">\n        <a href=\"#\">\n          <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n        </a>\n      </div>\n      <div class=\"col-md-9 col-ld-9 miq-info-section\">\n        <dl class=\"dl-horizontal tile\">\n          <dt ng-repeat-start=\"(key, header) in item.headers\" ng-if=\"header.text && header.text !== 'Name'\">{{header.text}}</dt>\n          <dd ng-repeat-end ng-if=\"header.text && header.text !== 'Name'\">{{item.cells[key].text}}</dd>\n        </dl>\n      </div>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"#\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
 /* 50 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.slicedData\" class=\"miq-small-tile\">\n    <a href=\"#\">\n      <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n    </a>\n  </div>\n  <div ng-if=\"vmCtrl.items.length > vmCtrl.numberOfVisible\" class=\"miq-load-more\">\n    <a href=\"#\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-small-tile\">\n    <div>\n      <a href=\"#\">{{item.nameItem.text}}</a>\n    </div>\n    <div>\n      <a href=\"#\">\n        <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n      </a>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"#\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
 /* 51 */
@@ -1280,15 +1317,23 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataTableService_1 = __webpack_require__(57);
-	var formValidatorService_1 = __webpack_require__(58);
-	var notificationService_1 = __webpack_require__(59);
+	var sortItemsController_1 = __webpack_require__(57);
+	var SortItems = (function () {
+	    function SortItems() {
+	        this.replace = true;
+	        this.template = __webpack_require__(58);
+	        this.controller = sortItemsController_1.default;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            onSort: '&',
+	            headers: '=',
+	            items: '='
+	        };
+	    }
+	    return SortItems;
+	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = function (module) {
-	    module.provider('MiQDataTableService', dataTableService_1.default);
-	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
-	    module.service('MiQNotificationService', notificationService_1.default);
-	};
+	exports.default = SortItems;
 
 
 /***/ },
@@ -1313,46 +1358,195 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
+	var SortItemsController = (function () {
+	    /* @ngInject*/
+	    function SortItemsController(MiQDataTableService) {
+	        this.MiQDataTableService = MiQDataTableService;
+	        this.initOptions();
+	        this.fillFields();
+	    }
+	    SortItemsController.$inject = ["MiQDataTableService"];
+	    SortItemsController.prototype.initOptions = function () {
+	        var _this = this;
+	        var sortIndexAndAsc = this.MiQDataTableService.getSortedIndexAndAscending();
+	        this.options = {
+	            fields: [],
+	            onSortChange: function (sortId, isAscending) { return _this.onSort({ sortId: sortId, isAscending: isAscending }); }
+	        };
+	        if (sortIndexAndAsc && sortIndexAndAsc.sortIndex.hasOwnProperty('id')) {
+	            this.options.currentField = sortIndexAndAsc.sortIndex;
+	            this.options.isAscending = sortIndexAndAsc.isAscending;
+	        }
+	    };
+	    SortItemsController.prototype.fillFields = function () {
+	        var _this = this;
+	        _.each(this.headers, function (oneCol) {
+	            if (!oneCol.hasOwnProperty('is_narrow') && oneCol.hasOwnProperty('text')) {
+	                _this.options.fields.push({
+	                    id: oneCol.text.toLowerCase(),
+	                    title: oneCol.text,
+	                    sortType: oneCol.sort === 'str' ? 'alpha' : 'numeric'
+	                });
+	            }
+	        });
+	    };
+	    return SortItemsController;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = SortItemsController;
+
+
+/***/ },
+/* 58 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n  <div pf-sort config=\"vm.options\"></div>\n</div>\n"
+
+/***/ },
+/* 59 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var dataTableService_1 = __webpack_require__(60);
+	var formValidatorService_1 = __webpack_require__(61);
+	var notificationService_1 = __webpack_require__(62);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.provider('MiQDataTableService', dataTableService_1.default);
+	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
+	    module.service('MiQNotificationService', notificationService_1.default);
+	};
+
+
+/***/ },
+/* 60 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
 	var DataTableService = (function () {
 	    function DataTableService() {
+	        this.perPage = 5;
+	        this.visibleCount = 0;
 	        this.endpoints = {
 	            list: '/list'
 	        };
 	    }
 	    DataTableService.prototype.retrieveRowsAndColumnsFromUrl = function () {
+	        var _this = this;
 	        return this.$http({
 	            method: 'GET',
 	            url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
 	        }).then(function (responseData) {
 	            DataTableService.mockData(responseData.data.rows);
-	            DataTableService.filterSelectBox(responseData.data.head, responseData.data.rows);
-	            DataTableService.bindHeadersToRows(responseData.data.head, responseData.data.rows);
-	            DataTableService.exposeName(responseData.data.head, responseData.data.rows);
-	            DataTableService.exposeIcon(responseData.data.rows);
+	            _this.columns = responseData.data.head;
+	            _this.rows = responseData.data.rows;
+	            _this.exposeData();
 	            return {
-	                rows: responseData.data.rows,
-	                cols: responseData.data.head
+	                rows: _this.rows,
+	                cols: _this.columns
 	            };
 	        });
 	    };
-	    DataTableService.exposeName = function (headers, rows) {
-	        _.each(rows, function (row) {
-	            row.nameItem = DataTableService.findNameItem(row.cells, headers);
+	    DataTableService.prototype.sortItemsBy = function (sortId, isAscending) {
+	        this.sortId = sortId;
+	        this.isAscending = isAscending;
+	        var itemIndex = _.findIndex(this.columns, { text: sortId.title });
+	        this.rows.sort(function (item1, item2) {
+	            var compValue = 0;
+	            if (sortId.sortType === 'numeric') {
+	                compValue = item1.cells[itemIndex] - item2[itemIndex];
+	            }
+	            else {
+	                compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
+	            }
+	            return (isAscending) ? compValue : compValue * -1;
 	        });
 	    };
-	    DataTableService.bindHeadersToRows = function (headers, rows) {
-	        _.each(rows, function (row) {
-	            row['headers'] = headers;
+	    DataTableService.prototype.getSortedIndexAndAscending = function () {
+	        if (this.sortId) {
+	            return {
+	                sortIndex: this.sortId,
+	                isAscending: this.isAscending
+	            };
+	        }
+	    };
+	    DataTableService.prototype.setPerPage = function (perPage) {
+	        this.perPage = perPage;
+	        this.visibleCount = perPage;
+	    };
+	    DataTableService.prototype.loadMore = function () {
+	        this.visibleCount += this.perPage;
+	        this.visibleItems = this.rows.slice(0, (this.perPage !== -1 ? this.visibleCount : this.rows.length));
+	    };
+	    DataTableService.prototype.exposeData = function () {
+	        this.filterSelectBox();
+	        this.bindHeadersToRows();
+	        this.exposeName();
+	        this.exposeIcon();
+	        this.makeSelectable();
+	        this.loadMore();
+	    };
+	    DataTableService.prototype.makeSelectable = function () {
+	        _.each(this.rows, function (row) {
+	            row.selecteItem = function (selected) {
+	                row.selected = selected;
+	            };
 	        });
 	    };
-	    DataTableService.filterSelectBox = function (headers, rows) {
-	        _.each(rows, function (row) {
+	    DataTableService.prototype.exposeName = function () {
+	        var _this = this;
+	        _.each(this.rows, function (row) {
+	            row.nameItem = _this.findNameItem(row.cells);
+	        });
+	    };
+	    DataTableService.prototype.bindHeadersToRows = function () {
+	        var _this = this;
+	        _.each(this.rows, function (row) {
+	            row['headers'] = _this.columns;
+	        });
+	    };
+	    DataTableService.prototype.filterSelectBox = function () {
+	        _.each(this.rows, function (row) {
 	            row.cells = row.cells.filter(function (cell) { return !cell.hasOwnProperty('is_checkbox'); });
 	        });
-	        headers.splice(0, 1);
+	        this.columns.splice(0, 1);
 	    };
-	    DataTableService.exposeIcon = function (rows) {
-	        _.each(rows, function (oneRow) {
+	    DataTableService.prototype.exposeIcon = function () {
+	        _.each(this.rows, function (oneRow) {
 	            oneRow.icon = DataTableService.findIconItem(oneRow.cells);
 	        });
 	    };
@@ -1361,8 +1555,8 @@
 	            return row.hasOwnProperty('image') || row.hasOwnProperty('icon');
 	        });
 	    };
-	    DataTableService.findNameItem = function (cells, headers) {
-	        var nameIndex = _.findIndex(headers, { text: 'Name' });
+	    DataTableService.prototype.findNameItem = function (cells) {
+	        var nameIndex = _.findIndex(this.columns, { text: 'Name' });
 	        if (nameIndex !== -1) {
 	            return cells[nameIndex];
 	        }
@@ -1373,21 +1567,35 @@
 	        rows.push(_.cloneDeep(rows[0]));
 	        rows.push(_.cloneDeep(rows[0]));
 	        rows.push(_.cloneDeep(rows[0]));
+	        rows.push(_.cloneDeep(rows[0]));
 	        _.each(rows, function (row, key) {
 	            row.id += key;
 	            row.cells[2].text += row.id;
 	        });
 	    };
 	    /*@ngInject*/
-	    DataTableService.prototype.$get = function ($http, MiQDataAccessService) {
+	    DataTableService.prototype.$get = function ($http, MiQDataAccessService, rx, $rootScope) {
 	        var _this = this;
 	        this.$http = $http;
 	        this.MiQDataAccessService = MiQDataAccessService;
 	        return {
-	            retrieveRowsAndColumnsFromUrl: function () { return _this.retrieveRowsAndColumnsFromUrl(); }
+	            retrieveRowsAndColumnsFromUrl: function () { return _this.retrieveRowsAndColumnsFromUrl(); },
+	            sortItemsBy: function (sortBy, isAscending) {
+	                _this.sortItemsBy(sortBy, isAscending);
+	                _this.visibleCount -= _this.perPage;
+	                _this.loadMore();
+	            },
+	            getSortedIndexAndAscending: function () { return _this.getSortedIndexAndAscending(); },
+	            setPerPage: function (perPage) {
+	                _this.setPerPage(perPage);
+	                _this.visibleCount -= _this.perPage;
+	                _this.loadMore();
+	            },
+	            loadMore: function () { return _this.loadMore(); },
+	            dataTableService: this
 	        };
 	    };
-	    DataTableService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
+	    DataTableService.prototype.$get.$inject = ["$http", "MiQDataAccessService", "rx", "$rootScope"];
 	    return DataTableService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -1395,7 +1603,7 @@
 
 
 /***/ },
-/* 58 */
+/* 61 */
 /***/ function(module, exports) {
 
 	///
@@ -1465,7 +1673,7 @@
 
 
 /***/ },
-/* 59 */
+/* 62 */
 /***/ function(module, exports) {
 
 	///
@@ -1553,7 +1761,7 @@
 
 
 /***/ },
-/* 60 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1574,7 +1782,7 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataAccessService_1 = __webpack_require__(61);
+	var dataAccessService_1 = __webpack_require__(64);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataAccessService', dataAccessService_1.default);
@@ -1582,7 +1790,7 @@
 
 
 /***/ },
-/* 61 */
+/* 64 */
 /***/ function(module, exports) {
 
 	///
@@ -1620,121 +1828,6 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = DataAccessService;
 
-
-/***/ },
-/* 62 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../tsd.d.ts"/>
-	var sortItemsController_1 = __webpack_require__(63);
-	var SortItems = (function () {
-	    function SortItems() {
-	        this.replace = true;
-	        this.template = __webpack_require__(64);
-	        this.controller = sortItemsController_1.default;
-	        this.controllerAs = 'vm';
-	        this.bindings = {
-	            headers: '=',
-	            items: '='
-	        };
-	    }
-	    return SortItems;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = SortItems;
-
-
-/***/ },
-/* 63 */
-/***/ function(module, exports) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../tsd.d.ts"/>
-	var SortItemsController = (function () {
-	    /* @ngInject */
-	    function SortItemsController($scope, rx) {
-	        this.$scope = $scope;
-	        this.rx = rx;
-	        this.initOptions();
-	        this.fillFields();
-	    }
-	    SortItemsController.$inject = ["$scope", "rx"];
-	    SortItemsController.prototype.initOptions = function () {
-	        var _this = this;
-	        this.options = {
-	            fields: [],
-	            onSortChange: function (sortId, isAscending) { return _this.handleSort(sortId, isAscending); }
-	        };
-	    };
-	    SortItemsController.prototype.fillFields = function () {
-	        var _this = this;
-	        _.each(this.headers, function (oneCol) {
-	            if (!oneCol.hasOwnProperty('is_narrow') && oneCol.hasOwnProperty('text')) {
-	                _this.options.fields.push({
-	                    id: oneCol.text.toLowerCase(),
-	                    title: oneCol.text,
-	                    sortType: oneCol.sort === 'str' ? 'alpha' : 'numeric'
-	                });
-	            }
-	        });
-	    };
-	    SortItemsController.prototype.handleSort = function (sortId, isAscending) {
-	        var itemIndex = _.findIndex(this.headers, { text: sortId.title });
-	        this.items.sort(function (item1, item2) {
-	            var compValue = 0;
-	            if (sortId.sortType === 'numeric') {
-	                compValue = item1.cells[itemIndex] - item2[itemIndex];
-	            }
-	            else {
-	                compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
-	            }
-	            return (isAscending) ? compValue : compValue * -1;
-	        });
-	    };
-	    return SortItemsController;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = SortItemsController;
-
-
-/***/ },
-/* 64 */
-/***/ function(module, exports) {
-
-	module.exports = "<div>\n  <div pf-sort config=\"vm.options\"></div>\n</div>\n"
 
 /***/ }
 /******/ ]);

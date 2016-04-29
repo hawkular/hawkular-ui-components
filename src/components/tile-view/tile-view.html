@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-  <div ng-if="vmCtrl.items.length > vmCtrl.numberOfVisible" class="miq-load-more">
+  <div ng-if="vmCtrl.hasLoader" class="miq-load-more">
     <a href="#" ng-click="vmCtrl.loadMoreItems()">Show {{vmCtrl.perPage}} more</a>
   </div>
 </div>

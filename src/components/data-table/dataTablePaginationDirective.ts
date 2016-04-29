@@ -72,7 +72,7 @@ export default class DataTablePagination implements ng.IDirective {
         $scope.currentPageView = parseInt(recentCurrentPage, 10) + 1;
       });
 
-      $scope.$watchGroup(['perPage'], () => {
+      $scope.$watchGroup(['perPage', 'resourceList'], () => {
         $scope.pagesNumber = getPagesNumber();
         $scope.goTos = new Array($scope.pagesNumber);
       });

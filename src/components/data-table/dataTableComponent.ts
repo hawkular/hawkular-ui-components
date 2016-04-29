@@ -22,14 +22,19 @@ export default class DataTable {
   public replace: boolean = true;
   public template = require<string>('./data-table.html');
   public controller: any = DataTableController;
+  public transclude: boolean = true;
   public controllerAs: string = 'vm';
   public bindings: any = {
-    onRowClick: '&',
-    onItemSelected: '&',
+    perPage: '=',
+    showHeader: '=',
     data: '=',
     columns: '=',
     selectable: '=',
     noFooter: '=',
-    defaultAction: '='
+    defaultAction: '=',
+    loadMoreItems: '&',
+    onSort: '&',
+    onRowClick: '&',
+    onItemSelected: '&'
   };
 }

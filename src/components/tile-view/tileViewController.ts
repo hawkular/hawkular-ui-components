@@ -20,23 +20,22 @@
 import DataTableController from './../data-table/dataTablecontroller';
 
 export default class TileViewcontroller {
-  public $onChanges: any;
-  public $onInit: any;
-  public numberOfVisible: number = 10;
-  public slicedData: any = [];
-  public perPage: number = 10;
-  public showBody: boolean;
+  public perPage: number;
   public items: any[];
   public headers: any[];
   public options: any;
   public onTileSelect;
   public onTileClick: (args: {$event: any, rowData: any}) => void;
+  public loadMoreItems: () => void;
+  public hasLoader: boolean;
   /* @ngInject */
-  constructor() {
-    this.$onInit = function () {
-      this.slicedData = this.items.slice(0, this.numberOfVisible);
-    };
-
+  constructor(public observeOnScope: any,
+              public $scope: any) {
+    observeOnScope($scope, () => {
+      return this.items
+    }).subscribe((changedItems) => {
+      this.options.selectedItems = this.filterSelected();
+    });
     this.initOptions();
   }
 
@@ -62,14 +61,9 @@ export default class TileViewcontroller {
       event.preventDefault();
       this.onTileClick({$event: event, rowData: item});
     } else {
-      item.selected = !item.selected;
+      item.selecteItem(!item.selected);
       this.options.selectedItems = this.filterSelected();
       this.onTileSelect();
     }
-  }
-
-  public loadMoreItems() {
-    this.numberOfVisible += this.perPage;
-    this.slicedData = this.items.slice(0, this.numberOfVisible);
   }
 }

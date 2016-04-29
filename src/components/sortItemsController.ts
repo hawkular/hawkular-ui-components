@@ -20,18 +20,23 @@ export default class SortItemsController {
   public options: any;
   public headers: any[];
   public items: any[];
-  /* @ngInject */
-  public constructor(private $scope: any,
-                     private rx: any) {
+  public onSort: (args: {sortId: any, isAscending: boolean}) => void;
+  /* @ngInject*/
+  public constructor(public MiQDataTableService: any) {
     this.initOptions();
     this.fillFields();
   }
 
   private initOptions() {
+    const sortIndexAndAsc = this.MiQDataTableService.getSortedIndexAndAscending();
     this.options = {
       fields: [],
-      onSortChange: (sortId, isAscending) => this.handleSort(sortId, isAscending)
+      onSortChange: (sortId: any, isAscending: boolean) => this.onSort({sortId: sortId, isAscending: isAscending})
     };
+    if (sortIndexAndAsc && sortIndexAndAsc.sortIndex.hasOwnProperty('id')) {
+      this.options.currentField = sortIndexAndAsc.sortIndex;
+      this.options.isAscending = sortIndexAndAsc.isAscending;
+    }
   }
 
   private fillFields() {
@@ -43,18 +48,6 @@ export default class SortItemsController {
           sortType: oneCol.sort === 'str' ? 'alpha' : 'numeric'
         });
       }
-    });
-  }
-  public handleSort(sortId, isAscending) {
-    const itemIndex = _.findIndex(this.headers, {text: sortId.title});
-    this.items.sort( (item1, item2) => {
-      let compValue = 0;
-      if (sortId.sortType === 'numeric') {
-        compValue = item1.cells[itemIndex] - item2[itemIndex];
-      } else {
-        compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
-      }
-      return (isAscending) ? compValue : compValue * -1;
     });
   }
 }

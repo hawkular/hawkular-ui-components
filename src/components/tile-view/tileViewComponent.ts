@@ -24,6 +24,9 @@ export default class TileView implements ng.IComponentOptions {
   public controller = TileViewController;
   public controllerAs = 'vmCtrl';
   public bindings: any = {
+    hasLoader: '=',
+    perPage: '=',
+    loadMoreItems: '&',
     items: '=',
     headers: '=',
     onTileSelect: '&',

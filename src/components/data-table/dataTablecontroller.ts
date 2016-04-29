@@ -17,24 +17,58 @@
 
 ///<reference path="../../tsd.d.ts"/>
 export default class DataTableController {
+  public showHeader: boolean;
+  public limitedData: any[];
   public data: any;
   public columns: any;
   public sortType: any = -1;
-  public sortReverse: boolean;
+  public sortReverse: boolean = true;
   public onRowClick: (args: {$event: JQueryEventObject, rowData: any}) => void;
   public onItemSelected: () => void;
-  public resPerPage: number = 10;
-  public resCurPage: number = 0;
+  public perPage: number;
+  public resCurPage: number;
   public noFooter: boolean = false;
   public defaultAction: any;
   public selectable: boolean = true;
+  public onSort: (args: {sortId: any, isAscending: boolean}) => void;
+
+  /* @ngInject */
+  public constructor(public MiQDataTableService: any,
+                     public observeOnScope: any,
+                     public $scope: any) {
+    observeOnScope($scope, () => {
+      return this.data
+    }).subscribe(() => {
+      this.setPage(0);
+    });
+
+    observeOnScope($scope, () => {
+      return this.perPage
+    }).subscribe(() => {
+      this.setPage(0);
+    });
+  }
 
   public static get assetUrl() {
     return '/assets/';
   }
 
-  public isFilteredBy(key): boolean {
-    return this.sortType === key;
+  public isFilteredBy(column) {
+    const sortIndexAndAsc = this.MiQDataTableService.getSortedIndexAndAscending();
+    if (sortIndexAndAsc) {
+      this.sortReverse = !sortIndexAndAsc.isAscending;
+      return column === _.find(this.columns, {text: sortIndexAndAsc.sortIndex.title});
+    }
+    return false;
+  }
+
+  public getSortClass(column) {
+    if (this.isFilteredBy(column)) {
+      return {
+        'fa-sort-asc': this.sortReverse,
+        'fa-sort-desc': !this.sortReverse
+      }
+    }
   }
 
   public getColumnClass(column: any): any {
@@ -47,8 +81,8 @@ export default class DataTableController {
 
   public onSortClick(column: any): void {
     if (column.sort) {
-      this.sortType = column['col_idx'];
-      this.sortReverse = !this.sortReverse;
+      this.onSort({sortId: {title: column.text, id: column.text.toLocaleLowerCase()}, isAscending: this.sortReverse});
+      this.setPage(this.resCurPage);
     }
   }
 
@@ -77,6 +111,7 @@ export default class DataTableController {
 
   public setPage(page) {
     this.resCurPage = page;
+    this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
   }
 
   public getSortTypeAsText() {
@@ -88,13 +123,14 @@ export default class DataTableController {
 
   public onCheckAll(isChecked: any) {
     _.each(this.data, (oneItem: any) => {
-      oneItem.selected = isChecked;
+      oneItem.selecteItem(isChecked);
     });
     this.onItemSelected();
   }
 
-  public onRowSelected($event) {
+  public onRowSelected($event, isSelected, item) {
     $event.stopPropagation();
+    item.selecteItem(isSelected);
     this.onItemSelected();
   }
 }

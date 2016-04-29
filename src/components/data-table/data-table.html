@@ -1,4 +1,13 @@
 <div>
+  <div ng-if="vm.showHeader" class="dataTables_header miq-data-tables-header">
+    <div class="row">
+      <div class="col-md-11 col-md-11">
+      </div>
+      <div class="col-md-1 col-ld-1">
+        <ng-transclude></ng-transclude>
+      </div>
+    </div>
+  </div>
   <table class="table table-bordered table-striped table-hover mig-table-with-footer mig-table">
     <thead>
     <tr>
@@ -10,22 +19,21 @@
         <div ng-if="column.sort">
           {{column.text}}
           <div class="pull-right">
-            <i ng-if="vm.isFilteredBy(column.col_idx) && !vm.sortReverse" class="fa fa-sort-desc"></i>
-            <i ng-if="vm.isFilteredBy(column.col_idx) && vm.sortReverse" class="fa fa-sort-asc"></i>
+            <i class="fa" ng-if="vm.isFilteredBy(column)" ng-class="vm.getSortClass(column)"></i>
           </div>
         </div>
       </th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="row in vm.data | orderBy : vm.sortType : vm.sortReverse"
+    <tr ng-repeat="row in vm.limitedData"
         ng-class="{active : row.selected}"
         ng-click="vm.onRowClick({$event: $event, rowData: row})">
       <td class="narrow" ng-if="vm.selectable" onclick="event.stopPropagation();">
-        <input ng-click="vm.onRowSelected($event)"
+        <input ng-click="vm.onRowSelected($event, isSelected, row)"
                onclick="event.stopPropagation();"
                type="checkbox"
-               ng-model="row.selected"
+               ng-model="isSelected"
                name="check_{{row.id}}"
                value="{{row.id}}"
                ng-checked="row.selected"
@@ -58,8 +66,8 @@
         <span class="pull-right">
             <miq-data-table-pagination resource-list="vm.data"
                                        current-page="vm.resCurPage"
-                                       page-setter="vm.setPage"
-                                       per-page="vm.resPerPage">
+                                       page-setter="vm.setPage(pageNumber)"
+                                       per-page="vm.perPage">
             </miq-data-table-pagination>
         </span>
   </div>

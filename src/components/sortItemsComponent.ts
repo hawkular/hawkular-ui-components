@@ -25,6 +25,7 @@ export default class SortItems implements ng.IComponentOptions {
   public controller = SortItemsController;
   public controllerAs = 'vm';
   public bindings: any = {
+    onSort: '&',
     headers: '=',
     items: '='
   };
