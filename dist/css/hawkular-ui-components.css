@@ -64,7 +64,9 @@ img.miq-gradient-background {
 
 .miq-small-tile .card-view-pf .card {
   width: 170px;
-  height: 120px; }
+  height: 140px; }
+  .miq-small-tile .card-view-pf .card .card-content a {
+    word-wrap: break-word; }
 
 .miq-data-tables-header {
   text-align: left; }

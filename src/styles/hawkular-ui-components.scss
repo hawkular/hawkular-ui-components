@@ -86,7 +86,12 @@ img.miq-gradient-background {
 .miq-small-tile .card-view-pf {
   .card {
     width: 170px;
-    height: 120px;
+    height: 140px;
+    .card-content {
+      a {
+        word-wrap: break-word;
+      }
+    }
   }
 }
 
