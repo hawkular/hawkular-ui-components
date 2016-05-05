@@ -110,8 +110,10 @@ export default class DataTableController {
   }
 
   public setPage(page) {
-    this.resCurPage = page;
-    this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
+    if (this.data) {
+      this.resCurPage = page;
+      this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
+    }
   }
 
   public getSortTypeAsText() {

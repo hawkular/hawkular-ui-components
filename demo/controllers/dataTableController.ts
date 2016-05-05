@@ -19,6 +19,7 @@
 
 export default class DataTableController {
   public tableData: any;
+  public perPage;
   public emptyData: any;
   public defaultAction: any;
   /* @ngInject */
@@ -32,6 +33,21 @@ export default class DataTableController {
     this.fetchData().then( (data) => {
       this.tableData = data;
     });
+    this.perPage = {
+      title: '5',
+      children: [
+        {title: '5', value: 5},
+        {title: '10', value: 10},
+        {title: '20', value: 20},
+        {title: '100', value: 100},
+        {title: 'All', value: -1}
+      ]
+    };
+  }
+
+  public onPerPage(item) {
+    this.perPage.title = item.title;
+    this.MiQDataTableService.setPerPage(item.value);
   }
 
   public fetchData() {

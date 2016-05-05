@@ -49,7 +49,6 @@ export default class DataTableService implements ng.IServiceProvider {
       method: 'GET',
       url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
     }).then((responseData) => {
-      DataTableService.mockData(responseData.data.rows);
       this.columns = responseData.data.head;
       this.rows = responseData.data.rows;
       this.exposeData();
@@ -68,7 +67,7 @@ export default class DataTableService implements ng.IServiceProvider {
       let compValue = 0;
       if (sortId.sortType === 'numeric') {
         compValue = item1.cells[itemIndex] - item2[itemIndex];
-      } else {
+      } else if (item1.cells[itemIndex].hasOwnProperty('text')){
         compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
       }
       return (isAscending) ? compValue : compValue * -1;
@@ -147,19 +146,6 @@ export default class DataTableService implements ng.IServiceProvider {
     if (nameIndex !== -1) {
       return cells[nameIndex];
     }
-  }
-
-  // TODO: Remove this method
-  private static mockData(rows: any[]) {
-    rows.push(_.cloneDeep(rows[0]));
-    rows.push(_.cloneDeep(rows[0]));
-    rows.push(_.cloneDeep(rows[0]));
-    rows.push(_.cloneDeep(rows[0]));
-    rows.push(_.cloneDeep(rows[0]));
-    _.each(rows, (row: any, key: any) => {
-      row.id += key;
-      row.cells[2].text += row.id;
-    });
   }
 
   /*@ngInject*/

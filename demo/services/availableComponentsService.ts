@@ -72,6 +72,18 @@ export default class AvailableComponentsService {
           require<string>('./../views/notification.html'),
           'basicNotification as vm')
       ]),
+      new AvailableGroup('tile-view', 'Tile Views components', '/tile-view', [
+        new AvailableComponent('small',
+          'Small tile view',
+          '/small',
+          require<string>('./../views/tile-view/small-tile.html'),
+          'demoDataTable as vm'),
+        new AvailableComponent('normal',
+          'Normal tile view with data',
+          '/basic',
+          require<string>('./../views/tile-view/tile-view.html'),
+          'demoDataTable as vm')
+        ]),
       new AvailableGroup('data-table', 'Data Table components', '/data-table', [
         new AvailableComponent('basic',
           'Data table with options',

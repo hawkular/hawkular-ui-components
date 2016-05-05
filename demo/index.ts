@@ -19,8 +19,8 @@
 import views from './views/loader';
 import controllers from './controllers/loader';
 
-const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router', 'ui.bootstrap.tabs',
-  'patternfly.select']);
+const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router',
+  'patternfly.select', 'ui.bootstrap.tabs', 'patternfly.views', 'ngAnimate']);
 app.config((MiQDataAccessServiceProvider: any, MiQDataTableServiceProvider: any) => {
   MiQDataTableServiceProvider.endpoints = {
     list: '/data-table.json'

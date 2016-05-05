@@ -51,9 +51,11 @@ export default class TileViewcontroller {
   }
 
   public filterSelected(): any[] {
-    return this.items.filter((oneItem: any) => {
-      return oneItem.selected;
-    });
+    if (this.items) {
+      return this.items.filter((oneItem: any) => {
+        return oneItem.selected;
+      });
+    }
   }
 
   public handleClick(item: any, event: any): void {

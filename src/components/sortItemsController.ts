@@ -22,9 +22,15 @@ export default class SortItemsController {
   public items: any[];
   public onSort: (args: {sortId: any, isAscending: boolean}) => void;
   /* @ngInject*/
-  public constructor(public MiQDataTableService: any) {
+  public constructor(public MiQDataTableService: any,
+                     public observeOnScope: any,
+                     public $scope: any) {
+    observeOnScope($scope, () => {
+      return this.headers;
+    }).subscribe(() => {
+      this.fillFields();
+    });
     this.initOptions();
-    this.fillFields();
   }
 
   private initOptions() {

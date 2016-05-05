@@ -25,8 +25,28 @@
           <input type="checkbox" name="selectable" id="selectable" class="ng-empty" ng-model="isSelectable" checked="checked">
         </span>
       </div>
+      <div class="col-md-3">
+        <label for="isHeader">
+          Show Header
+        </label>
+        <span class="demo-checkbox" style="">
+          <input type="checkbox" name="selectable" id="isHeader" class="ng-empty" ng-model="isHeader" checked="checked">
+        </span>
+      </div>
     </div>
   </div>
-  <miq-data-table columns="vm.tableData.cols" data="vm.tableData.rows" on-row-click="vm.onRowClick($event, rowData)"
-                  on-item-selected="vm.onRowSelected()" no-footer="hideFooter" selectable="isSelectable" default-action="vm.defaultAction"></miq-data-table>
+  <miq-data-table columns="vm.tableData.cols"
+                  data="vm.tableData.rows"
+                  on-row-click="vm.onRowClick($event, rowData)"
+                  on-sort="vm.MiQDataTableService.sortItemsBy(sortId, isAscending)"
+                  per-page="vm.MiQDataTableService.dataTableService.perPage"
+                  on-item-selected="vm.onRowSelected()"
+                  no-footer="hideFooter"
+                  selectable="isSelectable"
+                  show-header="isHeader"
+                  default-action="vm.defaultAction">
+    <miq-toolbar-list on-item-click="vm.onPerPage(item)" toolbar-list="vm.perPage">
+
+    </miq-toolbar-list>
+  </miq-data-table>
 </div>
