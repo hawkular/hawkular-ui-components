@@ -1,0 +1,21 @@
+<div class="miq-tile-section">
+  <div pf-card-view config="vmCtrl.options" items="vmCtrl.items" class="miq-tile-with-body">
+    <a href="javascript:void(0)">{{item.nameItem.text}}</a>
+    <div class="row miq-row-margin-only-top ">
+      <div class="col-md-3 col-ld-3 miq-icon-section">
+        <a href="javascript:void(0)">
+          <img height="72" class="miq-gradient-background" ng-src="/assets/{{item.icon.image}}" width="72">
+        </a>
+      </div>
+      <div class="col-md-9 col-ld-9 miq-info-section">
+        <dl class="dl-horizontal tile">
+          <dt ng-repeat-start="(key, header) in item.headers" ng-if="header.text && header.text !== 'Name'">{{header.text}}</dt>
+          <dd ng-repeat-end ng-if="header.text && header.text !== 'Name'">{{item.cells[key].text}}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div ng-if="vmCtrl.hasLoader" class="miq-load-more">
+    <a href="javascript:void(0)" ng-click="vmCtrl.loadMoreItems()">Show {{vmCtrl.perPage}} more</a>
+  </div>
+</div>

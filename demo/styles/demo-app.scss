@@ -28,6 +28,9 @@ table .narrow {
 
 .form-group {
   margin-bottom: 15px;
+  .demo-checkbox {
+    position: absolute;margin-left: 10px;margin-top: 1px;
+  }
 }
 
 .form-horizontal .form-group:after {

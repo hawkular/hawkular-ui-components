@@ -15,13 +15,23 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
+///<reference path="../../tsd.d.ts"/>
 
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+import TileViewController from './tileViewController';
+
+export default class TileView implements ng.IComponentOptions {
+  public replace: boolean = true;
+  public controller = TileViewController;
+  public controllerAs = 'vmCtrl';
+  public bindings: any = {
+    hasLoader: '=',
+    perPage: '=',
+    loadMoreItems: '&',
+    items: '=',
+    headers: '=',
+    onTileSelect: '&',
+    onTileClick: '&'
+  };
+
+  constructor(public template: any) {}
 }

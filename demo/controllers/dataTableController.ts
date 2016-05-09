@@ -19,6 +19,7 @@
 
 export default class DataTableController {
   public tableData: any;
+  public perPage;
   public emptyData: any;
   public defaultAction: any;
   /* @ngInject */
@@ -29,14 +30,28 @@ export default class DataTableController {
         alert('You have tried creating new record');
       }
     };
-    this.MiQDataTableService.retrieveRowsAndColumnsFromUrl().then( (data) => {
+    this.fetchData().then( (data) => {
       this.tableData = data;
-      this.emptyData = {
-        cols: data.cols,
-        rows: []
-      };
-      return data;
     });
+    this.perPage = {
+      title: '5',
+      children: [
+        {title: '5', value: 5},
+        {title: '10', value: 10},
+        {title: '20', value: 20},
+        {title: '100', value: 100},
+        {title: 'All', value: -1}
+      ]
+    };
+  }
+
+  public onPerPage(item) {
+    this.perPage.title = item.title;
+    this.MiQDataTableService.setPerPage(item.value);
+  }
+
+  public fetchData() {
+    return this.MiQDataTableService.retrieveRowsAndColumnsFromUrl();
   }
 
   public onRowClick($event, rowData) {
@@ -45,5 +60,20 @@ export default class DataTableController {
 
   public onRowSelected() {
     console.log(this.tableData);
+  }
+
+  public toggleData(isChecked) {
+    if (isChecked) {
+      this.fetchData().then( (data) => {
+        this.tableData = {
+          cols: data.cols,
+          rows: []
+        };
+      });
+    } else {
+      this.fetchData().then( (data) => {
+        this.tableData = data;
+      });
+    }
   }
 }

@@ -1,0 +1,15 @@
+<div class="miq-tile-section">
+  <div pf-card-view config="vmCtrl.options" items="vmCtrl.items" class="miq-small-tile">
+    <div>
+      <a href="javascript:void(0)">{{item.nameItem.text}}</a>
+    </div>
+    <div>
+      <a href="javascript:void(0)">
+        <img height="72" class="miq-gradient-background" ng-src="/assets/{{item.icon.image}}" width="72">
+      </a>
+    </div>
+  </div>
+  <div ng-if="vmCtrl.hasLoader" class="miq-load-more">
+    <a href="javascript:void(0)" ng-click="vmCtrl.loadMoreItems()">Show {{vmCtrl.perPage}} more</a>
+  </div>
+</div>

@@ -16,12 +16,17 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
 
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+import SortItemsController from './sortItemsController';
+
+export default class SortItems implements ng.IComponentOptions {
+  public replace: boolean = true;
+  public template = require<string>('./sort-items.html');
+  public controller = SortItemsController;
+  public controllerAs = 'vm';
+  public bindings: any = {
+    onSort: '&',
+    headers: '=',
+    items: '='
+  };
 }

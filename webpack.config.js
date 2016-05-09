@@ -32,6 +32,9 @@ var webpack = require('webpack'),
         selector: '[ng-app]'
       })
     }),
+    new webpack.ProvidePlugin({
+      Rx: "rxjs"
+    }),
     new ExtractTextPlugin(settings.stylesheetPath),
     new NgAnnotatePlugin({add: true})
   ];

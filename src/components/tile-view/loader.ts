@@ -15,13 +15,11 @@
 /// limitations under the License.
 ///
 
-///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
+///<reference path="../../tsd.d.ts"/>
+
+import TileView from './tileViewComponent';
 
 export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+  module.component('miqTileView', new TileView(require('./tile-view.html')));
+  module.component('miqSmallTileView', new TileView(require('./small-tile.html')));
 }

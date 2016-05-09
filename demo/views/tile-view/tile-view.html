@@ -1,0 +1,21 @@
+<div>
+  Sort items: <miq-sort-items ng-if="vm.tableData.rows.length > 0"
+                              headers="vm.tableData.cols"
+                              items="vm.tableData.rows"
+                              on-sort="vm.MiQDataTableService.sortItemsBy(sortId, isAscending)"
+                              style="display: inline-block; margin-right: 10px">
+</miq-sort-items>
+  Per page: <miq-toolbar-list ng-if="vm.tableData.rows.length > 0"
+                              on-item-click="vm.onPerPage(item)"
+                              toolbar-list="vm.perPage"></miq-toolbar-list>
+  <miq-tile-view ng-if="vm.tableData.rows.length > 0"
+                       has-loader="vm.MiQDataTableService.dataTableService.visibleItems.length < vm.MiQDataTableService.dataTableService.rows.length"
+                       headers="vm.tableData.cols"
+                       items="vm.MiQDataTableService.dataTableService.visibleItems"
+                       load-more-items="vm.MiQDataTableService.loadMore()"
+                       on-tile-click="vm.onRowClick($event, rowData)"
+                       on-tile-select="vm.onRowSelected()"
+                       per-page="vm.MiQDataTableService.dataTableService.perPage">
+
+  </miq-tile-view>
+</div>

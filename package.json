@@ -7,8 +7,10 @@
     "postinstall": "bower install && typings install && webpack && webpack --config webpack.vendor.config.js"
   },
   "devDependencies": {
-    "angular": "1.5.2",
+    "angular": "1.5.5",
+    "angular-animate": "^1.5.5",
     "angular-bootstrap": "^0.12.2",
+    "angular-ui-select": "^0.12.100",
     "bootstrap-combobox": "^1.0.2",
     "bower": "1.3.12",
     "bower-webpack-plugin": "^0.1.9",
@@ -31,6 +33,8 @@
     "node-sass": "^3.4.2",
     "patternfly": "^3.3.1",
     "raw-loader": "0.5.1",
+    "rx": "^4.1.0",
+    "rx-angular": "^1.1.3",
     "sass": "^0.5.0",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.0",

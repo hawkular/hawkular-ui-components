@@ -20,6 +20,7 @@ export interface IValidationResponse {
   isValid: boolean;
   errorMsg: string;
   formObject: any;
+  serverAlerts: any;
 }
 
 export interface IFormValidatorService {
@@ -30,6 +31,7 @@ export interface IFormValidatorService {
 export interface IValidatorService extends IFormValidatorService {
   $http: any;
   MiQDataAccessService: any;
+  $get($http: any, MiQDataAccessService: any): IFormValidatorService;
 }
 
 export default class FormValidatorService implements IValidatorService {
@@ -53,9 +55,18 @@ export default class FormValidatorService implements IValidatorService {
       return {
         isValid: validationData.data.result,
         errorMsg: validationData.data.details,
-        formObject: validationData.data.ems_object
+        formObject: validationData.data.ems_object,
+        serverAlerts: this.mergeAlerts(validationData.data.database_errors)
       };
     });
+  }
+
+  private mergeAlerts(alertsData): any {
+    let allAlerts = {};
+    _.each(alertsData, (item, key) => {
+      allAlerts[key] = item.join();
+    });
+    return allAlerts;
   }
 
   /*@ngInject*/

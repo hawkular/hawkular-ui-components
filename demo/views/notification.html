@@ -1,0 +1,36 @@
+<div>
+  <div class="form-horizontal">
+    <div class="form-group">
+      <div class="col-md-2">
+        <label for="alertType">Alert Type</label>
+        <select pf-select ng-model="vm.alertType" id="alertType">
+          <option value="info" ng-selected="true" selected="selected">Info</option>
+          <option value="danger">Danger</option>
+          <option value="warning">Warning</option>
+          <option value="success">Success</option>
+          <option value="loading">Loading</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="alertHeader">Alert Header</label>
+        <input type="text" name="alertHeader" id="alertHeader" class="form-control" ng-model="vm.alertHeader">
+      </div>
+      <div class="col-md-4">
+        <label for="alertType">Alert Body</label>
+        <input type="text" name="alertBody" id="alertBody" class="form-control" ng-model="vm.alertBody">
+      </div>
+      <div class="col-md-2">
+        <label for="is_hidable">
+          Dismissible
+        </label><br/>
+        <span class="demo-checkbox" style="">
+          <input type="checkbox" name="is_hidable" id="is_hidable" class="ng-empty" ng-model="vm.isDismissible">
+        </span>
+      </div>
+      <div class="pull-right" style="margin-right: 16px">
+        <miq-action-buttons actions="vm.formActions" class="form-actions"></miq-action-buttons>
+      </div>
+    </div>
+  </div>
+  <miq-notification-section limit="2" show-info="{{true}}"></miq-notification-section>
+</div>

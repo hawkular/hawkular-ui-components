@@ -22,7 +22,6 @@ export default class ValidateCredentialsController {
   public validateAction: (args: {validateData: any}) => void;
 
   public onValidate() {
-    console.log(this);
     this.validateAction({validateData: this.modelHolder});
   }
 

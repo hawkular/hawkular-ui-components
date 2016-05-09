@@ -1,0 +1,7 @@
+<div class="alert" ng-class="vm.getClassFromType()">
+  <button type="button" class="close" ng-click="vm.onDismiss()" aria-hidden="true" ng-if="vm.dismissible">
+    <span class="pficon pficon-close"></span>
+  </button>
+  <span ng-class="vm.getIconByType()" class="pficon"></span>
+  <strong ng-if="vm.header">{{vm.header}}</strong> <span>{{(vm.body?vm.body:'&nbsp;')}}</span>
+</div>

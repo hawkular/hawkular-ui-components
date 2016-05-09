@@ -16,12 +16,28 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
-
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.service('MiQNotificationService', NotificationService);
+export default class BasicNotificationController {
+  public alertType = 'info';
+  public alertHeader: string;
+  public alertBody: string;
+  public isDismissible: boolean = false;
+  public noTimeout: boolean = false;
+  public formActions: any[] = [];
+  /* @ngInject */
+  constructor(private MiQNotificationService: any) {
+    this.formActions = [{
+      btnClass: 'btn-primary',
+      title: 'Add button',
+      clickFunction: ($event) => {
+        this.MiQNotificationService.sendNext({
+          header: this.alertHeader,
+          body: this.alertBody,
+          type: this.alertType,
+          dismissible: this.isDismissible,
+          noTimeout: this.noTimeout
+        });
+      },
+      label: 'Add'
+    }];
+  }
 }
