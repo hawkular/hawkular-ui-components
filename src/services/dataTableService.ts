@@ -27,6 +27,7 @@ export interface IDataTableService {
   getSortedIndexAndAscending(): any;
   setPerPage(perPage: number): void;
   loadMore(): void;
+  removeItems(removeIds: any[]): any;
   dataTableService: any;
 }
 
@@ -67,7 +68,7 @@ export default class DataTableService implements ng.IServiceProvider {
       let compValue = 0;
       if (sortId.sortType === 'numeric') {
         compValue = item1.cells[itemIndex] - item2[itemIndex];
-      } else if (item1.cells[itemIndex].hasOwnProperty('text')){
+      } else if (item1.cells[itemIndex].hasOwnProperty('text')) {
         compValue = item1.cells[itemIndex].text.localeCompare(item2.cells[itemIndex].text);
       }
       return (isAscending) ? compValue : compValue * -1;
@@ -91,6 +92,15 @@ export default class DataTableService implements ng.IServiceProvider {
   public loadMore() {
     this.visibleCount += this.perPage;
     this.visibleItems = this.rows.slice(0, (this.perPage !== -1 ? this.visibleCount : this.rows.length));
+  }
+
+  public removeItems(itemIds: any[]): any {
+    this.rows = _.filter(this.rows, (item) => {
+      return itemIds.indexOf(item.id) === -1;
+    });
+    this.visibleCount -= this.perPage;
+    this.loadMore();
+    return this.rows;
   }
 
   private exposeData() {
@@ -166,6 +176,7 @@ export default class DataTableService implements ng.IServiceProvider {
         this.loadMore();
       },
       loadMore: () => this.loadMore(),
+      removeItems: (itemIds: any[]) => this.removeItems(itemIds),
       dataTableService: this
     };
   }

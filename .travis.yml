@@ -1,4 +1,5 @@
-sudo: false
+sudo: required
+dist: trusty
 language: node_js
 node_js:
   - '5'
@@ -8,6 +9,7 @@ npm:
 
 env:
   global:
+  - secure: "ZNsWStPBUrU01kFv15uL3iXKaHDI5BapvH60fXHFCTii1UubD7BTK0tvbABGFzkRDGfbOx0ypExrE9C6HLwnWUjVQSVhlxV7t5nYyWWjTuN+Y/AF2XdjmmYyNXrMKD95OuRaZcyxVJvKBFFOnzMWOGETFO5LpHztTGszVrNISU0="
   - GH_REF: github.com/hawkular/hawkular-ui-components
   - GH_BRANCH: gh-pages
 

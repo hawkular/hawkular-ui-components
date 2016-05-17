@@ -1354,7 +1354,7 @@
 /* 57 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
+	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_userid'}}\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" id=\"{{vm.modelName + '_userid'}}\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_password'}}\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" id=\"{{vm.modelName + '_password'}}\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_verify'}}\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" id=\"{{vm.modelName + '_verify'}}\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
 /* 58 */
@@ -1579,6 +1579,14 @@
 	        this.visibleCount += this.perPage;
 	        this.visibleItems = this.rows.slice(0, (this.perPage !== -1 ? this.visibleCount : this.rows.length));
 	    };
+	    DataTableService.prototype.removeItems = function (itemIds) {
+	        this.rows = _.filter(this.rows, function (item) {
+	            return itemIds.indexOf(item.id) === -1;
+	        });
+	        this.visibleCount -= this.perPage;
+	        this.loadMore();
+	        return this.rows;
+	    };
 	    DataTableService.prototype.exposeData = function () {
 	        this.filterSelectBox();
 	        this.bindHeadersToRows();
@@ -1647,6 +1655,7 @@
 	                _this.loadMore();
 	            },
 	            loadMore: function () { return _this.loadMore(); },
+	            removeItems: function (itemIds) { return _this.removeItems(itemIds); },
 	            dataTableService: this
 	        };
 	    };
