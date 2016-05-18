@@ -52,7 +52,8 @@ img.miq-gradient-background {
 
 .miq-tile-with-body .card-view-pf .card {
   width: 350px;
-  height: 170px; }
+  height: 170px;
+  animation: fade-in 2s; }
   .miq-tile-with-body .card-view-pf .card .card-content {
     overflow: hidden; }
   .miq-tile-with-body .card-view-pf .card .miq-icon-section {
@@ -64,9 +65,18 @@ img.miq-gradient-background {
 
 .miq-small-tile .card-view-pf .card {
   width: 170px;
-  height: 140px; }
+  height: 140px;
+  animation: fade-in 2s; }
   .miq-small-tile .card-view-pf .card .card-content a {
     word-wrap: break-word; }
+
+@keyframes fade-in {
+  0% {
+    opacity: 0; }
+  60% {
+    opacity: 1; }
+  100% {
+    opacity: 1; } }
 
 .miq-data-tables-header {
   text-align: left; }

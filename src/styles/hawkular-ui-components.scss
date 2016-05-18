@@ -65,6 +65,7 @@ img.miq-gradient-background {
   .card {
     width: 350px;
     height: 170px;
+    animation: fade-in 2s;
 
     .card-content {
       overflow: hidden;
@@ -87,6 +88,8 @@ img.miq-gradient-background {
   .card {
     width: 170px;
     height: 140px;
+    animation: fade-in 2s;
+
     .card-content {
       a {
         word-wrap: break-word;
@@ -94,6 +97,21 @@ img.miq-gradient-background {
     }
   }
 }
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 
 .miq-data-tables-header {
   text-align: left;

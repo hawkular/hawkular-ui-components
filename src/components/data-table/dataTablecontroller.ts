@@ -41,7 +41,6 @@ export default class DataTableController {
     }).subscribe(() => {
       this.setPage(0);
     });
-
     observeOnScope($scope, () => {
       return this.perPage;
     }).subscribe(() => {
@@ -112,7 +111,11 @@ export default class DataTableController {
   public setPage(page) {
     if (this.data) {
       this.resCurPage = page;
-      this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
+      if (this.perPage > 0) {
+        this.limitedData = this.data.slice(this.perPage * this.resCurPage, this.perPage * (this.resCurPage + 1));
+      } else {
+        this.limitedData = this.data;
+      }
     }
   }
 
