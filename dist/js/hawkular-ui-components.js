@@ -155,7 +155,7 @@
 	///<reference path="tsd.d.ts"/>
 	var loader_1 = __webpack_require__(26);
 	var loader_2 = __webpack_require__(61);
-	var loader_3 = __webpack_require__(65);
+	var loader_3 = __webpack_require__(66);
 	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
 	loader_1.default(app);
 	loader_2.default(app);
@@ -325,7 +325,7 @@
 /* 30 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"toolbar-pf-actions miq-toolbar-actions\">\n    <div class=\"form-group\">\n      <miq-toolbar-list ng-repeat=\"item in vm.toolbarItems | filter: children\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n</div>\n"
+	module.exports = "<div class=\"toolbar-pf-actions miq-toolbar-actions\">\n    <div class=\"form-group\" ng-repeat=\"toolbarItem in vm.toolbarItems\">\n      <miq-toolbar-list ng-repeat=\"item in toolbarItem | filter: items\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n</div>\n"
 
 /***/ },
 /* 31 */
@@ -420,7 +420,7 @@
 /* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: toolbarList.disabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.children\" ng-class=\"{disabled: item.disabled}\">\n      <a href=\"javascript:void(0)\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
+	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: !toolbarList.enabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.items\" ng-class=\"{disabled: !item.enabled}\">\n      <a href=\"javascript:void(0)\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 35 */
@@ -1446,10 +1446,12 @@
 	var dataTableService_1 = __webpack_require__(62);
 	var formValidatorService_1 = __webpack_require__(63);
 	var notificationService_1 = __webpack_require__(64);
+	var toolbarSettingsService_1 = __webpack_require__(65);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataTableService', dataTableService_1.default);
 	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
+	    module.provider('MiQToolbarSettingsService', toolbarSettingsService_1.default);
 	    module.service('MiQNotificationService', notificationService_1.default);
 	};
 
@@ -1777,6 +1779,58 @@
 
 /***/ },
 /* 65 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var ToolbarSettingsService = (function () {
+	    function ToolbarSettingsService() {
+	        this.endpoints = {
+	            settings: '/toolbar_settings'
+	        };
+	    }
+	    ToolbarSettingsService.prototype.getSettings = function (isList) {
+	        if (isList === void 0) { isList = false; }
+	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings, { 'is_list': isList });
+	    };
+	    ToolbarSettingsService.prototype.httpGet = function (url, dataObject) {
+	        return this.$http.get(url, { params: dataObject })
+	            .then(function (dataResponse) { return dataResponse.data; });
+	    };
+	    /*@ngInject*/
+	    ToolbarSettingsService.prototype.$get = function ($http, MiQDataAccessService) {
+	        var _this = this;
+	        this.$http = $http;
+	        this.MiQDataAccessService = MiQDataAccessService;
+	        return {
+	            getSettings: function (isList) { return _this.getSettings(isList); }
+	        };
+	    };
+	    ToolbarSettingsService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
+	    return ToolbarSettingsService;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ToolbarSettingsService;
+
+
+/***/ },
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1797,7 +1851,7 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataAccessService_1 = __webpack_require__(66);
+	var dataAccessService_1 = __webpack_require__(67);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataAccessService', dataAccessService_1.default);
@@ -1805,7 +1859,7 @@
 
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports) {
 
 	///
