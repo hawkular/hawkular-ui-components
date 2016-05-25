@@ -29,6 +29,7 @@ export default class TileView implements ng.IComponentOptions {
     loadMoreItems: '&',
     items: '=',
     headers: '=',
+    defaultAction: '<',
     onTileSelect: '&',
     onTileClick: '&'
   };

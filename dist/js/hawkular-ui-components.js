@@ -1069,6 +1069,7 @@
 	            loadMoreItems: '&',
 	            items: '=',
 	            headers: '=',
+	            defaultAction: '<',
 	            onTileSelect: '&',
 	            onTileClick: '&'
 	        };
@@ -1152,13 +1153,13 @@
 /* 51 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-tile-with-body\">\n    <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    <div class=\"row miq-row-margin-only-top \">\n      <div class=\"col-md-3 col-ld-3 miq-icon-section\">\n        <a href=\"javascript:void(0)\">\n          <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n        </a>\n      </div>\n      <div class=\"col-md-9 col-ld-9 miq-info-section\">\n        <dl class=\"dl-horizontal tile\">\n          <dt ng-repeat-start=\"(key, header) in item.headers\" ng-if=\"header.text && header.text !== 'Name'\">{{header.text}}</dt>\n          <dd ng-repeat-end ng-if=\"header.text && header.text !== 'Name'\">{{item.cells[key].text}}</dd>\n        </dl>\n      </div>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-tile-with-body\">\n    <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    <div class=\"row miq-row-margin-only-top \">\n      <div class=\"col-md-3 col-ld-3 miq-icon-section\">\n        <a href=\"javascript:void(0)\">\n          <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n        </a>\n      </div>\n      <div class=\"col-md-9 col-ld-9 miq-info-section\">\n        <dl class=\"dl-horizontal tile\">\n          <dt ng-repeat-start=\"(key, header) in item.headers\" ng-if=\"header.text && header.text !== 'Name'\">{{header.text}}</dt>\n          <dd ng-repeat-end ng-if=\"header.text && header.text !== 'Name'\">{{item.cells[key].text}}</dd>\n        </dl>\n      </div>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length === 0\">\n    <p>It looks like this table has no data.</p>\n    <p ng-if=\"vmCtrl.defaultAction\">\n      <a ng-click=\"vmCtrl.defaultAction.actionFunction()\" style=\"cursor: pointer;\">{{vmCtrl.defaultAction.title}}</a>\n      so it would not be empty.\n    </p>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
 /* 52 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-small-tile\">\n    <div>\n      <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    </div>\n    <div>\n      <a href=\"javascript:void(0)\">\n        <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n      </a>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
+	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-small-tile\">\n    <div>\n      <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    </div>\n    <div>\n      <a href=\"javascript:void(0)\">\n        <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n      </a>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length === 0\">\n    <p>It looks like this table has no data.</p>\n    <p ng-if=\"vmCtrl.defaultAction\">\n      <a ng-click=\"vmCtrl.defaultAction.actionFunction()\" style=\"cursor: pointer;\">{{vmCtrl.defaultAction.title}}</a>\n      so it would not be empty.\n    </p>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
 /* 53 */
