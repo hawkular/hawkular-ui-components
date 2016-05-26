@@ -19,12 +19,11 @@
 
 export default class ToolbarMenuController {
   public toolbarMenu: any;
-  public constructor(private $http: any) {
-    this.$http({
-      method: 'GET',
-      url: '/data/toolbar.json'
-    }).then((responseData) => {
-      this.toolbarMenu = responseData.data;
-    });
+
+  public constructor(private MiQToolbarSettingsService: any) {
+    this.MiQToolbarSettingsService.getSettings(true)
+      .then(dataResponse => {
+        this.toolbarMenu = dataResponse;
+      });
   }
 }

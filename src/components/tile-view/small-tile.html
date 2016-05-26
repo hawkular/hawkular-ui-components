@@ -9,6 +9,13 @@
       </a>
     </div>
   </div>
+  <div ng-if="vmCtrl.items.length === 0">
+    <p>It looks like this table has no data.</p>
+    <p ng-if="vmCtrl.defaultAction">
+      <a ng-click="vmCtrl.defaultAction.actionFunction()" style="cursor: pointer;">{{vmCtrl.defaultAction.title}}</a>
+      so it would not be empty.
+    </p>
+  </div>
   <div ng-if="vmCtrl.hasLoader" class="miq-load-more">
     <a href="javascript:void(0)" ng-click="vmCtrl.loadMoreItems()">Show {{vmCtrl.perPage}} more</a>
   </div>

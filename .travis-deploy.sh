@@ -15,5 +15,5 @@ if [ "$TRAVIS_BRANCH" = "master" ] && [ $TRAVIS_PULL_REQUEST = "false" ]; then
         git config user.email "<your@email.com>"
         git commit -m "Deploy to GitHub Pages"
 
-        git push --force --quiet "https://${GH_TOKEN}@${GH_REF}.git"
+        git push --quiet "https://${GH_TOKEN}@${GH_REF}.git"
 fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #execute this only when pull requesting to master, or pushing to master
 export GH_BRANCH=gh-pages
-if [ "${TRAVIS_BRANCH}" = "master" ] && [ ${GH_TOKEN} ]; then
+if [ ${GH_TOKEN} ]; then
         set -e
 
         # remove folder with github pages branch and recreate it

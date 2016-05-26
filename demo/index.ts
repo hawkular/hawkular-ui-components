@@ -21,11 +21,18 @@ import controllers from './controllers/loader';
 
 const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router',
   'patternfly.select', 'ui.bootstrap.tabs', 'patternfly.views', 'ngAnimate']);
-app.config((MiQDataAccessServiceProvider: any, MiQDataTableServiceProvider: any) => {
+app.config((MiQDataAccessServiceProvider: any,
+            MiQDataTableServiceProvider: any,
+            MiQToolbarSettingsServiceProvider: any) => {
   MiQDataTableServiceProvider.endpoints = {
     list: '/data-table.json'
   };
+
   MiQDataAccessServiceProvider.setUrlPrefix('/data');
+
+  MiQToolbarSettingsServiceProvider.endpoints = {
+    settings: '/toolbar.json'
+  };
 });
 controllers(app);
 views(app);

@@ -1,6 +1,6 @@
 <div class="toolbar-pf-actions miq-toolbar-actions">
-    <div class="form-group">
-      <miq-toolbar-list ng-repeat="item in vm.toolbarItems | filter: children"
+    <div class="form-group" ng-repeat="toolbarItem in vm.toolbarItems">
+      <miq-toolbar-list ng-repeat="item in toolbarItem | filter: items"
                         toolbar-list="item"
                         on-item-click="vm.onItemClick(item)">
       </miq-toolbar-list>
