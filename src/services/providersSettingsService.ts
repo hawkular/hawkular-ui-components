@@ -16,16 +16,27 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
-import DataTableService from './dataTableService';
-import FormValidatorService from './formValidatorService';
-import NotificationService from './notificationService';
-import ToolbarSettingsService from './toolbarSettingsService';
-import ProvidersSettingsService from './providersSettingsService';
+export default class ProvidersSettingsService {
+  private $http: any;
+  private MiQDataAccessService: any;
+  public endpoints = {
+    settings : '/list_providers_settings'
+  };
 
-export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.provider('MiQToolbarSettingsService', ToolbarSettingsService);
-  module.provider('MiQProvidersSettingsService', ProvidersSettingsService);
-  module.service('MiQNotificationService', NotificationService);
+  public getSettings() {
+    return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings);
+  }
+
+  private httpGet(url: string): any {
+    return this.$http.get(url)
+      .then(dataResponse => dataResponse.data);
+  }
+  /*@ngInject*/
+  public $get($http: any, MiQDataAccessService: any): any {
+    this.$http = $http;
+    this.MiQDataAccessService = MiQDataAccessService;
+    return {
+      getSettings: () => this.getSettings()
+    };
+  }
 }
