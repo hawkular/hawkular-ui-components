@@ -155,7 +155,7 @@
 	///<reference path="tsd.d.ts"/>
 	var loader_1 = __webpack_require__(26);
 	var loader_2 = __webpack_require__(61);
-	var loader_3 = __webpack_require__(66);
+	var loader_3 = __webpack_require__(67);
 	var app = angular.module('miQStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
 	loader_1.default(app);
 	loader_2.default(app);
@@ -1448,11 +1448,13 @@
 	var formValidatorService_1 = __webpack_require__(63);
 	var notificationService_1 = __webpack_require__(64);
 	var toolbarSettingsService_1 = __webpack_require__(65);
+	var providersSettingsService_1 = __webpack_require__(66);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataTableService', dataTableService_1.default);
 	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
 	    module.provider('MiQToolbarSettingsService', toolbarSettingsService_1.default);
+	    module.provider('MiQProvidersSettingsService', providersSettingsService_1.default);
 	    module.service('MiQNotificationService', notificationService_1.default);
 	};
 
@@ -1484,14 +1486,26 @@
 	        this.perPage = 5;
 	        this.visibleCount = 0;
 	        this.endpoints = {
-	            list: '/list'
+	            list: '/list',
+	            deleteItems: '/delete'
 	        };
 	    }
+	    DataTableService.prototype.deleteItems = function (data) {
+	        var _this = this;
+	        return this.$http({
+	            url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.deleteItems,
+	            method: 'POST',
+	            data: data
+	        }).then(function (responseData) {
+	            _this.removeItems(responseData.data.removedIds);
+	            return responseData.data;
+	        });
+	    };
 	    DataTableService.prototype.retrieveRowsAndColumnsFromUrl = function () {
 	        var _this = this;
 	        return this.$http({
 	            method: 'GET',
-	            url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
+	            url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
 	        }).then(function (responseData) {
 	            _this.columns = responseData.data.head;
 	            _this.rows = responseData.data.rows;
@@ -1535,7 +1549,7 @@
 	    };
 	    DataTableService.prototype.removeItems = function (itemIds) {
 	        this.rows = _.filter(this.rows, function (item) {
-	            return itemIds.indexOf(item.id) === -1;
+	            return itemIds.indexOf(parseInt(item.id, 10)) === -1;
 	        });
 	        this.visibleCount -= this.perPage;
 	        this.loadMore();
@@ -1596,6 +1610,7 @@
 	        this.$http = $http;
 	        this.MiQDataAccessService = MiQDataAccessService;
 	        return {
+	            deleteItems: function (data) { return _this.deleteItems(data); },
 	            retrieveRowsAndColumnsFromUrl: function () { return _this.retrieveRowsAndColumnsFromUrl(); },
 	            sortItemsBy: function (sortBy, isAscending) {
 	                _this.sortItemsBy(sortBy, isAscending);
@@ -1832,6 +1847,57 @@
 
 /***/ },
 /* 66 */
+/***/ function(module, exports) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var ProvidersSettingsService = (function () {
+	    function ProvidersSettingsService() {
+	        this.endpoints = {
+	            settings: '/list_providers_settings'
+	        };
+	    }
+	    ProvidersSettingsService.prototype.getSettings = function () {
+	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings);
+	    };
+	    ProvidersSettingsService.prototype.httpGet = function (url) {
+	        return this.$http.get(url)
+	            .then(function (dataResponse) { return dataResponse.data; });
+	    };
+	    /*@ngInject*/
+	    ProvidersSettingsService.prototype.$get = function ($http, MiQDataAccessService) {
+	        var _this = this;
+	        this.$http = $http;
+	        this.MiQDataAccessService = MiQDataAccessService;
+	        return {
+	            getSettings: function () { return _this.getSettings(); }
+	        };
+	    };
+	    ProvidersSettingsService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
+	    return ProvidersSettingsService;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ProvidersSettingsService;
+
+
+/***/ },
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1852,15 +1918,17 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataAccessService_1 = __webpack_require__(67);
+	var dataAccessService_1 = __webpack_require__(68);
+	var newProviderState_1 = __webpack_require__(69);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQDataAccessService', dataAccessService_1.default);
+	    module.provider('MiQNewProviderStateService', newProviderState_1.default);
 	};
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports) {
 
 	///
@@ -1897,6 +1965,61 @@
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = DataAccessService;
+
+
+/***/ },
+/* 69 */
+/***/ function(module, exports) {
+
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var NewProviderState = (function () {
+	    function NewProviderState() {
+	        this.endpoints = {
+	            types: '/types'
+	        };
+	    }
+	    NewProviderState.prototype.addProviderStates = function (states) {
+	        var _this = this;
+	        _.each(states, function (oneState) {
+	            if (!_this.$state.get(oneState.stateId)) {
+	                _this.$stateProvider.state(oneState.stateId, {
+	                    views: _.mapValues(oneState.views, function (value) {
+	                        return { 'templateUrl': value };
+	                    })
+	                });
+	            }
+	        });
+	    };
+	    NewProviderState.prototype.getProviderTypes = function (statePrefix) {
+	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.types).then(function (typesData) {
+	            _.each(typesData, function (type) {
+	                type.stateId = statePrefix + '.' + type.id;
+	            });
+	            return typesData;
+	        });
+	    };
+	    NewProviderState.prototype.httpGet = function (url, requestData) {
+	        return this.$http.get(url, requestData).then(function (responseData) {
+	            return responseData.data;
+	        });
+	    };
+	    /*@ngInject*/
+	    NewProviderState.prototype.$get = function ($http, $state, MiQDataAccessService) {
+	        var _this = this;
+	        this.$http = $http;
+	        this.$state = $state;
+	        this.MiQDataAccessService = MiQDataAccessService;
+	        return {
+	            addProviderStates: function (states) { return _this.addProviderStates(states); },
+	            getProviderTypes: function (statePrefix) { return _this.getProviderTypes(statePrefix); }
+	        };
+	    };
+	    NewProviderState.prototype.$get.$inject = ["$http", "$state", "MiQDataAccessService"];
+	    return NewProviderState;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = NewProviderState;
 
 
 /***/ }

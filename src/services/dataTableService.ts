@@ -22,6 +22,7 @@ export interface IRowsColsResponse {
 }
 
 export interface IDataTableService {
+  deleteItems(data): any;
   retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse>;
   sortItemsBy(sortBy: any, isAscending: boolean): any;
   getSortedIndexAndAscending(): any;
@@ -42,13 +43,25 @@ export default class DataTableService implements ng.IServiceProvider {
   public visibleCount: number = 0;
   public visibleItems: any[];
   public endpoints = {
-    list : '/list'
+    list : '/list',
+    deleteItems: '/delete'
   };
+
+  public deleteItems(data): ng.IPromise<any>  {
+    return this.$http({
+      url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.deleteItems,
+      method: 'POST',
+      data: data
+    }).then((responseData: any) => {
+      this.removeItems(responseData.data.removedIds);
+      return responseData.data;
+    });
+  }
 
   public retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse> {
     return this.$http({
       method: 'GET',
-      url: location.origin + this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
+      url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
     }).then((responseData) => {
       this.columns = responseData.data.head;
       this.rows = responseData.data.rows;
@@ -96,7 +109,7 @@ export default class DataTableService implements ng.IServiceProvider {
 
   public removeItems(itemIds: any[]): any {
     this.rows = _.filter(this.rows, (item) => {
-      return itemIds.indexOf(item.id) === -1;
+      return itemIds.indexOf(parseInt(item.id, 10)) === -1;
     });
     this.visibleCount -= this.perPage;
     this.loadMore();
@@ -163,6 +176,7 @@ export default class DataTableService implements ng.IServiceProvider {
     this.$http = $http;
     this.MiQDataAccessService = MiQDataAccessService;
     return {
+      deleteItems: (data) => this.deleteItems(data),
       retrieveRowsAndColumnsFromUrl: () => this.retrieveRowsAndColumnsFromUrl(),
       sortItemsBy: (sortBy: any, isAscending: boolean) => {
         this.sortItemsBy(sortBy, isAscending);
