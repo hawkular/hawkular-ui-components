@@ -19,7 +19,7 @@
 import views from './views/loader';
 import controllers from './controllers/loader';
 
-const app = angular.module('demoApp', ['miQStaticAssets', 'ui.bootstrap', 'ui.router',
+const app = angular.module('demoApp', ['miqStaticAssets', 'ui.bootstrap', 'ui.router',
   'patternfly.select', 'ui.bootstrap.tabs', 'patternfly.views', 'ngAnimate']);
 app.config((MiQDataAccessServiceProvider: any,
             MiQDataTableServiceProvider: any,
