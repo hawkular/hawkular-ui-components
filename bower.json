@@ -8,8 +8,7 @@
   ],
   "main": [
     "dist/css/hawkular-ui-components.css",
-    "dist/js/hawkular-ui-components.js",
-    "dist/js/hawkular-ui-components.min.js"
+    "dist/js/hawkular-ui-components.js"
   ],
   "ignore": [
     "*",
