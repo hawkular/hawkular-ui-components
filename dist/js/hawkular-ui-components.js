@@ -123,62 +123,7 @@
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
+/* 21 */,
 /* 22 */,
 /* 23 */
 /***/ function(module, exports) {
@@ -210,7 +155,7 @@
 	///<reference path="tsd.d.ts"/>
 	var loader_1 = __webpack_require__(26);
 	var loader_2 = __webpack_require__(61);
-	var loader_3 = __webpack_require__(67);
+	var loader_3 = __webpack_require__(68);
 	var app = angular.module('miqStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
 	loader_1.default(app);
 	loader_2.default(app);
@@ -1504,13 +1449,15 @@
 	var notificationService_1 = __webpack_require__(64);
 	var toolbarSettingsService_1 = __webpack_require__(65);
 	var providersSettingsService_1 = __webpack_require__(66);
+	var endpointsService_1 = __webpack_require__(67);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    module.provider('MiQDataTableService', dataTableService_1.default);
-	    module.provider('MiQFormValidatorService', formValidatorService_1.default);
-	    module.provider('MiQToolbarSettingsService', toolbarSettingsService_1.default);
-	    module.provider('MiQProvidersSettingsService', providersSettingsService_1.default);
+	    module.service('MiQDataTableService', dataTableService_1.default);
+	    module.service('MiQFormValidatorService', formValidatorService_1.default);
+	    module.service('MiQToolbarSettingsService', toolbarSettingsService_1.default);
+	    module.service('MiQProvidersSettingsService', providersSettingsService_1.default);
 	    module.service('MiQNotificationService', notificationService_1.default);
+	    module.service('MiQEndpointsService', endpointsService_1.default);
 	};
 
 
@@ -1537,18 +1484,18 @@
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
 	var DataTableService = (function () {
-	    function DataTableService() {
+	    /*@ngInject*/
+	    function DataTableService($http, MiQEndpointsService) {
+	        this.$http = $http;
+	        this.MiQEndpointsService = MiQEndpointsService;
 	        this.perPage = 5;
 	        this.visibleCount = 0;
-	        this.endpoints = {
-	            list: '/list',
-	            deleteItems: '/delete'
-	        };
 	    }
+	    DataTableService.$inject = ["$http", "MiQEndpointsService"];
 	    DataTableService.prototype.deleteItems = function (data) {
 	        var _this = this;
 	        return this.$http({
-	            url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.deleteItems,
+	            url: this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.deleteItemDataTable,
 	            method: 'POST',
 	            data: data
 	        }).then(function (responseData) {
@@ -1560,7 +1507,7 @@
 	        var _this = this;
 	        return this.$http({
 	            method: 'GET',
-	            url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
+	            url: this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.listDataTable
 	        }).then(function (responseData) {
 	            _this.columns = responseData.data.head;
 	            _this.rows = responseData.data.rows;
@@ -1585,6 +1532,8 @@
 	            }
 	            return (isAscending) ? compValue : compValue * -1;
 	        });
+	        this.visibleCount -= this.perPage;
+	        this.loadMore();
 	    };
 	    DataTableService.prototype.getSortedIndexAndAscending = function () {
 	        if (this.sortId) {
@@ -1597,6 +1546,8 @@
 	    DataTableService.prototype.setPerPage = function (perPage) {
 	        this.perPage = perPage;
 	        this.visibleCount = perPage;
+	        this.visibleCount -= this.perPage;
+	        this.loadMore();
 	    };
 	    DataTableService.prototype.loadMore = function () {
 	        this.visibleCount += this.perPage;
@@ -1659,31 +1610,6 @@
 	            return cells[nameIndex];
 	        }
 	    };
-	    /*@ngInject*/
-	    DataTableService.prototype.$get = function ($http, MiQDataAccessService, rx, $rootScope) {
-	        var _this = this;
-	        this.$http = $http;
-	        this.MiQDataAccessService = MiQDataAccessService;
-	        return {
-	            deleteItems: function (data) { return _this.deleteItems(data); },
-	            retrieveRowsAndColumnsFromUrl: function () { return _this.retrieveRowsAndColumnsFromUrl(); },
-	            sortItemsBy: function (sortBy, isAscending) {
-	                _this.sortItemsBy(sortBy, isAscending);
-	                _this.visibleCount -= _this.perPage;
-	                _this.loadMore();
-	            },
-	            getSortedIndexAndAscending: function () { return _this.getSortedIndexAndAscending(); },
-	            setPerPage: function (perPage) {
-	                _this.setPerPage(perPage);
-	                _this.visibleCount -= _this.perPage;
-	                _this.loadMore();
-	            },
-	            loadMore: function () { return _this.loadMore(); },
-	            removeItems: function (itemIds) { return _this.removeItems(itemIds); },
-	            dataTableService: this
-	        };
-	    };
-	    DataTableService.prototype.$get.$inject = ["$http", "MiQDataAccessService", "rx", "$rootScope"];
 	    return DataTableService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -1713,17 +1639,17 @@
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
 	var FormValidatorService = (function () {
-	    function FormValidatorService() {
-	        this.endpoints = {
-	            validate: '/validate',
-	            create: '/create'
-	        };
+	    /*@ngInject*/
+	    function FormValidatorService($http, MiQEndpointsService) {
+	        this.$http = $http;
+	        this.MiQEndpointsService = MiQEndpointsService;
 	    }
+	    FormValidatorService.$inject = ["$http", "MiQEndpointsService"];
 	    FormValidatorService.prototype.validateObject = function (dataObject) {
-	        return this.httpPost(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.validate, dataObject);
+	        return this.httpPost(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.validateItem, dataObject);
 	    };
 	    FormValidatorService.prototype.saveObject = function (dataObject) {
-	        return this.httpPost(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.create, dataObject);
+	        return this.httpPost(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.createItem, dataObject);
 	    };
 	    FormValidatorService.prototype.httpPost = function (url, dataObject) {
 	        var _this = this;
@@ -1743,17 +1669,6 @@
 	        });
 	        return allAlerts;
 	    };
-	    /*@ngInject*/
-	    FormValidatorService.prototype.$get = function ($http, MiQDataAccessService) {
-	        var _this = this;
-	        this.$http = $http;
-	        this.MiQDataAccessService = MiQDataAccessService;
-	        return {
-	            validateObject: function (data) { return _this.validateObject(data); },
-	            saveObject: function (data) { return _this.saveObject(data); }
-	        };
-	    };
-	    FormValidatorService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
 	    return FormValidatorService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -1871,29 +1786,20 @@
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
 	var ToolbarSettingsService = (function () {
-	    function ToolbarSettingsService() {
-	        this.endpoints = {
-	            settings: '/toolbar_settings'
-	        };
+	    /*@ngInject*/
+	    function ToolbarSettingsService($http, MiQEndpointsService) {
+	        this.$http = $http;
+	        this.MiQEndpointsService = MiQEndpointsService;
 	    }
+	    ToolbarSettingsService.$inject = ["$http", "MiQEndpointsService"];
 	    ToolbarSettingsService.prototype.getSettings = function (isList) {
 	        if (isList === void 0) { isList = false; }
-	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings, { 'is_list': isList });
+	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, { 'is_list': isList });
 	    };
 	    ToolbarSettingsService.prototype.httpGet = function (url, dataObject) {
 	        return this.$http.get(url, { params: dataObject })
 	            .then(function (dataResponse) { return dataResponse.data; });
 	    };
-	    /*@ngInject*/
-	    ToolbarSettingsService.prototype.$get = function ($http, MiQDataAccessService) {
-	        var _this = this;
-	        this.$http = $http;
-	        this.MiQDataAccessService = MiQDataAccessService;
-	        return {
-	            getSettings: function (isList) { return _this.getSettings(isList); }
-	        };
-	    };
-	    ToolbarSettingsService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
 	    return ToolbarSettingsService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -1923,28 +1829,19 @@
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
 	var ProvidersSettingsService = (function () {
-	    function ProvidersSettingsService() {
-	        this.endpoints = {
-	            settings: '/list_providers_settings'
-	        };
+	    /*@ngInject*/
+	    function ProvidersSettingsService($http, MiQEndpointsService) {
+	        this.$http = $http;
+	        this.MiQEndpointsService = MiQEndpointsService;
 	    }
+	    ProvidersSettingsService.$inject = ["$http", "MiQEndpointsService"];
 	    ProvidersSettingsService.prototype.getSettings = function () {
-	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings);
+	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.providerSettings);
 	    };
 	    ProvidersSettingsService.prototype.httpGet = function (url) {
 	        return this.$http.get(url)
 	            .then(function (dataResponse) { return dataResponse.data; });
 	    };
-	    /*@ngInject*/
-	    ProvidersSettingsService.prototype.$get = function ($http, MiQDataAccessService) {
-	        var _this = this;
-	        this.$http = $http;
-	        this.MiQDataAccessService = MiQDataAccessService;
-	        return {
-	            getSettings: function () { return _this.getSettings(); }
-	        };
-	    };
-	    ProvidersSettingsService.prototype.$get.$inject = ["$http", "MiQDataAccessService"];
 	    return ProvidersSettingsService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -1953,37 +1850,6 @@
 
 /***/ },
 /* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../tsd.d.ts"/>
-	var dataAccessService_1 = __webpack_require__(68);
-	var newProviderState_1 = __webpack_require__(69);
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = function (module) {
-	    module.provider('MiQDataAccessService', dataAccessService_1.default);
-	    module.provider('MiQNewProviderStateService', newProviderState_1.default);
-	};
-
-
-/***/ },
-/* 68 */
 /***/ function(module, exports) {
 
 	///
@@ -2004,26 +1870,60 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var DataAccessService = (function () {
-	    function DataAccessService() {
+	var DefaultEndpoints = (function () {
+	    function DefaultEndpoints() {
+	        this.listDataTable = '/list';
+	        this.deleteItemDataTable = '/delete';
+	        this.validateItem = '/validate';
+	        this.createItem = '/create';
+	        this.providerSettings = '/list_providers_settings';
+	        this.toolbarSettings = '/toolbar_settings';
 	    }
-	    DataAccessService.prototype.setUrlPrefix = function (urlPrefix) {
-	        this.urlPrefix = urlPrefix;
-	    };
-	    DataAccessService.prototype.$get = function () {
-	        var _this = this;
-	        return {
-	            getUrlPrefix: function () { return _this.urlPrefix; }
-	        };
-	    };
-	    return DataAccessService;
+	    return DefaultEndpoints;
+	}());
+	exports.DefaultEndpoints = DefaultEndpoints;
+	var EndpointsService = (function () {
+	    function EndpointsService() {
+	        this.endpoints = new DefaultEndpoints;
+	    }
+	    return EndpointsService;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = DataAccessService;
+	exports.default = EndpointsService;
 
 
 /***/ },
-/* 69 */
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var newProviderState_1 = __webpack_require__(70);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.provider('MiQNewProviderStateService', newProviderState_1.default);
+	};
+
+
+/***/ },
+/* 69 */,
+/* 70 */
 /***/ function(module, exports) {
 
 	"use strict";

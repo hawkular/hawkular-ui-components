@@ -16,10 +16,8 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
-import DataAccessService from './dataAccessService';
 import NewProviderState from './newProviderState';
 
 export default (module: ng.IModule) => {
-  module.provider('MiQDataAccessService', DataAccessService);
   module.provider('MiQNewProviderStateService', NewProviderState);
 }

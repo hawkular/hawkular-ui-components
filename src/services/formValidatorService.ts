@@ -28,26 +28,19 @@ export interface IFormValidatorService {
   saveObject(dataObject: any): ng.IPromise<IValidationResponse>;
 }
 
-export interface IValidatorService extends IFormValidatorService {
-  $http: any;
-  MiQDataAccessService: any;
-  $get($http: any, MiQDataAccessService: any): IFormValidatorService;
-}
-
-export default class FormValidatorService implements IValidatorService {
-  public $http: any;
-  public MiQDataAccessService: any;
-  public endpoints = {
-    validate : '/validate',
-    create: '/create'
-  };
-
+export default class FormValidatorService implements IFormValidatorService {
   public validateObject(dataObject: any): ng.IPromise<IValidationResponse> {
-    return this.httpPost(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.validate, dataObject);
+    return this.httpPost(
+      this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.validateItem,
+      dataObject
+    );
   }
 
   public saveObject(dataObject: any): ng.IPromise<IValidationResponse> {
-    return this.httpPost(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.create, dataObject);
+    return this.httpPost(
+      this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.createItem,
+      dataObject
+    );
   }
 
   private httpPost(url: string, dataObject: any): ng.IPromise<IValidationResponse> {
@@ -70,12 +63,5 @@ export default class FormValidatorService implements IValidatorService {
   }
 
   /*@ngInject*/
-  public $get($http: any, MiQDataAccessService: any) : IFormValidatorService {
-    this.$http = $http;
-    this.MiQDataAccessService = MiQDataAccessService;
-    return {
-      validateObject: (data) => this.validateObject(data),
-      saveObject: (data) => this.saveObject(data)
-    };
-  }
+  constructor(private $http: any, private MiQEndpointsService: any) {}
 }
