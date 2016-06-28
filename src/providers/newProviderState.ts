@@ -7,7 +7,7 @@ export interface  IProviderState {
 
 export default class NewProviderState implements ng.IServiceProvider {
   private $http: ng.IHttpService;
-  private MiQDataAccessService: any;
+  private MiQEndpointsService: any;
   private $state: any;
   public $stateProvider: any;
   public endpoints = {
@@ -27,7 +27,7 @@ export default class NewProviderState implements ng.IServiceProvider {
   }
 
   public getProviderTypes(statePrefix): ng.IPromise<any[]> {
-    return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.types).then((typesData: any) => {
+    return this.httpGet(this.MiQEndpointsService.rootPoint + this.endpoints.types).then((typesData: any) => {
       _.each(typesData, (type) => {
         type.stateId = statePrefix + '.' + type.id;
       });
@@ -42,10 +42,10 @@ export default class NewProviderState implements ng.IServiceProvider {
   }
 
   /*@ngInject*/
-  public $get($http: any, $state: any, MiQDataAccessService: any) : IProviderState {
+  public $get($http: any, $state: any, MiQEndpointsService: any) : IProviderState {
     this.$http = $http;
     this.$state = $state;
-    this.MiQDataAccessService = MiQDataAccessService;
+    this.MiQEndpointsService = MiQEndpointsService;
     return {
       addProviderStates: (states) => this.addProviderStates(states),
       getProviderTypes: (statePrefix) => this.getProviderTypes(statePrefix)

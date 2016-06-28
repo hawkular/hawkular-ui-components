@@ -45,7 +45,7 @@ export class DefaultEndpoints implements IEndpoints {
 
 export default class EndpointsService {
   public endpoints: IEndpoints;
-  public rootPoint: string;
+  public rootPoint: string = '';
 
   constructor() {
     this.endpoints = new DefaultEndpoints;

@@ -123,7 +123,62 @@
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */,
+/* 21 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
 /* 22 */,
 /* 23 */
 /***/ function(module, exports) {
@@ -1884,6 +1939,7 @@
 	exports.DefaultEndpoints = DefaultEndpoints;
 	var EndpointsService = (function () {
 	    function EndpointsService() {
+	        this.rootPoint = '';
 	        this.endpoints = new DefaultEndpoints;
 	    }
 	    return EndpointsService;
@@ -1914,7 +1970,7 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var newProviderState_1 = __webpack_require__(70);
+	var newProviderState_1 = __webpack_require__(69);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQNewProviderStateService', newProviderState_1.default);
@@ -1922,8 +1978,7 @@
 
 
 /***/ },
-/* 69 */,
-/* 70 */
+/* 69 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1947,7 +2002,7 @@
 	        });
 	    };
 	    NewProviderState.prototype.getProviderTypes = function (statePrefix) {
-	        return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.types).then(function (typesData) {
+	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.endpoints.types).then(function (typesData) {
 	            _.each(typesData, function (type) {
 	                type.stateId = statePrefix + '.' + type.id;
 	            });
@@ -1960,17 +2015,17 @@
 	        });
 	    };
 	    /*@ngInject*/
-	    NewProviderState.prototype.$get = function ($http, $state, MiQDataAccessService) {
+	    NewProviderState.prototype.$get = function ($http, $state, MiQEndpointsService) {
 	        var _this = this;
 	        this.$http = $http;
 	        this.$state = $state;
-	        this.MiQDataAccessService = MiQDataAccessService;
+	        this.MiQEndpointsService = MiQEndpointsService;
 	        return {
 	            addProviderStates: function (states) { return _this.addProviderStates(states); },
 	            getProviderTypes: function (statePrefix) { return _this.getProviderTypes(statePrefix); }
 	        };
 	    };
-	    NewProviderState.prototype.$get.$inject = ["$http", "$state", "MiQDataAccessService"];
+	    NewProviderState.prototype.$get.$inject = ["$http", "$state", "MiQEndpointsService"];
 	    return NewProviderState;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
