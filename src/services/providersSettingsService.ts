@@ -17,26 +17,14 @@
 
 ///<reference path="../tsd.d.ts"/>
 export default class ProvidersSettingsService {
-  private $http: any;
-  private MiQDataAccessService: any;
-  public endpoints = {
-    settings : '/list_providers_settings'
-  };
-
+  /*@ngInject*/
+  constructor(private $http: any, private MiQEndpointsService: any) {}
   public getSettings() {
-    return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings);
+    return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.providerSettings);
   }
 
   private httpGet(url: string): any {
     return this.$http.get(url)
       .then(dataResponse => dataResponse.data);
-  }
-  /*@ngInject*/
-  public $get($http: any, MiQDataAccessService: any): any {
-    this.$http = $http;
-    this.MiQDataAccessService = MiQDataAccessService;
-    return {
-      getSettings: () => this.getSettings()
-    };
   }
 }

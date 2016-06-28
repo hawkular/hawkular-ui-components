@@ -29,12 +29,12 @@ export interface IDataTableService {
   setPerPage(perPage: number): void;
   loadMore(): void;
   removeItems(removeIds: any[]): any;
-  dataTableService: any;
 }
 
-export default class DataTableService implements ng.IServiceProvider {
-  private $http: any;
-  private MiQDataAccessService: any;
+export default class DataTableService implements IDataTableService {
+  /*@ngInject*/
+  constructor(private $http: any, private MiQEndpointsService: any) {}
+
   private rows: any[];
   private columns: any[];
   private sortId: any;
@@ -42,14 +42,10 @@ export default class DataTableService implements ng.IServiceProvider {
   public perPage: number = 5;
   public visibleCount: number = 0;
   public visibleItems: any[];
-  public endpoints = {
-    list : '/list',
-    deleteItems: '/delete'
-  };
 
   public deleteItems(data): ng.IPromise<any>  {
     return this.$http({
-      url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.deleteItems,
+      url: this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.deleteItemDataTable,
       method: 'POST',
       data: data
     }).then((responseData: any) => {
@@ -61,7 +57,7 @@ export default class DataTableService implements ng.IServiceProvider {
   public retrieveRowsAndColumnsFromUrl(): ng.IPromise<IRowsColsResponse> {
     return this.$http({
       method: 'GET',
-      url: this.MiQDataAccessService.getUrlPrefix() + this.endpoints.list
+      url: this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.listDataTable
     }).then((responseData) => {
       this.columns = responseData.data.head;
       this.rows = responseData.data.rows;
@@ -86,6 +82,8 @@ export default class DataTableService implements ng.IServiceProvider {
       }
       return (isAscending) ? compValue : compValue * -1;
     });
+    this.visibleCount -= this.perPage;
+    this.loadMore();
   }
 
   public getSortedIndexAndAscending() {
@@ -100,6 +98,8 @@ export default class DataTableService implements ng.IServiceProvider {
   public setPerPage(perPage: number) {
     this.perPage = perPage;
     this.visibleCount = perPage;
+    this.visibleCount -= this.perPage;
+    this.loadMore();
   }
 
   public loadMore() {
@@ -169,29 +169,5 @@ export default class DataTableService implements ng.IServiceProvider {
     if (nameIndex !== -1) {
       return cells[nameIndex];
     }
-  }
-
-  /*@ngInject*/
-  public $get($http: any, MiQDataAccessService: any, rx: any, $rootScope: any): IDataTableService {
-    this.$http = $http;
-    this.MiQDataAccessService = MiQDataAccessService;
-    return {
-      deleteItems: (data) => this.deleteItems(data),
-      retrieveRowsAndColumnsFromUrl: () => this.retrieveRowsAndColumnsFromUrl(),
-      sortItemsBy: (sortBy: any, isAscending: boolean) => {
-        this.sortItemsBy(sortBy, isAscending);
-        this.visibleCount -= this.perPage;
-        this.loadMore();
-      },
-      getSortedIndexAndAscending: () => this.getSortedIndexAndAscending(),
-      setPerPage: (perPage: number) => {
-        this.setPerPage(perPage);
-        this.visibleCount -= this.perPage;
-        this.loadMore();
-      },
-      loadMore: () => this.loadMore(),
-      removeItems: (itemIds: any[]) => this.removeItems(itemIds),
-      dataTableService: this
-    };
   }
 }

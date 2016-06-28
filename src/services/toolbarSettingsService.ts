@@ -17,26 +17,18 @@
 
 ///<reference path="../tsd.d.ts"/>
 export default class ToolbarSettingsService {
-  private $http: any;
-  private MiQDataAccessService: any;
-  public endpoints = {
-    settings : '/toolbar_settings'
-  };
+  /*@ngInject*/
+  constructor(private $http: any, private MiQEndpointsService: any) {}
 
   public getSettings(isList = false) {
-    return this.httpGet(this.MiQDataAccessService.getUrlPrefix() + this.endpoints.settings, {'is_list': isList});
+    return this.httpGet(
+      this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings,
+      {'is_list': isList}
+    );
   }
 
   private httpGet(url: string, dataObject: any): any {
     return this.$http.get(url, {params: dataObject})
       .then(dataResponse => dataResponse.data);
-  }
-  /*@ngInject*/
-  public $get($http: any, MiQDataAccessService: any): any {
-    this.$http = $http;
-    this.MiQDataAccessService = MiQDataAccessService;
-    return {
-      getSettings: (isList) => this.getSettings(isList)
-    };
   }
 }

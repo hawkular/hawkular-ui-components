@@ -23,7 +23,8 @@ export default class DataTableController {
   public emptyData: any;
   public defaultAction: any;
   /* @ngInject */
-  constructor(public MiQDataTableService: any) {
+  constructor(public MiQDataTableService: any, private MiQEndpointsService: any) {
+    this.setEndpoints();
     this.defaultAction = {
       title: 'Create new record',
       actionFunction: () => {
@@ -35,14 +36,20 @@ export default class DataTableController {
     });
     this.perPage = {
       title: '5',
-      children: [
-        {title: '5', value: 5},
-        {title: '10', value: 10},
-        {title: '20', value: 20},
-        {title: '100', value: 100},
-        {title: 'All', value: -1}
+      enabled: true,
+      items: [
+        {title: '5', value: 5, enabled: true},
+        {title: '10', value: 10, enabled: true},
+        {title: '20', value: 20, enabled: true},
+        {title: '100', value: 100, enabled: true},
+        {title: 'All', value: -1, enabled: true}
       ]
     };
+  }
+
+  private setEndpoints() {
+    this.MiQEndpointsService.rootPoint = '/data';
+    this.MiQEndpointsService.endpoints.listDataTable = '/data-table.json';
   }
 
   public onPerPage(item) {

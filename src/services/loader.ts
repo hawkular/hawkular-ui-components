@@ -21,11 +21,13 @@ import FormValidatorService from './formValidatorService';
 import NotificationService from './notificationService';
 import ToolbarSettingsService from './toolbarSettingsService';
 import ProvidersSettingsService from './providersSettingsService';
+import EndpointsService from './endpointsService';
 
 export default (module: ng.IModule) => {
-  module.provider('MiQDataTableService', DataTableService);
-  module.provider('MiQFormValidatorService', FormValidatorService);
-  module.provider('MiQToolbarSettingsService', ToolbarSettingsService);
-  module.provider('MiQProvidersSettingsService', ProvidersSettingsService);
+  module.service('MiQDataTableService', DataTableService);
+  module.service('MiQFormValidatorService', FormValidatorService);
+  module.service('MiQToolbarSettingsService', ToolbarSettingsService);
+  module.service('MiQProvidersSettingsService', ProvidersSettingsService);
   module.service('MiQNotificationService', NotificationService);
+  module.service('MiQEndpointsService', EndpointsService);
 }

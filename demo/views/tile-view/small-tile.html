@@ -9,13 +9,13 @@
                               on-item-click="vm.onPerPage(item)"
                               toolbar-list="vm.perPage"></miq-toolbar-list>
   <miq-small-tile-view ng-if="vm.tableData.rows.length > 0"
-                       has-loader="vm.MiQDataTableService.dataTableService.visibleItems.length < vm.MiQDataTableService.dataTableService.rows.length"
+                       has-loader="vm.MiQDataTableService.visibleItems.length < vm.MiQDataTableService.rows.length"
                        headers="vm.tableData.cols"
-                       items="vm.MiQDataTableService.dataTableService.visibleItems"
+                       items="vm.MiQDataTableService.visibleItems"
                        load-more-items="vm.MiQDataTableService.loadMore()"
                        on-tile-click="vm.onRowClick($event, rowData)"
                        on-tile-select="vm.onRowSelected()"
-                       per-page="vm.MiQDataTableService.dataTableService.perPage">
+                       per-page="vm.MiQDataTableService.perPage">
 
   </miq-small-tile-view>
 </div>

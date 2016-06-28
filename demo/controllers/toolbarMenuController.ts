@@ -20,10 +20,16 @@
 export default class ToolbarMenuController {
   public toolbarMenu: any;
 
-  public constructor(private MiQToolbarSettingsService: any) {
+  public constructor(private MiQToolbarSettingsService: any, private MiQEndpointsService: any) {
+    this.setEndpoints();
     this.MiQToolbarSettingsService.getSettings(true)
       .then(dataResponse => {
         this.toolbarMenu = dataResponse;
       });
+  }
+
+  private setEndpoints() {
+    this.MiQEndpointsService.rootPoint = '/data';
+    this.MiQEndpointsService.endpoints.toolbarSettings = '/toolbar.json';
   }
 }
