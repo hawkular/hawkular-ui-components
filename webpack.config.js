@@ -15,7 +15,7 @@ var webpack = require('webpack'),
       {from: __dirname + '/demo/assets', to: 'assets'}
     ]),
     new HtmlWebpackPlugin({
-      title: 'Powered by webpack',
+      title: 'ManageIQ Common Components',
       template: 'demo/template-index.ejs', // Load a custom template
       inject: 'body'
     }),

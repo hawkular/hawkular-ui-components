@@ -55,14 +55,14 @@ export default class AvailableComponentsService {
 
   private initComponents() {
       this.availableComponents = [
-      new AvailableGroup('common-components', 'Default components', '/common-components', [
+      new AvailableGroup('common-components', 'Common Components', '/common-components', [
         new AvailableComponent('validate-credentials',
-          'Validate credentials',
+          'Validate Credentials',
           '/validate-credentials',
           require<string>('./../views/validate-credentials.html'),
           'demoValidateCredentials as vm'),
         new AvailableComponent('action-buttons',
-          'Action buttons',
+          'Action Buttons',
           '/action-buttons',
           require<string>('./../views/action-buttons.html'),
           'demoActionButtons as vm'),
@@ -72,28 +72,28 @@ export default class AvailableComponentsService {
           require<string>('./../views/notification.html'),
           'basicNotification as vm')
       ]),
-      new AvailableGroup('tile-view', 'Tile Views components', '/tile-view', [
+      new AvailableGroup('tile-view', 'Tile Views Components', '/tile-view', [
         new AvailableComponent('small',
-          'Small tile view',
+          'Small Tile View',
           '/small',
           require<string>('./../views/tile-view/small-tile.html'),
           'demoDataTable as vm'),
         new AvailableComponent('normal',
-          'Normal tile view with data',
+          'Normal Tile View with Data',
           '/basic',
           require<string>('./../views/tile-view/tile-view.html'),
           'demoDataTable as vm')
         ]),
-      new AvailableGroup('data-table', 'Data Table components', '/data-table', [
+      new AvailableGroup('data-table', 'Data Table Components', '/data-table', [
         new AvailableComponent('basic',
-          'Data table with options',
+          'Data Table with Options',
           '/basic',
           require<string>('./../views/data-table/basic.html'),
           'demoDataTable as vm')
       ]),
-      new AvailableGroup('toolbar-menu', 'Toolbar menu components', '/toolbar-menu', [
+      new AvailableGroup('toolbar-menu', 'Toolbar Menu Components', '/toolbar-menu', [
         new AvailableComponent('basic', '' +
-          'Basic toolbar menu',
+          'Basic Toolbar Menu',
           '/basic',
           require<string>('./../views/toolbar-menu/basic.html'),
           'demoToolbarMenu as vm')

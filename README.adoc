@@ -52,7 +52,7 @@ your system.
 
 Install these node packages globally in the system
 [source]
-npm install -g typings bower webpack wiredep-cli
+npm install -g typings bower webpack wiredep-cli typescript typescript-formatter
 
 Install local node dependencies
 [source]
@@ -62,6 +62,10 @@ To run:
 [source]
 npm start
 
+Before sumbitting code:
+tsmft -r
+This formats the code according to the tslint rules.
+
 __Next up Angular 2.x components running alongside Angular 1.x via ngUpgrade. Ideally, a switch directly to Angular 2
 would be most desirable. However, since there are some Angular 1 dependencies (such as
 https://github.com/patternfly/angular-patternfly[Angular Patternfly]) that make it difficult to migrate directly to
@@ -70,3 +74,4 @@ Angular 2, at first. So a good intermediate compromise is to use http://blog.ran
 alongside Angular 1. Angular 2 components can use Angular 1 stuff and vice versa. This makes it easy to create real
 Angular 2 Components that can be downgraded to Angular 1 directives (and used in Angular 1). So the team gets
 experience writing Angular 2 working in the Angular 1 runtime. __
+
