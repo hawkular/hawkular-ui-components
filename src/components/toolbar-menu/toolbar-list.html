@@ -1,15 +1,20 @@
 <div class="btn-group" dropdown>
   <button type="button" dropdown-toggle class="btn dropdown-toggle btn-default"
-          ng-class="{disabled: !toolbarList.enabled}" title="{{toolbarList.title}}">
-    <i class="{{toolbarList.icon}}" style="margin-right: 5px;" ng-if="toolbarList.icon"></i>
-    {{toolbarList.title}}
+          ng-class="{disabled: !vm.toolbarList.enabled}" title="{{vm.toolbarList.title}}">
+    <i class="{{vm.toolbarList.icon}}" style="margin-right: 5px;" ng-if="vm.toolbarList.icon"></i>
+    {{vm.toolbarList.title}}
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu">
-    <li ng-repeat="item in toolbarList.items" ng-class="{disabled: !item.enabled}">
-      <a href="javascript:void(0)" ng-click="onItemClick({item: item})">
+    <li ng-repeat="item in vm.toolbarList.items" ng-class="{disabled: !item.enabled}">
+      <a href="javascript:void(0)"
+         ng-click="vm.onItemClick({item: item})"
+         data-click="{{item.id}}"
+         name="{{item.id}}"
+         id="{{item.id}}"
+         data-url_parms="{{item.url_parms}}">
         <i ng-if="item.icon" class="{{item.icon}}"></i>
-        {{item.title}}
+        {{item.text}}
       </a>
     </li>
   </ul>

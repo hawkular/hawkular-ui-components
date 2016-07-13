@@ -17,18 +17,48 @@
 
 ///<reference path="../tsd.d.ts"/>
 export default class ToolbarSettingsService {
+  private countSelected: number = 0;
+  private items: any[];
   /*@ngInject*/
   constructor(private $http: any, private MiQEndpointsService: any) {}
+
+  public checkboxClicked(isClicked) {
+    isClicked ? this.countSelected++ : this.countSelected--;
+    _.chain(this.items)
+      .flatten()
+      .each((item: any) => {
+        if (item) {
+          this.enableToolbarItemByCountSelected(item);
+          _.each(item.items, (oneButton) => {
+            this.enableToolbarItemByCountSelected(oneButton);
+          });
+        }
+      })
+      .value();
+  }
 
   public getSettings(isList = false) {
     return this.httpGet(
       this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings,
       {'is_list': isList}
-    );
+    ).then((items) => {
+      this.items = items;
+      return items;
+    });
   }
 
   private httpGet(url: string, dataObject: any): any {
     return this.$http.get(url, {params: dataObject})
       .then(dataResponse => dataResponse.data);
+  }
+
+  private enableToolbarItemByCountSelected(toolbarItem: any) {
+    if (toolbarItem.onwhen) {
+      if (toolbarItem.onwhen.slice(-1) === '+') {
+        toolbarItem.enabled = this.countSelected >=  toolbarItem.onwhen.slice(0, toolbarItem.onwhen.length - 1);
+      } else {
+        toolbarItem.enabled = this.countSelected === parseInt(toolbarItem.onwhen, 10);
+      }
+    }
   }
 }

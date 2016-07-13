@@ -227,12 +227,12 @@
 	///<reference path="../../tsd.d.ts"/>
 	var toolbarComponent_1 = __webpack_require__(28);
 	var toolbarButtonDirective_1 = __webpack_require__(31);
-	var toolbarListDirective_1 = __webpack_require__(33);
+	var toolbarListComponent_1 = __webpack_require__(33);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
+	    module.component('miqToolbarList', new toolbarListComponent_1.default);
 	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
-	    module.directive('miqToolbarList', toolbarListDirective_1.default.Factory());
 	};
 
 
@@ -396,20 +396,22 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
+	var ToolbarListController = (function () {
+	    function ToolbarListController() {
+	    }
+	    return ToolbarListController;
+	}());
 	var ToolbarList = (function () {
 	    function ToolbarList() {
 	        this.replace = true;
 	        this.template = __webpack_require__(34);
-	        this.scope = {
+	        this.controller = ToolbarListController;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
 	            toolbarList: '=',
 	            onItemClick: '&'
 	        };
 	    }
-	    ToolbarList.Factory = function () {
-	        var directive = function () { return new ToolbarList(); };
-	        directive.$inject = [];
-	        return directive;
-	    };
 	    return ToolbarList;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -420,7 +422,7 @@
 /* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: !toolbarList.enabled}\" title=\"{{toolbarList.title}}\">\n    <i class=\"{{toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"toolbarList.icon\"></i>\n    {{toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in toolbarList.items\" ng-class=\"{disabled: !item.enabled}\">\n      <a href=\"javascript:void(0)\" ng-click=\"onItemClick({item: item})\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.title}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
+	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: !vm.toolbarList.enabled}\" title=\"{{vm.toolbarList.title}}\">\n    <i class=\"{{vm.toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"vm.toolbarList.icon\"></i>\n    {{vm.toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in vm.toolbarList.items\" ng-class=\"{disabled: !item.enabled}\">\n      <a href=\"javascript:void(0)\"\n         ng-click=\"vm.onItemClick({item: item})\"\n         data-click=\"{{item.id}}\"\n         name=\"{{item.id}}\"\n         id=\"{{item.id}}\"\n         data-url_parms=\"{{item.url_parms}}\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.text}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 35 */
@@ -1790,15 +1792,45 @@
 	    function ToolbarSettingsService($http, MiQEndpointsService) {
 	        this.$http = $http;
 	        this.MiQEndpointsService = MiQEndpointsService;
+	        this.countSelected = 0;
 	    }
 	    ToolbarSettingsService.$inject = ["$http", "MiQEndpointsService"];
+	    ToolbarSettingsService.prototype.checkboxClicked = function (isClicked) {
+	        var _this = this;
+	        isClicked ? this.countSelected++ : this.countSelected--;
+	        _.chain(this.items)
+	            .flatten()
+	            .each(function (item) {
+	            if (item) {
+	                _this.enableToolbarItemByCountSelected(item);
+	                _.each(item.items, function (oneButton) {
+	                    _this.enableToolbarItemByCountSelected(oneButton);
+	                });
+	            }
+	        })
+	            .value();
+	    };
 	    ToolbarSettingsService.prototype.getSettings = function (isList) {
+	        var _this = this;
 	        if (isList === void 0) { isList = false; }
-	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, { 'is_list': isList });
+	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, { 'is_list': isList }).then(function (items) {
+	            _this.items = items;
+	            return items;
+	        });
 	    };
 	    ToolbarSettingsService.prototype.httpGet = function (url, dataObject) {
 	        return this.$http.get(url, { params: dataObject })
 	            .then(function (dataResponse) { return dataResponse.data; });
+	    };
+	    ToolbarSettingsService.prototype.enableToolbarItemByCountSelected = function (toolbarItem) {
+	        if (toolbarItem.onwhen) {
+	            if (toolbarItem.onwhen.slice(-1) === '+') {
+	                toolbarItem.enabled = this.countSelected >= toolbarItem.onwhen.slice(0, toolbarItem.onwhen.length - 1);
+	            }
+	            else {
+	                toolbarItem.enabled = this.countSelected === parseInt(toolbarItem.onwhen, 10);
+	            }
+	        }
 	    };
 	    return ToolbarSettingsService;
 	}());

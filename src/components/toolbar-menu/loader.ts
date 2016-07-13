@@ -18,10 +18,10 @@
 ///<reference path="../../tsd.d.ts"/>
 import Toolbar from './toolbarComponent';
 import ToolbarButton from './toolbarButtonDirective';
-import ToolbarList from './toolbarListDirective';
+import ToolbarList from './toolbarListComponent';
 
 export default (module: ng.IModule) => {
   module.component('miqToolbarMenu', new Toolbar);
+  module.component('miqToolbarList', new ToolbarList);
   module.directive('miqToolbarButton', ToolbarButton.Factory());
-  module.directive('miqToolbarList', ToolbarList.Factory());
 }
