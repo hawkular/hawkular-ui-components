@@ -154,9 +154,9 @@
 	"use strict";
 	///<reference path="tsd.d.ts"/>
 	var loader_1 = __webpack_require__(26);
-	var loader_2 = __webpack_require__(61);
-	var loader_3 = __webpack_require__(68);
-	var app = angular.module('miqStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx']);
+	var loader_2 = __webpack_require__(63);
+	var loader_3 = __webpack_require__(70);
+	var app = angular.module('miqStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx', 'ngSanitize']);
 	loader_1.default(app);
 	loader_2.default(app);
 	loader_3.default(app);
@@ -185,12 +185,12 @@
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
 	var loader_1 = __webpack_require__(27);
-	var loader_2 = __webpack_require__(35);
-	var loader_3 = __webpack_require__(41);
-	var loader_4 = __webpack_require__(48);
-	var actionButtonsDirective_1 = __webpack_require__(53);
-	var validateCredentialsComponent_1 = __webpack_require__(55);
-	var sortItemsComponent_1 = __webpack_require__(58);
+	var loader_2 = __webpack_require__(37);
+	var loader_3 = __webpack_require__(43);
+	var loader_4 = __webpack_require__(50);
+	var actionButtonsDirective_1 = __webpack_require__(55);
+	var validateCredentialsComponent_1 = __webpack_require__(57);
+	var sortItemsComponent_1 = __webpack_require__(60);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    loader_1.default(module);
@@ -228,10 +228,12 @@
 	var toolbarComponent_1 = __webpack_require__(28);
 	var toolbarButtonDirective_1 = __webpack_require__(31);
 	var toolbarListComponent_1 = __webpack_require__(33);
+	var toolbarViewComponent_1 = __webpack_require__(35);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.component('miqToolbarMenu', new toolbarComponent_1.default);
 	    module.component('miqToolbarList', new toolbarListComponent_1.default);
+	    module.component('miqToolbarView', new toolbarViewComponent_1.default);
 	    module.directive('miqToolbarButton', toolbarButtonDirective_1.default.Factory());
 	};
 
@@ -266,7 +268,9 @@
 	        this.controller = toolbarController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
-	            toolbarItems: '='
+	            toolbarViews: '=',
+	            toolbarItems: '=',
+	            onViewClick: '&'
 	        };
 	    }
 	    return Toolbar;
@@ -299,12 +303,13 @@
 	///<reference path="../../tsd.d.ts"/>
 	var ToolbarController = (function () {
 	    /*@ngInject*/
-	    ToolbarController.$inject = ["$window", "$location"];
-	    function ToolbarController($window, $location) {
+	    function ToolbarController($window, $location, $sce) {
 	        this.$window = $window;
 	        this.$location = $location;
+	        this.$sce = $sce;
 	    }
-	    ToolbarController.prototype.onItemClick = function (item) {
+	    ToolbarController.$inject = ["$window", "$location", "$sce"];
+	    ToolbarController.prototype.onItemClick = function (item, $event) {
 	        if (item.hasOwnProperty('actionUrl')) {
 	            this.$location.path(item.actionUrl);
 	        }
@@ -314,6 +319,35 @@
 	        else if (item.hasOwnProperty('actionFunction')) {
 	            item.actionFunction();
 	        }
+	        else if (item.hasOwnProperty('eventFunction')) {
+	            item.eventFunction($event);
+	        }
+	    };
+	    ToolbarController.prototype.hasContent = function (toolbarItem) {
+	        return toolbarItem && toolbarItem.filter(function (item) {
+	            return item && (ToolbarController.isButtonOrSelect(item) || ToolbarController.isCustom(item));
+	        }).length !== 0;
+	    };
+	    ToolbarController.prototype.trustAsHtml = function (escapedString) {
+	        escapedString = ToolbarController.htmlDecode(escapedString).replace(/&quot;/g, '"');
+	        return this.$sce.trustAsHtml(escapedString);
+	    };
+	    ToolbarController.htmlDecode = function (input) {
+	        var e = document.createElement('div');
+	        e.innerHTML = input;
+	        return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
+	    };
+	    ToolbarController.isCustom = function (item) {
+	        return item.name && item.name === 'custom';
+	    };
+	    ToolbarController.isButtonOrSelect = function (item) {
+	        return item.type && ToolbarController.isButtonSelect(item) || ToolbarController.isButton(item);
+	    };
+	    ToolbarController.isButtonSelect = function (item) {
+	        return item.type === 'buttonSelect';
+	    };
+	    ToolbarController.isButton = function (item) {
+	        return item.type === 'buttonSelect';
 	    };
 	    return ToolbarController;
 	}());
@@ -325,7 +359,7 @@
 /* 30 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"toolbar-pf-actions miq-toolbar-actions\">\n    <div class=\"form-group\" ng-repeat=\"toolbarItem in vm.toolbarItems\">\n      <miq-toolbar-list ng-repeat=\"item in toolbarItem | filter: items\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item)\">\n      </miq-toolbar-list>\n    </div>\n</div>\n"
+	module.exports = "<div class=\"toolbar-pf-actions miq-toolbar-actions\">\n    <div class=\"form-group miq-toolbar-group\"\n         ng-repeat=\"toolbarItem in vm.toolbarItems\"\n         ng-if=\"vm.hasContent(toolbarItem)\">\n      <miq-toolbar-button ng-repeat=\"item in toolbarItem | filter: {type: 'button'}:true\"\n                          toolbar-button=\"item\"\n                          on-item-click=\"vm.onItemClick(item, $event)\">\n      </miq-toolbar-button>\n      <miq-toolbar-list ng-repeat=\"item in toolbarItem | filter: {type: 'buttonSelect'}\"\n                        toolbar-list=\"item\"\n                        on-item-click=\"vm.onItemClick(item, $event)\">\n      </miq-toolbar-list>\n      <div ng-repeat=\"item in toolbarItem | filter: {name: 'custom'}\"\n           ng-bind-html=\"vm.trustAsHtml(item.args.html)\"\n           class=\"miq-custom-html\"></div>\n    </div>\n    <miq-toolbar-view toolbar-views=\"vm.toolbarViews\"\n                      on-item-click=\"vm.onViewClick({item: item})\"\n                      class=\"miq-view-list\">\n    </miq-toolbar-view>\n</div>\n"
 
 /***/ },
 /* 31 */
@@ -354,7 +388,8 @@
 	        this.replace = true;
 	        this.template = __webpack_require__(32);
 	        this.scope = {
-	            toolbarButton: '='
+	            toolbarButton: '=',
+	            onItemClick: '&'
 	        };
 	    }
 	    ToolbarButton.Factory = function () {
@@ -372,7 +407,7 @@
 /* 32 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  Button\n</div>\n"
+	module.exports = "<button title=\"{{toolbarButton.title}}\"\n        id=\"{{toolbarButton.id}}\"\n        name=\"{{toolbarButton.name}}\"\n        type=\"button\"\n        class=\"btn btn-default\"\n        data-click=\"{{toolbarButton.id}}\"\n        data-url=\"{{toolbarButton.url}}\"\n        data-url_parms=\"{{toolbarButton.url_parms}}\"\n        ng-click=\"onItemClick({item: toolbarButton, $event: $event})\">\n  <i class=\"{{toolbarButton.icon}}\" style=\"\"></i>&nbsp;\n</button>\n"
 
 /***/ },
 /* 33 */
@@ -422,7 +457,7 @@
 /* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: !vm.toolbarList.enabled}\" title=\"{{vm.toolbarList.title}}\">\n    <i class=\"{{vm.toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"vm.toolbarList.icon\"></i>\n    {{vm.toolbarList.title}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in vm.toolbarList.items\" ng-class=\"{disabled: !item.enabled}\">\n      <a href=\"javascript:void(0)\"\n         ng-click=\"vm.onItemClick({item: item})\"\n         data-click=\"{{item.id}}\"\n         name=\"{{item.id}}\"\n         id=\"{{item.id}}\"\n         data-url_parms=\"{{item.url_parms}}\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.text}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
+	module.exports = "<div class=\"btn-group\" dropdown>\n  <button type=\"button\" dropdown-toggle class=\"btn dropdown-toggle btn-default\"\n          ng-class=\"{disabled: !vm.toolbarList.enabled}\" title=\"{{vm.toolbarList.title}}\">\n    <i class=\"{{vm.toolbarList.icon}}\" style=\"margin-right: 5px;\" ng-if=\"vm.toolbarList.icon\"></i>\n    {{vm.toolbarList.text}}\n    <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\" role=\"menu\">\n    <li ng-repeat=\"item in vm.toolbarList.items\" ng-class=\"{disabled: !item.enabled}\">\n      <a href=\"javascript:void(0)\"\n         ng-click=\"vm.onItemClick({item: item, $event: $event})\"\n         data-click=\"{{item.id}}\"\n         name=\"{{item.id}}\"\n         id=\"{{item.id}}\"\n         data-url_parms=\"{{item.url_parms}}\"\n         data-url=\"{{item.url}}\">\n        <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>\n        {{item.text}}\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 35 */
@@ -446,17 +481,36 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var dataTableComponent_1 = __webpack_require__(36);
-	var dataTablePaginationDirective_1 = __webpack_require__(39);
+	var ToolbarViewController = (function () {
+	    function ToolbarViewController() {
+	    }
+	    return ToolbarViewController;
+	}());
+	var ToolbarView = (function () {
+	    function ToolbarView() {
+	        this.replace = false;
+	        this.template = __webpack_require__(36);
+	        this.controller = ToolbarViewController;
+	        this.controllerAs = 'vm';
+	        this.bindings = {
+	            toolbarViews: '=',
+	            onItemClick: '&'
+	        };
+	    }
+	    return ToolbarView;
+	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = function (module) {
-	    module.component('miqDataTable', new dataTableComponent_1.default);
-	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
-	};
+	exports.default = ToolbarView;
 
 
 /***/ },
 /* 36 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"toolbar-pf-view-selector form-group\">\n  <ul class=\"list-inline\">\n    <li ng-repeat=\"item in vm.toolbarViews\" ng-class=\"{active: !item.enabled}\">\n      <a href=\"javascript:void(0)\"\n         title=\"{{item.title}}\"\n         id=\"{{item.id}}\"\n         data-url=\"{{item.url}}\"\n         data-click=\"{{}}\"\n         data-url_parms=\"{{item.url_parms}}\"\n         data-click=\"{{view_dashboard}}\"\n         ng-click=\"vm.onItemClick({item: item})\"\n         name=\"{{item.name}}\">\n        <i class=\"{{item.icon}}\" style=\"\"></i>\n      </a>\n    </li>\n  </ul>\n</div>\n"
+
+/***/ },
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -477,11 +531,42 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var dataTablecontroller_1 = __webpack_require__(37);
+	var dataTableComponent_1 = __webpack_require__(38);
+	var dataTablePaginationDirective_1 = __webpack_require__(41);
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = function (module) {
+	    module.component('miqDataTable', new dataTableComponent_1.default);
+	    module.directive('miqDataTablePagination', dataTablePaginationDirective_1.default.Factory());
+	};
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../../tsd.d.ts"/>
+	var dataTablecontroller_1 = __webpack_require__(39);
 	var DataTable = (function () {
 	    function DataTable() {
 	        this.replace = true;
-	        this.template = __webpack_require__(38);
+	        this.template = __webpack_require__(40);
 	        this.controller = dataTablecontroller_1.default;
 	        this.transclude = true;
 	        this.controllerAs = 'vm';
@@ -506,7 +591,7 @@
 
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports) {
 
 	///
@@ -529,7 +614,6 @@
 	///<reference path="../../tsd.d.ts"/>
 	var DataTableController = (function () {
 	    /* @ngInject */
-	    DataTableController.$inject = ["MiQDataTableService", "observeOnScope", "$scope"];
 	    function DataTableController(MiQDataTableService, observeOnScope, $scope) {
 	        var _this = this;
 	        this.MiQDataTableService = MiQDataTableService;
@@ -550,6 +634,7 @@
 	            _this.setPage(0);
 	        });
 	    }
+	    DataTableController.$inject = ["MiQDataTableService", "observeOnScope", "$scope"];
 	    Object.defineProperty(DataTableController, "assetUrl", {
 	        get: function () {
 	            return '/assets/';
@@ -639,13 +724,13 @@
 
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <div ng-if=\"vm.showHeader\" class=\"dataTables_header miq-data-tables-header\">\n    <div class=\"row\">\n      <div class=\"col-md-11 col-md-11\">\n      </div>\n      <div class=\"col-md-1 col-ld-1\">\n        <ng-transclude></ng-transclude>\n      </div>\n    </div>\n  </div>\n  <table class=\"table table-bordered table-striped table-hover mig-table-with-footer mig-table\">\n    <thead>\n    <tr>\n      <th class=\"narrow miq-select\" ng-if=\"vm.selectable\">\n        <input ng-if=\"vm.data.length !== 0\" type=\"checkbox\" ng-model=\"isChecked\" ng-click=\"vm.onCheckAll(isChecked)\" title=\"Select all\">\n      </th>\n      <th ng-repeat=\"column in vm.columns\" ng-click=\"vm.onSortClick(column)\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <div ng-if=\"column.sort\">\n          {{column.text}}\n          <div class=\"pull-right\">\n            <i class=\"fa\" ng-if=\"vm.isFilteredBy(column)\" ng-class=\"vm.getSortClass(column)\"></i>\n          </div>\n        </div>\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n    <tr ng-repeat=\"row in vm.limitedData\"\n        ng-class=\"{active : row.selected}\"\n        ng-click=\"vm.onRowClick({$event: $event, rowData: row})\">\n      <td class=\"narrow\" ng-if=\"vm.selectable\" onclick=\"event.stopPropagation();\">\n        <input ng-click=\"vm.onRowSelected($event, isSelected, row)\"\n               onclick=\"event.stopPropagation();\"\n               type=\"checkbox\"\n               ng-model=\"isSelected\"\n               name=\"check_{{row.id}}\"\n               value=\"{{row.id}}\"\n               ng-checked=\"row.selected\"\n               class=\"list-grid-checkbox\">\n      </td>\n      <td ng-repeat=\"(columnKey, column) in vm.columns\"\n          ng-class=\"vm.getColumnClass(column)\">\n        <img ng-if=\"vm.isIconOrImage(row, columnKey)\"\n             alt=\"row.cells[columnKey].title\"\n             title=\"row.cells[columnKey].title\"\n             ng-src=\"{{vm.buildImageUrl(row, columnKey)}}\">\n            <span ng-if=\"row.cells[columnKey].text\">\n                {{row.cells[columnKey].text}}\n            </span>\n      </td>\n    </tr>\n    <tr ng-if=\"vm.data.length === 0\">\n      <td colspan=\"{{vm.columns.length + (vm.selectable? 1 : 0)}}\">\n        <p>It looks like this table has no data.</p>\n        <p ng-if=\"vm.defaultAction\">\n          Why don't you try\n            <a ng-click=\"vm.defaultAction.actionFunction()\">{{vm.defaultAction.title}}</a>\n          so this table would not be empty.\n        </p>\n      </td>\n    </tr>\n    </tbody>\n  </table>\n  <div ng-if=\"!vm.noFooter\" class=\"dataTables_footer\">\n        <span class=\"pull-right\">\n            <miq-data-table-pagination resource-list=\"vm.data\"\n                                       current-page=\"vm.resCurPage\"\n                                       page-setter=\"vm.setPage(pageNumber)\"\n                                       per-page=\"vm.perPage\">\n            </miq-data-table-pagination>\n        </span>\n  </div>\n</div>\n"
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -668,7 +753,7 @@
 	///<reference path="../../tsd.d.ts"/>
 	var DataTablePagination = (function () {
 	    function DataTablePagination() {
-	        this.template = __webpack_require__(40);
+	        this.template = __webpack_require__(42);
 	        this.scope = {
 	            resourceList: '=',
 	            currentPage: '=',
@@ -731,13 +816,13 @@
 
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"dataTables_paginate paging_bootstrap_input\" id=\"DataTables_Table_0_paginate\">\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: currentPage === 0}\" class=\"first\" ng-click=\"goToFirst()\"><span\n      class=\"i fa fa-angle-double-left\"></span></li>\n    <li ng-class=\"{disabled: currentPage === 0}\" class=\"prev\" ng-click=\"setPage(currentPage - 1)\"><span\n      class=\"i fa fa-angle-left\"></span></li>\n  </ul>\n  <div class=\"pagination-input\">\n    <form ng-submit=\"setPage(currentPageView - 1)\">\n      <input type=\"text\" class=\"paginate_input\" ng-model=\"currentPageView\">\n      <span class=\"paginate_of\">of <b>{{goTos.length}}</b></span>\n    </form>\n  </div>\n  <ul class=\"pagination\">\n    <li ng-class=\"{disabled: currentPage === goTos.length -1}\" class=\"next\" ng-click=\"setPage(currentPage + 1)\"><span\n      class=\"i fa fa-angle-right\"></span></li>\n    <li ng-class=\"{disabled: currentPage === goTos.length -1}\" class=\"last\" ng-click=\"goToLast()\"><span\n      class=\"i fa fa-angle-double-right\"></span></li>\n  </ul>\n</div>\n"
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -758,8 +843,8 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var notificationsDirective_1 = __webpack_require__(42);
-	var notificationSectionComponent_1 = __webpack_require__(45);
+	var notificationsDirective_1 = __webpack_require__(44);
+	var notificationSectionComponent_1 = __webpack_require__(47);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.directive('miqNotifications', notificationsDirective_1.default.Factory());
@@ -768,7 +853,7 @@
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -789,11 +874,11 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var notificationsController_1 = __webpack_require__(43);
+	var notificationsController_1 = __webpack_require__(45);
 	var Notifications = (function () {
 	    function Notifications() {
 	        this.replace = true;
-	        this.template = __webpack_require__(44);
+	        this.template = __webpack_require__(46);
 	        this.controller = notificationsController_1.default;
 	        this.controllerAs = 'vm';
 	        this.scope = {};
@@ -817,7 +902,7 @@
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports) {
 
 	///
@@ -866,13 +951,13 @@
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"alert\" ng-class=\"vm.getClassFromType()\">\n  <button type=\"button\" class=\"close\" ng-click=\"vm.onDismiss()\" aria-hidden=\"true\" ng-if=\"vm.dismissible\">\n    <span class=\"pficon pficon-close\"></span>\n  </button>\n  <span ng-class=\"vm.getIconByType()\" class=\"pficon\"></span>\n  <strong ng-if=\"vm.header\">{{vm.header}}</strong> <span>{{(vm.body?vm.body:'&nbsp;')}}</span>\n</div>\n"
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -893,11 +978,11 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var notificationSectionController_1 = __webpack_require__(46);
+	var notificationSectionController_1 = __webpack_require__(48);
 	var NotificationSection = (function () {
 	    function NotificationSection() {
 	        this.replace = true;
-	        this.template = __webpack_require__(47);
+	        this.template = __webpack_require__(49);
 	        this.controller = notificationSectionController_1.default;
 	        this.controllerAs = 'vm';
 	        this.scope = {};
@@ -914,7 +999,7 @@
 
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports) {
 
 	///
@@ -936,7 +1021,6 @@
 	"use strict";
 	var NotificationSectionController = (function () {
 	    /* @ngInject */
-	    NotificationSectionController.$inject = ["MiQNotificationService", "$timeout", "$scope", "rx"];
 	    function NotificationSectionController(MiQNotificationService, $timeout, $scope, rx) {
 	        var _this = this;
 	        this.MiQNotificationService = MiQNotificationService;
@@ -948,6 +1032,7 @@
 	        $scope.$eventToObservable('$destroy')
 	            .subscribe(function () { return disposable.dispose(); });
 	    }
+	    NotificationSectionController.$inject = ["MiQNotificationService", "$timeout", "$scope", "rx"];
 	    /**
 	     *
 	     * @param data
@@ -1001,13 +1086,13 @@
 
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"miq-alert-section\">\n  <div class=\"miq-info-alert\" ng-if=\"vm.showInfo && (vm.limit ? vm.limit : 1) < vm.activeNotifications.length\">\n    And {{vm.activeNotifications.length - (vm.limit ? vm.limit : 1)}} more\n  </div>\n  <miq-notifications ng-repeat=\"(key, alert) in vm.activeNotifications | limitTo: (vm.limit ? vm.limit : 1)\"\n                     type=\"alert.type\"\n                     header=\"alert.header\"\n                     body=\"alert.body\"\n                     dismissible=\"alert.dismissible\"\n                     on-dismiss=\"vm.onDismiss(key)\">\n  </miq-notifications>\n</div>\n"
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1028,16 +1113,16 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var tileViewComponent_1 = __webpack_require__(49);
+	var tileViewComponent_1 = __webpack_require__(51);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
-	    module.component('miqTileView', new tileViewComponent_1.default(__webpack_require__(51)));
-	    module.component('miqSmallTileView', new tileViewComponent_1.default(__webpack_require__(52)));
+	    module.component('miqTileView', new tileViewComponent_1.default(__webpack_require__(53)));
+	    module.component('miqSmallTileView', new tileViewComponent_1.default(__webpack_require__(54)));
 	};
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1058,7 +1143,7 @@
 	///
 	"use strict";
 	///<reference path="../../tsd.d.ts"/>
-	var tileViewController_1 = __webpack_require__(50);
+	var tileViewController_1 = __webpack_require__(52);
 	var TileView = (function () {
 	    function TileView(template) {
 	        this.template = template;
@@ -1083,7 +1168,7 @@
 
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports) {
 
 	///
@@ -1105,7 +1190,6 @@
 	"use strict";
 	var TileViewcontroller = (function () {
 	    /* @ngInject */
-	    TileViewcontroller.$inject = ["observeOnScope", "$scope"];
 	    function TileViewcontroller(observeOnScope, $scope) {
 	        var _this = this;
 	        this.observeOnScope = observeOnScope;
@@ -1117,6 +1201,7 @@
 	        });
 	        this.initOptions();
 	    }
+	    TileViewcontroller.$inject = ["observeOnScope", "$scope"];
 	    TileViewcontroller.prototype.initOptions = function () {
 	        this.options = {
 	            selectionMatchProp: 'id',
@@ -1152,64 +1237,16 @@
 
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-tile-with-body\">\n    <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    <div class=\"row miq-row-margin-only-top \">\n      <div class=\"col-md-3 col-ld-3 miq-icon-section\">\n        <a href=\"javascript:void(0)\">\n          <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n        </a>\n      </div>\n      <div class=\"col-md-9 col-ld-9 miq-info-section\">\n        <dl class=\"dl-horizontal tile\">\n          <dt ng-repeat-start=\"(key, header) in item.headers\" ng-if=\"header.text && header.text !== 'Name'\">{{header.text}}</dt>\n          <dd ng-repeat-end ng-if=\"header.text && header.text !== 'Name'\">{{item.cells[key].text}}</dd>\n        </dl>\n      </div>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length === 0\">\n    <p>It looks like this table has no data.</p>\n    <p ng-if=\"vmCtrl.defaultAction\">\n      <a ng-click=\"vmCtrl.defaultAction.actionFunction()\" style=\"cursor: pointer;\">{{vmCtrl.defaultAction.title}}</a>\n      so it would not be empty.\n    </p>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
-/* 52 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-small-tile\">\n    <div>\n      <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    </div>\n    <div>\n      <a href=\"javascript:void(0)\">\n        <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n      </a>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length === 0\">\n    <p>It looks like this table has no data.</p>\n    <p ng-if=\"vmCtrl.defaultAction\">\n      <a ng-click=\"vmCtrl.defaultAction.actionFunction()\" style=\"cursor: pointer;\">{{vmCtrl.defaultAction.title}}</a>\n      so it would not be empty.\n    </p>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
-
-/***/ },
-/* 53 */
-/***/ function(module, exports, __webpack_require__) {
-
-	///
-	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
-	/// and other contributors as indicated by the @author tags.
-	///
-	/// Licensed under the Apache License, Version 2.0 (the "License");
-	/// you may not use this file except in compliance with the License.
-	/// You may obtain a copy of the License at
-	///
-	///    http://www.apache.org/licenses/LICENSE-2.0
-	///
-	/// Unless required by applicable law or agreed to in writing, software
-	/// distributed under the License is distributed on an "AS IS" BASIS,
-	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	/// See the License for the specific language governing permissions and
-	/// limitations under the License.
-	///
-	"use strict";
-	///<reference path="../tsd.d.ts"/>
-	var ActionButtons = (function () {
-	    function ActionButtons() {
-	        this.replace = true;
-	        this.template = __webpack_require__(54);
-	        this.scope = {
-	            actions: '=',
-	            isValid: '='
-	        };
-	    }
-	    ActionButtons.Factory = function () {
-	        var directive = function () { return new ActionButtons(); };
-	        directive.$inject = [];
-	        return directive;
-	    };
-	    return ActionButtons;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ActionButtons;
-
-
-/***/ },
 /* 54 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-disabled=\"oneAction.validate && !isValid\"\n          ng-click=\"oneAction.clickFunction($event)\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
+	module.exports = "<div class=\"miq-tile-section\">\n  <div pf-card-view config=\"vmCtrl.options\" items=\"vmCtrl.items\" class=\"miq-small-tile\">\n    <div>\n      <a href=\"javascript:void(0)\">{{item.nameItem.text}}</a>\n    </div>\n    <div>\n      <a href=\"javascript:void(0)\">\n        <img height=\"72\" class=\"miq-gradient-background\" ng-src=\"/assets/{{item.icon.image}}\" width=\"72\">\n      </a>\n    </div>\n  </div>\n  <div ng-if=\"vmCtrl.items.length === 0\">\n    <p>It looks like this table has no data.</p>\n    <p ng-if=\"vmCtrl.defaultAction\">\n      <a ng-click=\"vmCtrl.defaultAction.actionFunction()\" style=\"cursor: pointer;\">{{vmCtrl.defaultAction.title}}</a>\n      so it would not be empty.\n    </p>\n  </div>\n  <div ng-if=\"vmCtrl.hasLoader\" class=\"miq-load-more\">\n    <a href=\"javascript:void(0)\" ng-click=\"vmCtrl.loadMoreItems()\">Show {{vmCtrl.perPage}} more</a>\n  </div>\n</div>\n"
 
 /***/ },
 /* 55 */
@@ -1233,11 +1270,59 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var validateCredentialsController_1 = __webpack_require__(56);
+	var ActionButtons = (function () {
+	    function ActionButtons() {
+	        this.replace = true;
+	        this.template = __webpack_require__(56);
+	        this.scope = {
+	            actions: '=',
+	            isValid: '='
+	        };
+	    }
+	    ActionButtons.Factory = function () {
+	        var directive = function () { return new ActionButtons(); };
+	        directive.$inject = [];
+	        return directive;
+	    };
+	    return ActionButtons;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ActionButtons;
+
+
+/***/ },
+/* 56 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n  <button ng-repeat=\"oneAction in actions\"\n          name=\"button\"\n          type=\"submit\"\n          class=\"btn {{oneAction.btnClass}}\"\n          alt=\"action.title\"\n          title=\"action.title\"\n          ng-disabled=\"oneAction.validate && !isValid\"\n          ng-click=\"oneAction.clickFunction($event)\">\n    <span>\n      <i ng-if=\"oneAction.iconClass\" class=\"{{oneAction.iconClass}}\"></i>\n      {{oneAction.label}}\n    </span>\n  </button>\n</div>\n"
+
+/***/ },
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+
+	///
+	/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+	/// and other contributors as indicated by the @author tags.
+	///
+	/// Licensed under the Apache License, Version 2.0 (the "License");
+	/// you may not use this file except in compliance with the License.
+	/// You may obtain a copy of the License at
+	///
+	///    http://www.apache.org/licenses/LICENSE-2.0
+	///
+	/// Unless required by applicable law or agreed to in writing, software
+	/// distributed under the License is distributed on an "AS IS" BASIS,
+	/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	/// See the License for the specific language governing permissions and
+	/// limitations under the License.
+	///
+	"use strict";
+	///<reference path="../tsd.d.ts"/>
+	var validateCredentialsController_1 = __webpack_require__(58);
 	var ValidateCredentials = (function () {
 	    function ValidateCredentials() {
 	        this.replace = true;
-	        this.template = __webpack_require__(57);
+	        this.template = __webpack_require__(59);
 	        this.controller = validateCredentialsController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
@@ -1253,7 +1338,7 @@
 
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports) {
 
 	///
@@ -1305,13 +1390,13 @@
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_userid'}}\">Username</label>\n    <div class=\"col-md-4\">\n      <input type=\"text\" id=\"{{vm.modelName + '_userid'}}\" name=\"{{vm.modelName}}_userid\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_userid']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_password'}}\">Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" id=\"{{vm.modelName + '_password'}}\" name=\"{{vm.modelName}}_password\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_password']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <label class=\"col-md-2 control-label\" for=\"{{vm.modelName + '_verify'}}\">Confirm Password</label>\n    <div class=\"col-md-4\">\n      <input type=\"password\" id=\"{{vm.modelName + '_verify'}}\" name=\"{{vm.modelName}}_verify\" maxlength=\"50\" class=\"form-control\" ng-model=\"vm.modelHolder[vm.modelName + '_verify']\">\n    </div>\n  </div>\n  <div class=\"form-group\">\n    <div class=\"col-md-6\">\n      <button name=\"button\" type=\"submit\" class=\"btn btn-primary btn-xs pull-right\"\n              ng-class=\"vm.getValidateClass()\"\n              ng-click=\"vm.onValidate()\">\n        Validate\n      </button>\n    </div>\n  </div>\n</div>\n"
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1332,11 +1417,11 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var sortItemsController_1 = __webpack_require__(59);
+	var sortItemsController_1 = __webpack_require__(61);
 	var SortItems = (function () {
 	    function SortItems() {
 	        this.replace = true;
-	        this.template = __webpack_require__(60);
+	        this.template = __webpack_require__(62);
 	        this.controller = sortItemsController_1.default;
 	        this.controllerAs = 'vm';
 	        this.bindings = {
@@ -1352,7 +1437,7 @@
 
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports) {
 
 	///
@@ -1375,7 +1460,6 @@
 	///<reference path="../tsd.d.ts"/>
 	var SortItemsController = (function () {
 	    /* @ngInject*/
-	    SortItemsController.$inject = ["MiQDataTableService", "observeOnScope", "$scope"];
 	    function SortItemsController(MiQDataTableService, observeOnScope, $scope) {
 	        var _this = this;
 	        this.MiQDataTableService = MiQDataTableService;
@@ -1388,6 +1472,7 @@
 	        });
 	        this.initOptions();
 	    }
+	    SortItemsController.$inject = ["MiQDataTableService", "observeOnScope", "$scope"];
 	    SortItemsController.prototype.initOptions = function () {
 	        var _this = this;
 	        var sortIndexAndAsc = this.MiQDataTableService.getSortedIndexAndAscending();
@@ -1419,13 +1504,13 @@
 
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n  <div pf-sort config=\"vm.options\"></div>\n</div>\n"
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1446,12 +1531,12 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var dataTableService_1 = __webpack_require__(62);
-	var formValidatorService_1 = __webpack_require__(63);
-	var notificationService_1 = __webpack_require__(64);
-	var toolbarSettingsService_1 = __webpack_require__(65);
-	var providersSettingsService_1 = __webpack_require__(66);
-	var endpointsService_1 = __webpack_require__(67);
+	var dataTableService_1 = __webpack_require__(64);
+	var formValidatorService_1 = __webpack_require__(65);
+	var notificationService_1 = __webpack_require__(66);
+	var toolbarSettingsService_1 = __webpack_require__(67);
+	var providersSettingsService_1 = __webpack_require__(68);
+	var endpointsService_1 = __webpack_require__(69);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.service('MiQDataTableService', dataTableService_1.default);
@@ -1464,7 +1549,7 @@
 
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports) {
 
 	///
@@ -1619,7 +1704,7 @@
 
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports) {
 
 	///
@@ -1678,7 +1763,7 @@
 
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports) {
 
 	///
@@ -1701,11 +1786,11 @@
 	///<reference path="../tsd.d.ts"/>
 	var NotificationService = (function () {
 	    /* @ngInject */
-	    NotificationService.$inject = ["rx"];
 	    function NotificationService(rx) {
 	        this.rx = rx;
 	        this.notificationSubject = new this.rx.Subject();
 	    }
+	    NotificationService.$inject = ["rx"];
 	    Object.defineProperty(NotificationService, "bodyTag", {
 	        get: function () { return '<body>'; },
 	        enumerable: true,
@@ -1766,7 +1851,7 @@
 
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports) {
 
 	///
@@ -1795,6 +1880,10 @@
 	        this.countSelected = 0;
 	    }
 	    ToolbarSettingsService.$inject = ["$http", "MiQEndpointsService"];
+	    /**
+	     *
+	     * @param isClicked
+	     */
 	    ToolbarSettingsService.prototype.checkboxClicked = function (isClicked) {
 	        var _this = this;
 	        isClicked ? this.countSelected++ : this.countSelected--;
@@ -1810,18 +1899,53 @@
 	        })
 	            .value();
 	    };
-	    ToolbarSettingsService.prototype.getSettings = function (isList) {
+	    ToolbarSettingsService.prototype.generateToolbarObject = function (toolbarObject) {
+	        this.items = toolbarObject;
+	        this.dataViews = this.filterViews();
+	        return {
+	            items: this.items,
+	            dataViews: this.dataViews
+	        };
+	    };
+	    /**
+	     *
+	     * @returns {ng.IPromise<IToolbarSettings>}
+	     * @param getData
+	     */
+	    ToolbarSettingsService.prototype.getSettings = function (getData) {
 	        var _this = this;
-	        if (isList === void 0) { isList = false; }
-	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, { 'is_list': isList }).then(function (items) {
+	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, getData).then(function (items) {
 	            _this.items = items;
-	            return items;
+	            _this.dataViews = _this.filterViews();
+	            return {
+	                items: items,
+	                dataViews: _this.dataViews
+	            };
 	        });
 	    };
+	    /**
+	     *
+	     * @returns {any[]}
+	     */
+	    ToolbarSettingsService.prototype.filterViews = function () {
+	        return _.flatten(this.items).filter(function (item) {
+	            return item && item.id && item.id.indexOf('view_') === 0;
+	        });
+	    };
+	    /**
+	     *
+	     * @param url
+	     * @param dataObject
+	     * @returns {any}
+	     */
 	    ToolbarSettingsService.prototype.httpGet = function (url, dataObject) {
 	        return this.$http.get(url, { params: dataObject })
 	            .then(function (dataResponse) { return dataResponse.data; });
 	    };
+	    /**
+	     *
+	     * @param toolbarItem
+	     */
 	    ToolbarSettingsService.prototype.enableToolbarItemByCountSelected = function (toolbarItem) {
 	        if (toolbarItem.onwhen) {
 	            if (toolbarItem.onwhen.slice(-1) === '+') {
@@ -1839,7 +1963,7 @@
 
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports) {
 
 	///
@@ -1881,7 +2005,7 @@
 
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports) {
 
 	///
@@ -1909,7 +2033,7 @@
 	        this.validateItem = '/validate';
 	        this.createItem = '/create';
 	        this.providerSettings = '/list_providers_settings';
-	        this.toolbarSettings = '/toolbar_settings';
+	        this.toolbarSettings = '/toolbar';
 	    }
 	    return DefaultEndpoints;
 	}());
@@ -1926,7 +2050,7 @@
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	///
@@ -1947,7 +2071,7 @@
 	///
 	"use strict";
 	///<reference path="../tsd.d.ts"/>
-	var newProviderState_1 = __webpack_require__(69);
+	var newProviderState_1 = __webpack_require__(71);
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = function (module) {
 	    module.provider('MiQNewProviderStateService', newProviderState_1.default);
@@ -1955,7 +2079,7 @@
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports) {
 
 	"use strict";

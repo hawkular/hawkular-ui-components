@@ -19,13 +19,22 @@
 
 export default class ToolbarMenuController {
   public toolbarMenu: any;
+  public toolbarMenuViews: any;
 
   public constructor(private MiQToolbarSettingsService: any, private MiQEndpointsService: any) {
     this.setEndpoints();
     this.MiQToolbarSettingsService.getSettings(true)
       .then(dataResponse => {
-        this.toolbarMenu = dataResponse;
+        this.toolbarMenu = dataResponse.items;
+        this.toolbarMenuViews = dataResponse.dataViews;
       });
+  }
+
+  public onViewClick(item: any) {
+    this.toolbarMenuViews.forEach((item: any) => {
+      item.enabled = (item.enabled === false) ? true : item.enabled;
+    });
+    item.enabled = false;
   }
 
   private setEndpoints() {
