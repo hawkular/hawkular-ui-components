@@ -15,12 +15,23 @@
 /// limitations under the License.
 ///
 
-///<reference path="tsd.d.ts"/>
-import components from './components/loader';
-import services from './services/loader';
-import providers from './providers/loader';
+///<reference path="../../tsd.d.ts"/>
+interface IToolbarViewBindings {
+  toolbarViews: any;
+  onItemClick: (args: {item: any}) => void;
+}
+class ToolbarViewController implements IToolbarViewBindings {
+  public toolbarViews: any;
+  public onItemClick: (args: {item: any}) => void;
+}
 
-const app = angular.module('miqStaticAssets', ['ui.bootstrap', 'ui.bootstrap.tabs', 'rx', 'ngSanitize']);
-components(app);
-services(app);
-providers(app);
+export default class ToolbarView {
+  public replace: boolean = false;
+  public template = require<string>('./toolbar-view.html');
+  public controller: any = ToolbarViewController;
+  public controllerAs: string = 'vm';
+  public bindings: any = {
+    toolbarViews: '=',
+    onItemClick: '&'
+  };
+}

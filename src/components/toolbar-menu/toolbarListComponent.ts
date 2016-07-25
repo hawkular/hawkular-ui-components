@@ -22,7 +22,7 @@ interface IToolbarListBindings {
 }
 class ToolbarListController implements IToolbarListBindings {
   public toolbarList: any;
-  public onItemClick: (args: {item: any}) => void;
+  public onItemClick: (args: {item: any, $event: any}) => void;
 }
 
 export default class ToolbarList {

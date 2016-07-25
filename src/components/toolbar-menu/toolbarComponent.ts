@@ -24,6 +24,8 @@ export default class Toolbar {
   public controller: any = ToolbarController;
   public controllerAs: string = 'vm';
   public bindings: any = {
-    toolbarItems: '='
+    toolbarViews: '=',
+    toolbarItems: '=',
+    onViewClick: '&'
   };
 }

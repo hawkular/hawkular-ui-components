@@ -1,0 +1,17 @@
+<div class="toolbar-pf-view-selector form-group">
+  <ul class="list-inline">
+    <li ng-repeat="item in vm.toolbarViews" ng-class="{active: !item.enabled}">
+      <a href="javascript:void(0)"
+         title="{{item.title}}"
+         id="{{item.id}}"
+         data-url="{{item.url}}"
+         data-click="{{}}"
+         data-url_parms="{{item.url_parms}}"
+         data-click="{{view_dashboard}}"
+         ng-click="vm.onItemClick({item: item})"
+         name="{{item.name}}">
+        <i class="{{item.icon}}" style=""></i>
+      </a>
+    </li>
+  </ul>
+</div>
