@@ -1,6 +1,6 @@
 <div class="toolbar-pf-view-selector form-group">
   <ul class="list-inline">
-    <li ng-repeat="item in vm.toolbarViews" ng-class="{active: !item.enabled}">
+    <li ng-repeat="item in vm.toolbarViews" ng-class="{active: item.selected}">
       <a href="javascript:void(0)"
          title="{{item.title}}"
          id="{{item.id}}"

@@ -347,7 +347,7 @@
 	        return item.type === 'buttonSelect';
 	    };
 	    ToolbarController.isButton = function (item) {
-	        return item.type === 'buttonSelect';
+	        return item.type === 'button';
 	    };
 	    return ToolbarController;
 	}());
@@ -507,7 +507,7 @@
 /* 36 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"toolbar-pf-view-selector form-group\">\n  <ul class=\"list-inline\">\n    <li ng-repeat=\"item in vm.toolbarViews\" ng-class=\"{active: !item.enabled}\">\n      <a href=\"javascript:void(0)\"\n         title=\"{{item.title}}\"\n         id=\"{{item.id}}\"\n         data-url=\"{{item.url}}\"\n         data-click=\"{{}}\"\n         data-url_parms=\"{{item.url_parms}}\"\n         data-click=\"{{view_dashboard}}\"\n         ng-click=\"vm.onItemClick({item: item})\"\n         name=\"{{item.name}}\">\n        <i class=\"{{item.icon}}\" style=\"\"></i>\n      </a>\n    </li>\n  </ul>\n</div>\n"
+	module.exports = "<div class=\"toolbar-pf-view-selector form-group\">\n  <ul class=\"list-inline\">\n    <li ng-repeat=\"item in vm.toolbarViews\" ng-class=\"{active: item.selected}\">\n      <a href=\"javascript:void(0)\"\n         title=\"{{item.title}}\"\n         id=\"{{item.id}}\"\n         data-url=\"{{item.url}}\"\n         data-click=\"{{}}\"\n         data-url_parms=\"{{item.url_parms}}\"\n         data-click=\"{{view_dashboard}}\"\n         ng-click=\"vm.onItemClick({item: item})\"\n         name=\"{{item.name}}\">\n        <i class=\"{{item.icon}}\" style=\"\"></i>\n      </a>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ },
 /* 37 */
@@ -1900,7 +1900,7 @@
 	            .value();
 	    };
 	    ToolbarSettingsService.prototype.generateToolbarObject = function (toolbarObject) {
-	        this.items = toolbarObject;
+	        this.items = toolbarObject.filter(function (item) { return item; });
 	        this.dataViews = this.filterViews();
 	        return {
 	            items: this.items,
@@ -1915,7 +1915,7 @@
 	    ToolbarSettingsService.prototype.getSettings = function (getData) {
 	        var _this = this;
 	        return this.httpGet(this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings, getData).then(function (items) {
-	            _this.items = items;
+	            _this.items = items.filter(function (item) { return item; });
 	            _this.dataViews = _this.filterViews();
 	            return {
 	                items: items,

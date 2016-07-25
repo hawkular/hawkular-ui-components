@@ -57,7 +57,7 @@ export default class ToolbarSettingsService {
   }
 
   public generateToolbarObject(toolbarObject) {
-    this.items = toolbarObject;
+    this.items = toolbarObject.filter(item => item);
     this.dataViews = this.filterViews();
     return {
       items: this.items,
@@ -75,7 +75,7 @@ export default class ToolbarSettingsService {
       this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings,
       getData
     ).then((items) => {
-      this.items = items;
+      this.items = items.filter(item => item);
       this.dataViews = this.filterViews();
       return {
         items: items,

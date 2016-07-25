@@ -67,6 +67,6 @@ export default class ToolbarController {
   }
 
   private static isButton(item): boolean {
-    return item.type === 'buttonSelect';
+    return item.type === 'button';
   }
 }
