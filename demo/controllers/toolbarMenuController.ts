@@ -32,9 +32,9 @@ export default class ToolbarMenuController {
 
   public onViewClick(item: any) {
     this.toolbarMenuViews.forEach((item: any) => {
-      item.enabled = (item.enabled === false) ? true : item.enabled;
+      item.selected = false;
     });
-    item.enabled = false;
+    item.selected = true;
   }
 
   private setEndpoints() {
