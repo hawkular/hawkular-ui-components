@@ -39,7 +39,7 @@ export class DefaultEndpoints implements IEndpoints {
     this.validateItem = '/validate';
     this.createItem = '/create';
     this.providerSettings = '/list_providers_settings';
-    this.toolbarSettings = '/toolbar_settings';
+    this.toolbarSettings = '/toolbar';
   }
 }
 

@@ -16,12 +16,31 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
+
+interface IToolbarSettings {
+  items: any[];
+  dataViews: any[];
+}
+
+interface IRequestData {
+  lastAction: string;
+  id?: number;
+  display?: string;
+  gtl_type?: string;
+}
+
 export default class ToolbarSettingsService {
   private countSelected: number = 0;
-  private items: any[];
+  public items: any[];
+  public dataViews: any[];
+
   /*@ngInject*/
   constructor(private $http: any, private MiQEndpointsService: any) {}
 
+  /**
+   *
+   * @param isClicked
+   */
   public checkboxClicked(isClicked) {
     isClicked ? this.countSelected++ : this.countSelected--;
     _.chain(this.items)
@@ -37,22 +56,60 @@ export default class ToolbarSettingsService {
       .value();
   }
 
-  public getSettings(isList = false) {
+  public generateToolbarObject(toolbarObject) {
+    this.items = toolbarObject;
+    this.dataViews = this.filterViews();
+    return {
+      items: this.items,
+      dataViews: this.dataViews
+    };
+  }
+
+  /**
+   *
+   * @returns {ng.IPromise<IToolbarSettings>}
+   * @param getData
+   */
+  public getSettings(getData: IRequestData): ng.IPromise<IToolbarSettings> {
     return this.httpGet(
       this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings,
-      {'is_list': isList}
+      getData
     ).then((items) => {
       this.items = items;
-      return items;
+      this.dataViews = this.filterViews();
+      return {
+        items: items,
+        dataViews: this.dataViews
+      };
     });
   }
 
+  /**
+   *
+   * @returns {any[]}
+   */
+  private filterViews(): any[] {
+    return _.flatten(this.items).filter(function(item) {
+      return item && item.id && item.id.indexOf('view_') === 0;
+    });
+  }
+
+  /**
+   *
+   * @param url
+   * @param dataObject
+   * @returns {any}
+   */
   private httpGet(url: string, dataObject: any): any {
     return this.$http.get(url, {params: dataObject})
       .then(dataResponse => dataResponse.data);
   }
 
-  private enableToolbarItemByCountSelected(toolbarItem: any) {
+  /**
+   *
+   * @param toolbarItem
+   */
+  private enableToolbarItemByCountSelected(toolbarItem: any): void {
     if (toolbarItem.onwhen) {
       if (toolbarItem.onwhen.slice(-1) === '+') {
         toolbarItem.enabled = this.countSelected >=  toolbarItem.onwhen.slice(0, toolbarItem.onwhen.length - 1);
