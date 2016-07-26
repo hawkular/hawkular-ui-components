@@ -17,47 +17,44 @@
 
 ///<reference path="../tsd.d.ts"/>
 
-interface IToolbarSettings {
-  items: any[];
-  dataViews: any[];
-}
-
-interface IRequestData {
-  lastAction: string;
-  id?: number;
-  display?: string;
-  gtl_type?: string;
-}
+import {IToolbarItem, IToolbarSettings, IRequestData} from '../interfaces/toolbar';
 
 export default class ToolbarSettingsService {
   private countSelected: number = 0;
-  public items: any[];
-  public dataViews: any[];
+  public items: Array<IToolbarItem>[];
+  public dataViews: IToolbarItem[];
 
   /*@ngInject*/
   constructor(private $http: any, private MiQEndpointsService: any) {}
 
   /**
-   *
+   * Method which will travers trough all items and enables them by number of selected items.
    * @param isClicked
    */
-  public checkboxClicked(isClicked) {
+  public checkboxClicked(isClicked: boolean): void {
     isClicked ? this.countSelected++ : this.countSelected--;
     _.chain(this.items)
       .flatten()
+      .filter(item => item)
       .each((item: any) => {
-        if (item) {
-          this.enableToolbarItemByCountSelected(item);
-          _.each(item.items, (oneButton) => {
-            this.enableToolbarItemByCountSelected(oneButton);
-          });
-        }
+        this.enableToolbarItemByCountSelected(item);
+      })
+      .map('items')
+      .flatten()
+      .filter(item => item)
+      .each((item: any) => {
+        this.enableToolbarItemByCountSelected(item);
       })
       .value();
   }
 
-  public generateToolbarObject(toolbarObject) {
-    this.items = toolbarObject.filter(item => item);
+  /**
+   *
+   * @param toolbarObject
+   * @returns {{items: Array<IToolbarItem>[], dataViews: IToolbarItem[]}}
+   */
+  public generateToolbarObject(toolbarObject: Array<IToolbarItem>[]): IToolbarSettings {
+    this.items = toolbarObject.filter(item => !!item);
     this.dataViews = this.filterViews();
     return {
       items: this.items,
@@ -74,8 +71,8 @@ export default class ToolbarSettingsService {
     return this.httpGet(
       this.MiQEndpointsService.rootPoint + this.MiQEndpointsService.endpoints.toolbarSettings,
       getData
-    ).then((items) => {
-      this.items = items.filter(item => item);
+    ).then((items: Array<IToolbarItem>[]) => {
+      this.items = items.filter(item => !!item);
       this.dataViews = this.filterViews();
       return {
         items: items,
@@ -86,21 +83,22 @@ export default class ToolbarSettingsService {
 
   /**
    *
-   * @returns {any[]}
+   * @returns {IToolbarItem[]}
    */
-  private filterViews(): any[] {
-    return _.flatten(this.items).filter(function(item) {
-      return item && item.id && item.id.indexOf('view_') === 0;
-    });
+  private filterViews(): IToolbarItem[] {
+    return _.flatten(this.items)
+            .filter(
+              item => item && item.id && item.id.indexOf('view_') === 0
+            );
   }
 
   /**
    *
    * @param url
    * @param dataObject
-   * @returns {any}
+   * @returns {ng.IPromise<Array<IToolbarItem>[]>}
    */
-  private httpGet(url: string, dataObject: any): any {
+  private httpGet(url: string, dataObject: any): ng.IPromise<Array<IToolbarItem>[]> {
     return this.$http.get(url, {params: dataObject})
       .then(dataResponse => dataResponse.data);
   }
@@ -109,13 +107,22 @@ export default class ToolbarSettingsService {
    *
    * @param toolbarItem
    */
-  private enableToolbarItemByCountSelected(toolbarItem: any): void {
+  private enableToolbarItemByCountSelected(toolbarItem: IToolbarItem): void {
     if (toolbarItem.onwhen) {
       if (toolbarItem.onwhen.slice(-1) === '+') {
-        toolbarItem.enabled = this.countSelected >=  toolbarItem.onwhen.slice(0, toolbarItem.onwhen.length - 1);
+        toolbarItem.enabled = this.countSelected >= ToolbarSettingsService.parseNumberFromWhen(toolbarItem.onwhen);
       } else {
         toolbarItem.enabled = this.countSelected === parseInt(toolbarItem.onwhen, 10);
       }
     }
+  }
+
+  /**
+   *
+   * @param onWhen
+   * @returns {number}
+   */
+  private static parseNumberFromWhen(onWhen: string) {
+    return onWhen.indexOf('+') !== -1 ? parseInt(onWhen.slice(0, onWhen.length - 1), 10) : parseInt(onWhen, 10);
   }
 }

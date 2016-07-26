@@ -31,7 +31,7 @@ export default class ToolbarList {
   public controller: any = ToolbarListController;
   public controllerAs: string = 'vm';
   public bindings: any = {
-    toolbarList: '=',
+    toolbarList: '<',
     onItemClick: '&'
   };
 }
