@@ -18,17 +18,55 @@
 ///<reference path="../../tsd.d.ts"/>
 export default class ToolbarController {
   public toolbarItems: any;
+  public toolbarViews: any;
   /*@ngInject*/
-  constructor(private $window: ng.IWindowService, private $location: ng.ILocationService) {
+  constructor(private $window: ng.IWindowService,
+              private $location: ng.ILocationService,
+              private $sce: ng.ISCEService) {
   }
 
-  public onItemClick(item: any) {
+  public onItemClick(item: any, $event: any) {
     if (item.hasOwnProperty('actionUrl')) {
       this.$location.path(item.actionUrl);
     } else if (item.hasOwnProperty('redirectUrl')) {
       this.$window.location = item.redirectUrl;
     } else if (item.hasOwnProperty('actionFunction')) {
       item.actionFunction();
+    } else if (item.hasOwnProperty('eventFunction')) {
+      item.eventFunction($event);
     }
+  }
+
+  public hasContent(toolbarItem): boolean {
+    return toolbarItem && toolbarItem.filter((item) => {
+      return item && (ToolbarController.isButtonOrSelect(item) || ToolbarController.isCustom(item));
+    }).length !== 0;
+  }
+
+  public trustAsHtml(escapedString) {
+    escapedString = ToolbarController.htmlDecode(escapedString).replace(/&quot;/g, '"');
+    return this.$sce.trustAsHtml(escapedString);
+  }
+
+  private static htmlDecode(input): string {
+    let e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue;
+  }
+
+  private static isCustom(item): boolean {
+    return item.name && item.name === 'custom';
+  }
+
+  private static isButtonOrSelect(item): boolean {
+    return item.type && ToolbarController.isButtonSelect(item) || ToolbarController.isButton(item);
+  }
+
+  private static isButtonSelect(item): boolean {
+    return item.type === 'buttonSelect';
+  }
+
+  private static isButton(item): boolean {
+    return item.type === 'button';
   }
 }

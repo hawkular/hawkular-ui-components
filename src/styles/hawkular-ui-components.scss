@@ -116,3 +116,20 @@ img.miq-gradient-background {
 .miq-data-tables-header {
   text-align: left;
 }
+
+.form-group.miq-toolbar-group {
+  margin-right: 20px;
+  display: inline-block;
+
+  .miq-custom-html {
+    form{
+      display: inline-block;
+    }
+
+    .form-group {
+      margin-bottom: 0 !important;
+      border-right: 0;
+    }
+  }
+}
+

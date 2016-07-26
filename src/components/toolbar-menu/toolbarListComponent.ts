@@ -16,17 +16,22 @@
 ///
 
 ///<reference path="../../tsd.d.ts"/>
-export default class ToolbarList implements ng.IDirective {
+interface IToolbarListBindings {
+  toolbarList: any;
+  onItemClick: (args: {item: any}) => void;
+}
+class ToolbarListController implements IToolbarListBindings {
+  public toolbarList: any;
+  public onItemClick: (args: {item: any, $event: any}) => void;
+}
+
+export default class ToolbarList {
   public replace: boolean = true;
   public template = require<string>('./toolbar-list.html');
-  public scope: any = {
-    toolbarList: '=',
+  public controller: any = ToolbarListController;
+  public controllerAs: string = 'vm';
+  public bindings: any = {
+    toolbarList: '<',
     onItemClick: '&'
-  };
-
-  public static Factory = () => {
-    let directive: ng.IDirectiveFactory = () => new ToolbarList();
-    directive.$inject = [];
-    return directive;
   };
 }

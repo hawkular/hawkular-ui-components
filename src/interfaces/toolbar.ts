@@ -16,29 +16,40 @@
 ///
 
 ///<reference path="../tsd.d.ts"/>
+export interface IToolbarSettings {
+  items: Array<IToolbarItem>[];
+  dataViews: IToolbarItem[];
+}
 
-export default class ToolbarMenuController {
-  public toolbarMenu: any;
-  public toolbarMenuViews: any;
+export interface IRequestData {
+  lastAction: string;
+  id?: number;
+  display?: string;
+  gtl_type?: string;
+}
 
-  public constructor(private MiQToolbarSettingsService: any, private MiQEndpointsService: any) {
-    this.setEndpoints();
-    this.MiQToolbarSettingsService.getSettings(true)
-      .then(dataResponse => {
-        this.toolbarMenu = dataResponse.items;
-        this.toolbarMenuViews = dataResponse.dataViews;
-      });
-  }
+export interface IToolbarItem {
+  text?: string;
+  title?: string;
+  name?: string;
+  id?: string;
+  onwhen?: string;
+  enabled?: boolean;
+  hidden?: boolean;
+  url_parms?: string;
+  url?: string;
+  items?: IToolbarItem[];
+  args?: ICustomToolbarItem;
+  data?: IToolbarData;
+}
 
-  public onViewClick(item: any) {
-    this.toolbarMenuViews.forEach((item: any) => {
-      item.selected = false;
-    });
-    item.selected = true;
-  }
+export interface IToolbarData {
+  'function': string;
+  'function-data': string;
+  targer: string;
+  toggle: string;
+}
 
-  private setEndpoints() {
-    this.MiQEndpointsService.rootPoint = '/data';
-    this.MiQEndpointsService.endpoints.toolbarSettings = '/toolbar.json';
-  }
+export interface ICustomToolbarItem extends IToolbarItem {
+  html: string;
 }
