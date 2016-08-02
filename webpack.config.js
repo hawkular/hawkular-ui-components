@@ -38,7 +38,7 @@ const webpack = require('webpack'),
     new NgAnnotatePlugin({add: true})
   ].filter(p => !!p);
 
-let appEntry = {};
+var appEntry = {};
 if(production){
   plugins.push(new webpack.optimize.DedupePlugin());
   plugins.push(new webpack.optimize.OccurenceOrderPlugin());
