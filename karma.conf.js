@@ -1,6 +1,5 @@
 
-const webpackEnv = {test: true};
-const webpackConfig = require('./webpack.config')
+const webpackConfig = require('./webpack.config');
 const fileGlob = 'src/**/*.test.js';
 
 module.exports = function(config) {
