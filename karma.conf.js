@@ -1,6 +1,6 @@
 
 const webpackConfig = require('./webpack.config');
-const fileGlob = 'src/**/*.test.js';
+const fileGlob = 'src/**/*.test.ts';
 
 module.exports = function(config) {
   config.set({

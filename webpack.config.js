@@ -38,13 +38,13 @@ const webpack = require('webpack'),
     new NgAnnotatePlugin({add: true})
   ].filter(p => !!p);
 
-var appEntry = {};
 if(production){
   plugins.push(new webpack.optimize.DedupePlugin());
   plugins.push(new webpack.optimize.OccurenceOrderPlugin());
   plugins.push(new webpack.optimize.UglifyJsPlugin({warnings: false, minimize: true, drop_console: true}));
 }
 
+var appEntry = {};
 appEntry[settings.appName] = [
   settings.sassEntryPoint,
   settings.tsEntryPoint

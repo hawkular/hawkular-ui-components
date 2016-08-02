@@ -22,6 +22,6 @@ module.exports = {
     output: {
         path: settings.outputFolder,
         publicPath: '.',
-        filename: 'js/vendor.something.js'
+        filename: 'js/vendor.js'
     }
 };
