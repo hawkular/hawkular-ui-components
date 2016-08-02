@@ -19,7 +19,7 @@ var webpack = require('webpack'),
       template: 'demo/template-index.ejs', // Load a custom template
       inject: 'body'
     }),
-    new webpack.optimize.CommonsChunkPlugin(
+    !production ? undefined : new webpack.optimize.CommonsChunkPlugin(
       settings.appName,
       settings.javascriptFolder + '/' + settings.appName + settings.isMinified(production)
     ),
@@ -37,7 +37,7 @@ var webpack = require('webpack'),
     }),
     new ExtractTextPlugin(settings.stylesheetPath),
     new NgAnnotatePlugin({add: true})
-  ];
+  ].filter(p => !!p);
 
 if(production){
   plugins.push(new webpack.optimize.DedupePlugin());
