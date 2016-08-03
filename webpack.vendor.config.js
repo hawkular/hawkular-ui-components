@@ -1,13 +1,18 @@
 const settings = require('./application-settings.js');
+const production = process.argv.indexOf('--production') !== -1;
+
 var webpack = require('webpack'),
     CopyWebpackPlugin = require('copy-webpack-plugin'),
     path = require('path'),
     plugins = [
-        new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */settings.javascriptFolder + "/vendor.js"),
+      !production ? undefined : new webpack.optimize.CommonsChunkPlugin(
+           /* chunkName= */"vendor",
+           /* filename= */settings.javascriptFolder + "/vendor.js"),
         new CopyWebpackPlugin([
           {from: __dirname + '/libs', to: settings.javascriptFolder + '/libs'}
         ])
-        ];
+        ].filter(p => !!p);
+
 module.exports = {
     context: __dirname,
     entry: {
@@ -17,6 +22,6 @@ module.exports = {
     output: {
         path: settings.outputFolder,
         publicPath: '.',
-        filename: 'js/vendor.something.js'
+        filename: 'js/vendor.js'
     }
 };
